@@ -34,11 +34,6 @@ options(width = 100)
 [gha]: <https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml/badge.svg> "GitHub Actions"
 
 - 📚 Docs: <https://tidywf.github.io/tidydragen>:
-  - [Installation](https://tidywf.github.io/tidydragen/articles/installation)
-  - [Files/tables supported](https://tidywf.github.io/tidydragen/articles/schemas_raw)
-  - [Tidy schemas](https://tidywf.github.io/tidydragen/articles/schemas_tidy)
-  - [Developer notes](https://tidywf.github.io/tidydragen/articles/developers)
-  - [Changelog](https://tidywf.github.io/tidydragen/articles/NEWS)
 
 ## Overview
 
@@ -56,7 +51,8 @@ look at some sample data (tracked via [DVC]) under
 #| label: example_input_tree
 #| code-fold: true
 #| code-summary: "Click here"
-system.file("extdata/oa", package = "tidydragen") |>
+#| eval: false
+system.file("extdata/oa", package = "tidywigits") |>
   fs::dir_tree(invert = TRUE, glob = "*.dvc")
 ```
 
@@ -95,15 +91,16 @@ A `tidydragen.R` command line interface is available for convenience.
 #| label: cli1
 #| echo: true
 #| eval: false
-tw_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
-export PATH="${tw_cli}:${PATH}"
+td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
+export PATH="${td_cli}:${PATH}"
 ```
 
 ```{bash}
 #| label: cli2
 #| echo: false
-tw_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
-export PATH="${tw_cli}:${PATH}"
+#| eval: false
+td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
+export PATH="${td_cli}:${PATH}"
 
 echo "$ tidydragen.R --version" & tidydragen.R --version
 echo ""
