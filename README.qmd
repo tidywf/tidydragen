@@ -3,7 +3,7 @@ format: gfm
 knitr:
   opts_chunk:
     collapse: true
-    comment: ''
+    comment: "#>"
     fig.path: "man/figures/README-"
 ---
 
@@ -13,106 +13,70 @@ knitr:
 #| label: pkg_load
 #| echo: false
 #| message: false
-use("tidydragen")
+
+{
+  use("tidydragen")
+  use("glue", "glue")
+  use("arrow", "read_parquet")
+  use("fs", "dir_tree")
+}
+```
+
+```{r}
+#| label: setup
+#| echo: false
+
+# keep these vars for child qmd templates
+pkg_nm <- "tidydragen"
+org_nm <- "tidywf"
+ver <- as.character(utils::packageVersion(pkg_nm))
+dir_nemo <- system.file("doc-templates", "installation", package = "nemo")
 ```
 
 ```{r}
 #| label: opts
 #| echo: false
+
 options(width = 100)
 ```
 
 <a href="https://tidywf.github.io/tidydragen"><img src="man/figures/logo.png" alt="logo" align="left" height="100" /></a>
 
-# 🧬✨ Tidy Illumina DRAGEN Outputs
-
+# Tidy Illumina DRAGEN Outputs
 
 [![conda-latest1]](https://anaconda.org/tidywf/r-tidydragen)
 [![gha]](https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml)
+[![ghcr-latest]](https://github.com/tidywf/tidydragen/pkgs/container/tidydragen)
 
-[conda-latest1]: <https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg> "Conda Latest Release"
-[gha]: <https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml/badge.svg> "GitHub Actions"
+[conda-latest1]: <https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg> "Conda latest release date"
+[gha]: <https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml/badge.svg> "GitHub Actions Status"
+[ghcr-latest]: <https://ghcr-badge.egpl.dev/tidywf/tidydragen/latest_tag?color=%2344cc11&ignore=latest&label=image-latest&trim=> "Docker latest release"
 
-- 📚 Docs: <https://tidywf.github.io/tidydragen>:
+## Contents
 
-## Overview
+TODO
 
-{{< include /inst/doc-templates/introduction/_overview.qmd >}}
+## tidydragen
 
-## 🎨 Quick Start
+TODO
 
-The starting point of {tidydragen} is a directory with DRAGEN results. Let's
-look at some sample data (tracked via [DVC]) under
-<https://github.com/tidywf/tidydragen/tree/main/inst/extdata/oa>:
-
-[DVC]: <https://dvc.org/>
+## Documentation
 
 ```{r}
-#| label: example_input_tree
-#| code-fold: true
-#| code-summary: "Click here"
-#| eval: false
-system.file("extdata/oa", package = "tidywigits") |>
-  fs::dir_tree(invert = TRUE, glob = "*.dvc")
-```
-
-We can parse, tidy up, and write the DRAGEN results into e.g. Parquet format or
-a PostgreSQL database as follows:
-
-- Parquet:
-
-{{< include /inst/doc-templates/examples/_parquet1.qmd >}}
-
-- PostgreSQL:
-
-{{< include /inst/doc-templates/examples/_postgresql1.qmd >}}
-
-## 🍕 Installation
-
-{{< include /inst/doc-templates/installation/_r.qmd >}}
-
-Alternatively:
-
-- conda package: <https://anaconda.org/tidywf/r-tidydragen>
-- Docker image: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
-
-For more details see: <https://tidywf.github.io/tidydragen/articles/installation>
-
-## 🌀 CLI
-
-A `tidydragen.R` command line interface is available for convenience.
-
-- If you're using the conda package, the `tidydragen.R` command will already be
-  available inside the activated conda environment.
-- If you're _not_ using the conda package, you need to export the
-  `tidydragen/inst/cli/` directory to your `PATH` in order to use `tidydragen.R`.
-
-```{bash}
-#| label: cli1
-#| echo: true
-#| eval: false
-td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
-export PATH="${td_cli}:${PATH}"
-```
-
-```{bash}
-#| label: cli2
+#| label: docs
 #| echo: false
-#| eval: false
-td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
-export PATH="${td_cli}:${PATH}"
+#| results: asis
 
-echo "$ tidydragen.R --version" & tidydragen.R --version
-echo ""
-echo "#-----------------------------------#"
-echo "$ tidydragen.R --help" & tidydragen.R --help
-echo "'"
-echo "#-----------------------------------#"
-echo "#------- Tidy ----------------------#"
-echo "$ tidydragen.R tidy --help" & tidydragen.R tidy --help
-echo ""
-echo "#-----------------------------------#"
-echo "#------- List ----------------------#"
-echo "$ tidydragen.R list --help" & tidydragen.R list --help
-echo ""
+base <- glue("https://{org_nm}.github.io/{pkg_nm}")
+glue(
+  "- Installation: <{base}/articles/installation>
+- Quickstart: <{base}/articles/quickstart>
+- Files supported: <{base}/articles/schema_table>
+- Output naming: <{base}/articles/output_naming>
+- Structure: <{base}/articles/structure>
+- Changelog: <{base}/articles/NEWS>
+- R6: <https://{org_nm}.github.io/nemo/articles/structure>"
+)
 ```
+
+## Quickstart
