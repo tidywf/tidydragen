@@ -6,7 +6,7 @@ message = "Bump version: {current_version} => {new_version}"
 regex = false
 ignore_missing_version = false
 ignore_missing_files = false
-commit = true
+commit = false
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
@@ -25,11 +25,6 @@ search = "Version: {current_version}"
 replace = "Version: {new_version}"
 
 [[tool.bumpversion.files]]
-filename = ".github/workflows/deploy.yaml"
-search = "pkg_version: '{current_version}' # bump"
-replace = "pkg_version: '{new_version}' # bump"
-
-[[tool.bumpversion.files]]
 filename = "deploy/conda/recipe/recipe.yaml"
 search = "version: {current_version}"
 replace = "version: {new_version}"
@@ -40,26 +35,7 @@ search = "r-tidydragen =={current_version}"
 replace = "r-tidydragen =={new_version}"
 
 [[tool.bumpversion.files]]
-filename = "inst/doc-templates/installation/_docker.qmd"
-search = "tidydragen:{current_version}"
-replace = "tidydragen:{new_version}"
+filename = "deploy/conda/env/yaml/pkgdown.yaml"
+search = "r-tidydragen =={current_version}"
+replace = "r-tidydragen =={new_version}"
 
-[[tool.bumpversion.files]]
-filename = "inst/doc-templates/installation/_docker.qmd"
-search = "tag={current_version}"
-replace = "tag={new_version}"
-
-[[tool.bumpversion.files]]
-filename = "inst/doc-templates/installation/_conda.qmd"
-search = "r-tidydragen=={current_version}"
-replace = "r-tidydragen=={new_version}"
-
-[[tool.bumpversion.files]]
-filename = "inst/doc-templates/installation/_r.qmd"
-search = "tidydragen@v{current_version}"
-replace = "tidydragen@v{new_version}"
-
-[[tool.bumpversion.files]]
-filename = "inst/doc-templates/installation/_pixi.qmd"
-search = "r-tidydragen=={current_version}"
-replace = "r-tidydragen=={new_version}"

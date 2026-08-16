@@ -8,11 +8,13 @@
 ^\.DS_Store$
 ^\.Rproj\.user$
 ^\.bumpversion\.toml$
+^\.claude$
 ^\.dockerignore$
 ^\.dvc$
 ^\.dvcignore$
 ^\.github$
 ^\.lintr$
+^\.panache\.toml$
 ^\.pre-commit-config\.yaml$
 ^\.vscode$
 ^_pkgdown\.yaml$

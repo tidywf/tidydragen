@@ -1,13 +1,10 @@
-.PHONY: all pkgdown
-
-readme:
-	@quarto render README.qmd
+.PHONY: all pkgdown test
 
 air:
 	@air format
 
-check:
-	@R -e "devtools::check()" --quiet --no-restore --no-save
+readme:
+	@quarto render README.qmd
 
 pkgdown:
 	@R -e "pkgdown::build_site()" --quiet --no-restore --no-save
@@ -22,6 +19,14 @@ build:
 
 build-readme: build readme
 
+test:
+	@R -e "devtools::test()" --quiet --no-restore --no-save
+
+check:
+	@R -e "devtools::check()" --quiet --no-restore --no-save
+
+full: roxydoc test build check
+
 bump:
 ifndef VERSION
 	$(error VERSION is not set. Usage: make bump VERSION=x.y.z BRANCH=dev)
@@ -31,8 +36,4 @@ ifndef BRANCH
 endif
 	@gh workflow run bump.yaml --ref $(BRANCH) --field version=$(VERSION)
 
-web-preview:
-	@quarto preview inst/website/index.qmd --port 4242 --no-browser --no-watch-inputs --output-dir nogit/website-tmp --embed-resources
 
-web-render:
-	@quarto render inst/website/
