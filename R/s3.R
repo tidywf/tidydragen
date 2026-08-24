@@ -18,7 +18,6 @@ s3sync <- function(src, dest, pats = NULL, dryrun = FALSE) {
   pats_default <- tibble::tribble(
     ~inex , ~pat                                    ,
     "ex"  , "*"                                     ,
-    "in"  , "*-replay.json"                         ,
     "in"  , "*.allele_transition_noise_metrics.csv" ,
     "in"  , "*.cnv_metrics.csv"                     ,
     "in"  , "*.fastqc_metrics.csv"                  ,

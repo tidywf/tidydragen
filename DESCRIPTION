@@ -19,9 +19,16 @@ Depends:
 Remotes:
     tidywf/nemo
 Imports:
+    dplyr,
+    glue,
     nemo,
-    tibble
+    R6,
+    readr,
+    rlang,
+    tibble,
+    tidyr
 Suggests:
+    arrow,
     knitr,
     quarto,
     rmarkdown,
