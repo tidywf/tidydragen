@@ -1,0 +1,470 @@
+tables:
+  vc:
+    description: 'DRAGEN variant caller metrics (SUMMARY section dropped).'
+    pattern: "\\.vc_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      # --- PREFILTER / POSTFILTER ---
+      - raw: 'Total'
+        tidy: 'total'
+        type: 'float'
+        description: 'total variants'
+        versions: ['latest']
+      - raw: 'Single allelic'
+        tidy: 'single_allelic'
+        type: 'float'
+        description: 'single-allelic sites'
+        versions: ['latest']
+      - raw: 'Biallelic'
+        tidy: 'biallelic'
+        type: 'float'
+        description: 'biallelic sites'
+        versions: ['latest']
+      - raw: 'Multiallelic'
+        tidy: 'multiallelic'
+        type: 'float'
+        description: 'multiallelic sites'
+        versions: ['latest']
+      - raw: 'SNPs'
+        tidy: 'snps'
+        type: 'float'
+        description: 'SNPs'
+        versions: ['latest']
+      - raw: 'Insertions'
+        tidy: 'insertions'
+        type: 'float'
+        description: 'insertions'
+        versions: ['latest']
+      - raw: 'Insertions (Hap)'
+        tidy: 'insertions_hap'
+        type: 'float'
+        description: 'haploid insertions'
+        versions: ['latest']
+      - raw: 'Insertions (Hom)'
+        tidy: 'insertions_hom'
+        type: 'float'
+        description: 'homozygous insertions'
+        versions: ['latest']
+      - raw: 'Insertions (Het)'
+        tidy: 'insertions_het'
+        type: 'float'
+        description: 'heterozygous insertions'
+        versions: ['latest']
+      - raw: 'Deletions'
+        tidy: 'deletions'
+        type: 'float'
+        description: 'deletions'
+        versions: ['latest']
+      - raw: 'Deletions (Hap)'
+        tidy: 'deletions_hap'
+        type: 'float'
+        description: 'haploid deletions'
+        versions: ['latest']
+      - raw: 'Deletions (Hom)'
+        tidy: 'deletions_hom'
+        type: 'float'
+        description: 'homozygous deletions'
+        versions: ['latest']
+      - raw: 'Deletions (Het)'
+        tidy: 'deletions_het'
+        type: 'float'
+        description: 'heterozygous deletions'
+        versions: ['latest']
+      - raw: 'Indels (Het)'
+        tidy: 'indels_het'
+        type: 'float'
+        description: 'heterozygous indels'
+        versions: ['latest']
+      # region ("over genome" / "over target region") stripped by region_split;
+      # the region is recorded in the `region` column.
+      - raw: 'Chr X number of SNPs'
+        tidy: 'chrx_snps'
+        type: 'float'
+        description: 'chr X SNPs over the called region'
+        versions: ['latest']
+      - raw: 'Chr Y number of SNPs'
+        tidy: 'chry_snps'
+        type: 'float'
+        description: 'chr Y SNPs over the called region'
+        versions: ['latest']
+      - raw: '(Chr X SNPs)/(chr Y SNPs) ratio'
+        tidy: 'chrx_chry_snp_ratio'
+        type: 'float'
+        description: 'chr X / chr Y SNP ratio over the called region'
+        versions: ['latest']
+      - raw: 'SNP Transitions'
+        tidy: 'snp_transitions'
+        type: 'float'
+        description: 'SNP transitions'
+        versions: ['latest']
+      - raw: 'SNP Transversions'
+        tidy: 'snp_transversions'
+        type: 'float'
+        description: 'SNP transversions'
+        versions: ['latest']
+      - raw: 'Ti/Tv ratio'
+        tidy: 'ti_tv_ratio'
+        type: 'float'
+        description: 'transition/transversion ratio'
+        versions: ['latest']
+      - raw: 'Heterozygous'
+        tidy: 'heterozygous'
+        type: 'float'
+        description: 'heterozygous variants'
+        versions: ['latest']
+      - raw: 'Homozygous'
+        tidy: 'homozygous'
+        type: 'float'
+        description: 'homozygous variants'
+        versions: ['latest']
+      - raw: 'Het/Hom ratio'
+        tidy: 'het_hom_ratio'
+        type: 'float'
+        description: 'heterozygous/homozygous ratio'
+        versions: ['latest']
+      - raw: 'SNP Mosaics'
+        tidy: 'snp_mosaics'
+        type: 'float'
+        description: 'SNP mosaics'
+        versions: ['latest']
+      - raw: 'Indel Mosaics'
+        tidy: 'indel_mosaics'
+        type: 'float'
+        description: 'indel mosaics'
+        versions: ['latest']
+      - raw: 'In dbSNP'
+        tidy: 'in_dbsnp'
+        type: 'float'
+        description: 'variants in dbSNP'
+        versions: ['latest']
+      - raw: 'Not in dbSNP'
+        tidy: 'not_in_dbsnp'
+        type: 'float'
+        description: 'variants not in dbSNP'
+        versions: ['latest']
+      - raw: 'Percent Callability'
+        tidy: 'callability_pct'
+        type: 'float'
+        description: 'percent callability'
+        versions: ['latest']
+      - raw: 'Percent Autosome Callability'
+        tidy: 'autosome_callability_pct'
+        type: 'float'
+        description: 'percent autosome callability'
+        versions: ['latest']
+      - raw: 'Percent QC Region Callability in Region 1'
+        tidy: 'qc_region_callability_region1_pct'
+        type: 'float'
+        description: 'percent QC region callability, region 1 (targeted)'
+        versions: ['latest']
+      - raw: 'Percent QC Region Callability in Region 2'
+        tidy: 'qc_region_callability_region2_pct'
+        type: 'float'
+        description: 'percent QC region callability, region 2 (targeted)'
+        versions: ['latest']
+  sv:
+    description: 'DRAGEN structural variant metrics.'
+    pattern: "\\.sv_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Total number of structural variants (PASS)'
+        tidy: 'total_pass'
+        type: 'float'
+        description: 'total number of PASS structural variants'
+        versions: ['latest']
+      - raw: 'Number of deletions (PASS)'
+        tidy: 'del'
+        type: 'float'
+        description: 'PASS deletions'
+        versions: ['latest']
+      - raw: 'Number of insertions (PASS)'
+        tidy: 'ins'
+        type: 'float'
+        description: 'PASS insertions'
+        versions: ['latest']
+      - raw: 'Number of duplications (PASS)'
+        tidy: 'dup'
+        type: 'float'
+        description: 'PASS duplications'
+        versions: ['latest']
+      - raw: 'Number of breakend pairs (PASS)'
+        tidy: 'bnd'
+        type: 'float'
+        description: 'PASS breakend pairs'
+        versions: ['latest']
+  cnv:
+    description: 'DRAGEN CNV metrics.'
+    pattern: "\\.cnv_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Bases in reference genome'
+        tidy: 'bases_in_ref_genome'
+        type: 'float'
+        description: 'bases in reference genome'
+        versions: ['latest']
+      - raw: 'Average alignment coverage over genome'
+        tidy: 'cov_alignment_avg_over_genome'
+        type: 'float'
+        description: 'average alignment coverage over genome'
+        versions: ['latest']
+      - raw: 'Number of alignment records'
+        tidy: 'n_alignment_records'
+        type: 'float'
+        description: 'number of alignment records'
+        versions: ['latest']
+      - raw: 'Number of filtered records (total)'
+        tidy: 'n_filtered_records_tot'
+        type: 'float'
+        description: 'filtered records (total)'
+        versions: ['latest']
+      - raw: 'Number of filtered records (duplicates)'
+        tidy: 'n_filtered_records_dup'
+        type: 'float'
+        description: 'filtered records (duplicates)'
+        versions: ['latest']
+      - raw: 'Number of filtered records (MAPQ)'
+        tidy: 'n_filtered_records_mapq'
+        type: 'float'
+        description: 'filtered records (MAPQ)'
+        versions: ['latest']
+      - raw: 'Number of filtered records (unmapped)'
+        tidy: 'n_filtered_records_unmap'
+        type: 'float'
+        description: 'filtered records (unmapped)'
+        versions: ['latest']
+      - raw: 'PMAD'
+        tidy: 'pmad'
+        type: 'float'
+        description: 'per-bin median absolute deviation'
+        versions: ['latest']
+      - raw: 'OutlierBafFraction'
+        tidy: 'outlier_baf_fraction'
+        type: 'float'
+        description: 'outlier BAF fraction'
+        versions: ['latest']
+      - raw: 'Homozygosity index'
+        tidy: 'homozygosity_index'
+        type: 'float'
+        description: 'homozygosity index'
+        versions: ['latest']
+      - raw: 'Coverage MAD'
+        tidy: 'coverage_mad'
+        type: 'float'
+        description: 'coverage median absolute deviation'
+        versions: ['latest']
+      - raw: 'Gene Scaled MAD'
+        tidy: 'gene_scaled_mad'
+        type: 'float'
+        description: 'gene-scaled MAD'
+        versions: ['latest']
+      - raw: 'Median Bin Count'
+        tidy: 'median_bin_count'
+        type: 'float'
+        description: 'median bin count'
+        versions: ['latest']
+      - raw: 'Number of target intervals'
+        tidy: 'n_target_intervals'
+        type: 'float'
+        description: 'number of target intervals'
+        versions: ['latest']
+      - raw: 'Number of normal samples'
+        tidy: 'n_samp_norm'
+        type: 'float'
+        description: 'number of normal samples'
+        versions: ['latest']
+      - raw: 'Number of segments'
+        tidy: 'n_seg'
+        type: 'float'
+        description: 'number of segments'
+        versions: ['latest']
+      - raw: 'Number of amplifications'
+        tidy: 'n_amp'
+        type: 'float'
+        description: 'number of amplifications'
+        versions: ['latest']
+      - raw: 'Number of deletions'
+        tidy: 'n_del'
+        type: 'float'
+        description: 'number of deletions'
+        versions: ['latest']
+      - raw: 'Number of passing amplifications'
+        tidy: 'n_amp_pass'
+        type: 'float'
+        description: 'number of passing amplifications'
+        versions: ['latest']
+      - raw: 'Number of passing deletions'
+        tidy: 'n_del_pass'
+        type: 'float'
+        description: 'number of passing deletions'
+        versions: ['latest']
+      - raw: 'Estimated tumor purity'
+        tidy: 'purity_tumor'
+        type: 'float'
+        description: 'estimated tumor purity'
+        versions: ['latest']
+      - raw: 'Diploid coverage'
+        tidy: 'cov_diploid'
+        type: 'float'
+        description: 'diploid coverage'
+        versions: ['latest']
+      - raw: 'Overall ploidy'
+        tidy: 'ploidy_overall'
+        type: 'float'
+        description: 'overall ploidy'
+        versions: ['latest']
+  tmb:
+    description: 'DRAGEN tumor mutational burden metrics.'
+    pattern: "\\.tmb\\.metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Total Input Variant Count'
+        tidy: 'vars_tot_input'
+        type: 'float'
+        description: 'total input variant count'
+        versions: ['latest']
+      - raw: 'Total Input Variant Count in TMB region'
+        tidy: 'vars_tot_input_tmbregion'
+        type: 'float'
+        description: 'total input variant count in TMB region'
+        versions: ['latest']
+      - raw: 'Filtered Variant Count'
+        tidy: 'vars_filt'
+        type: 'float'
+        description: 'filtered variant count'
+        versions: ['latest']
+      - raw: 'Filtered Nonsyn Variant Count'
+        tidy: 'vars_filt_nonsyn'
+        type: 'float'
+        description: 'filtered non-synonymous variant count'
+        versions: ['latest']
+      - raw: 'Eligible Region (MB)'
+        tidy: 'region_eligible_mb'
+        type: 'float'
+        description: 'eligible region (Mb)'
+        versions: ['latest']
+      - raw: 'TMB'
+        tidy: 'tmb'
+        type: 'float'
+        description: 'tumor mutational burden'
+        versions: ['latest']
+      - raw: 'Nonsyn TMB'
+        tidy: 'tmb_nonsyn'
+        type: 'float'
+        description: 'non-synonymous TMB'
+        versions: ['latest']
+  ploidy:
+    description: 'DRAGEN ploidy estimation sample-level metrics; per-chromosome ratios go to the ploidyratio table.'
+    pattern: "\\.ploidy_estimation_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Ploidy estimation'
+        tidy: 'ploidy_est'
+        type: 'char'
+        description: 'estimated sex-chromosome ploidy (e.g. XX, XY)'
+        versions: ['latest']
+      - raw: 'Coverage skewness'
+        tidy: 'cov_skewness'
+        type: 'float'
+        description: 'coverage skewness'
+        versions: ['latest']
+      # coverage scalars: 'coverage percentile' or 'median coverage' naming (per DRAGEN version)
+      - raw: 'Autosomal coverage percentile'
+        tidy: 'cov_autosomal'
+        type: 'float'
+        description: 'autosomal coverage'
+        versions: ['latest']
+      - raw: 'X coverage percentile'
+        tidy: 'cov_x'
+        type: 'float'
+        description: 'chr X coverage'
+        versions: ['latest']
+      - raw: 'Y coverage percentile'
+        tidy: 'cov_y'
+        type: 'float'
+        description: 'chr Y coverage'
+        versions: ['latest']
+      - raw: 'Autosomal median coverage'
+        tidy: 'cov_autosomal'
+        type: 'float'
+        description: 'autosomal coverage'
+        versions: ['latest']
+      - raw: 'X median coverage'
+        tidy: 'cov_x'
+        type: 'float'
+        description: 'chr X coverage'
+        versions: ['latest']
+      - raw: 'Y median coverage'
+        tidy: 'cov_y'
+        type: 'float'
+        description: 'chr Y coverage'
+        versions: ['latest']
+  ploidyratio:
+    description: 'DRAGEN per-chromosome ploidy ratio (chrom / autosomal), long. Produced from the ploidy file by tidy_ploidy; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__ploidyratio"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'autosomal_ratio'
+        tidy: 'autosomal_ratio'
+        type: 'float'
+        description: 'chromosome / autosomal median coverage ratio'
+        versions: ['latest']
+  nuctrans:
+    description: 'DRAGEN allele nucleotide transition noise, long: one row per from/to base pair with its count.'
+    pattern: "\\.allele_transition_noise_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'count'
+        tidy: 'count'
+        type: 'float'
+        description: 'number of observed from -> to allele transitions'
+        versions: ['latest']
+  hethom:
+    description: 'DRAGEN per-chromosome het/hom ratio metrics (PREFILTER/POSTFILTER); one row per section/rg/chrom.'
+    pattern: "\\.vc_hethom_ratio_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Heterozygous'
+        tidy: 'het'
+        type: 'float'
+        description: 'heterozygous variant count on the chromosome'
+        versions: ['latest']
+      - raw: 'Homozygous'
+        tidy: 'hom'
+        type: 'float'
+        description: 'homozygous variant count on the chromosome'
+        versions: ['latest']
+      - raw: 'Het/Hom ratio'
+        tidy: 'het_hom_ratio'
+        type: 'float'
+        description: 'heterozygous/homozygous ratio on the chromosome (nan when hom=0)'
+        versions: ['latest']
+  hrd:
+    description: 'DRAGEN HRD score (single row: LOH/TAI/LST component scores + total).'
+    pattern: "\\.hrdscore\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Sample'
+        tidy: 'sample'
+        type: 'char'
+        description: 'sample name'
+        versions: ['latest']
+      - raw: 'LOH_Score'
+        tidy: 'loh_score'
+        type: 'int'
+        description: 'loss-of-heterozygosity score'
+        versions: ['latest']
+      - raw: 'TAI_Score'
+        tidy: 'tai_score'
+        type: 'int'
+        description: 'telomeric allelic imbalance score'
+        versions: ['latest']
+      - raw: 'LST_Score'
+        tidy: 'lst_score'
+        type: 'int'
+        description: 'large-scale state transition score'
+        versions: ['latest']
+      - raw: 'HRD_Score'
+        tidy: 'hrd_score'
+        type: 'int'
+        description: 'total HRD score (LOH+TAI+LST)'
+        versions: ['latest']
