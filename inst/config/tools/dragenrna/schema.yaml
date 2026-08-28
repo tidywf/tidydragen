@@ -1,0 +1,136 @@
+tables:
+  fusion:
+    description: 'DRAGEN RNA gene fusion statistics.'
+    pattern: "\\.fusion_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'All fusion candidates (unfiltered)'
+        tidy: 'fusions_all_unfiltered'
+        type: 'float'
+        description: 'all fusion candidates (unfiltered)'
+        versions: ['latest']
+      - raw: 'Final fusion candidates (passing filter)'
+        tidy: 'fusions_final_passing'
+        type: 'float'
+        description: 'final fusion candidates (passing filter)'
+        versions: ['latest']
+      - raw: 'Unique passing gene fusions'
+        tidy: 'fusions_unique_passing'
+        type: 'float'
+        description: 'unique passing gene fusions'
+        versions: ['latest']
+  quant:
+    description: 'DRAGEN RNA quantification statistics.'
+    pattern: "\\.quant_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Library orientation'
+        tidy: 'library_orientation'
+        type: 'char'
+        description: 'library orientation (e.g. ISR)'
+        versions: ['latest']
+      - raw: 'Total Genes'
+        tidy: 'genes_tot'
+        type: 'float'
+        description: 'total genes'
+        versions: ['latest']
+      - raw: 'Total Transcripts'
+        tidy: 'transcripts_tot'
+        type: 'float'
+        description: 'total transcripts'
+        versions: ['latest']
+      - raw: 'Coding Genes'
+        tidy: 'genes_coding'
+        type: 'float'
+        description: 'coding genes'
+        versions: ['latest']
+      - raw: 'Median transcript CV coverage'
+        tidy: 'transcript_cv_cov_median'
+        type: 'float'
+        description: 'median transcript CV coverage'
+        versions: ['latest']
+      - raw: "Median 5' coverage bias"
+        tidy: 'cov_bias_5prime_median'
+        type: 'float'
+        description: "median 5' coverage bias"
+        versions: ['latest']
+      - raw: "Median 3' coverage bias"
+        tidy: 'cov_bias_3prime_median'
+        type: 'float'
+        description: "median 3' coverage bias"
+        versions: ['latest']
+      - raw: 'Number of genes with coverage > 1x'
+        tidy: 'genes_cov_gt1x'
+        type: 'float'
+        description: 'genes with coverage > 1x'
+        versions: ['latest']
+      - raw: 'Number of genes with coverage > 10x'
+        tidy: 'genes_cov_gt10x'
+        type: 'float'
+        description: 'genes with coverage > 10x'
+        versions: ['latest']
+      - raw: 'Number of genes with coverage > 30x'
+        tidy: 'genes_cov_gt30x'
+        type: 'float'
+        description: 'genes with coverage > 30x'
+        versions: ['latest']
+      - raw: 'Number of genes with coverage > 100x'
+        tidy: 'genes_cov_gt100x'
+        type: 'float'
+        description: 'genes with coverage > 100x'
+        versions: ['latest']
+      - raw: 'Forward transcript fragments'
+        tidy: 'frags_fwd_transcript'
+        type: 'float'
+        description: 'forward transcript fragments'
+        versions: ['latest']
+      - raw: 'Reverse transcript fragments'
+        tidy: 'frags_rev_transcript'
+        type: 'float'
+        description: 'reverse transcript fragments'
+        versions: ['latest']
+      - raw: 'Strand mismatched fragments'
+        tidy: 'frags_strand_mismatch'
+        type: 'float'
+        description: 'strand mismatched fragments'
+        versions: ['latest']
+      - raw: 'Ambiguous strand fragments'
+        tidy: 'frags_strand_ambiguous'
+        type: 'float'
+        description: 'ambiguous strand fragments'
+        versions: ['latest']
+      - raw: 'Unknown transcript fragments'
+        tidy: 'frags_unknown_transcript'
+        type: 'float'
+        description: 'unknown transcript fragments'
+        versions: ['latest']
+      - raw: 'Intron fragments'
+        tidy: 'frags_intron'
+        type: 'float'
+        description: 'intron fragments'
+        versions: ['latest']
+      - raw: 'Intergenic fragments'
+        tidy: 'frags_intergenic'
+        type: 'float'
+        description: 'intergenic fragments'
+        versions: ['latest']
+      - raw: 'Fold coverage of all exons'
+        tidy: 'cov_fold_exons_all'
+        type: 'float'
+        description: 'fold coverage of all exons'
+        versions: ['latest']
+      - raw: 'Fold coverage of introns'
+        tidy: 'cov_fold_introns'
+        type: 'float'
+        description: 'fold coverage of introns'
+        versions: ['latest']
+      - raw: 'Fold coverage of intergenic regions'
+        tidy: 'cov_fold_intergenic'
+        type: 'float'
+        description: 'fold coverage of intergenic regions'
+        versions: ['latest']
+      - raw: 'Fold coverage of coding exons'
+        tidy: 'cov_fold_exons_coding'
+        type: 'float'
+        description: 'fold coverage of coding exons'
+        versions: ['latest']
