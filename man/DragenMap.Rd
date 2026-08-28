@@ -22,9 +22,7 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DragenMap-new}{\code{DragenMap$new()}}
-\item \href{#method-DragenMap-parse_metrics}{\code{DragenMap$parse_metrics()}}
 \item \href{#method-DragenMap-tidy_metrics}{\code{DragenMap$tidy_metrics()}}
-\item \href{#method-DragenMap-parse_time}{\code{DragenMap$parse_time()}}
 \item \href{#method-DragenMap-tidy_time}{\code{DragenMap$tidy_time()}}
 \item \href{#method-DragenMap-parse_fraglenhist}{\code{DragenMap$parse_fraglenhist()}}
 }
@@ -65,23 +63,6 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-parse_metrics"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-parse_metrics}{}}}
-\subsection{Method \code{parse_metrics()}}{
-Parse \code{mapping_metrics.csv}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_metrics(x)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to file.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DragenMap-tidy_metrics"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_metrics}{}}}
 \subsection{Method \code{tidy_metrics()}}{
@@ -96,23 +77,6 @@ Both id columns retained (\code{drop_constant = character()}).
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-parse_time"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-parse_time}{}}}
-\subsection{Method \code{parse_time()}}{
-Parse \code{time_metrics.csv}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_time(x)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }

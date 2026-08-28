@@ -3,10 +3,12 @@
 #' @description
 #' Intermediate base class for all tidydragen tools. Inherits [nemo::Tool] and
 #' adds DRAGEN-specific shared logic e.g. the metrics parser/tidier used
-#' by every `*_metrics.csv` table. Tools like `DragenCov`
-#' inherit from `DragenTool` rather than `nemo::Tool`
-#' directly, and expose per-table `parse_<tbl>()` / `tidy_<tbl>()` one-liners
-#' that delegate to these helpers.
+#' by every `*_metrics.csv` table. Tools like `DragenCov` inherit from
+#' `DragenTool` rather than `nemo::Tool` directly. The `dragen-metrics` ftype is
+#' registered here (parse via `extra_ftypes()`, tidy via the `tidy_file`
+#' override), so a plain metrics table needs no methods — just `ftype:
+#' 'dragen-metrics'` in its schema. A table needing a `normalise`/`drop_constant`
+#' still declares an explicit `tidy_<tbl>()` that delegates to `tidy_metrics`.
 #'
 #' @details
 #' DRAGEN `*_metrics.csv` files share a headerless 4/5-column shape:
@@ -63,15 +65,29 @@ DragenTool <- R6::R6Class(
     on_unexpected_col = "error"
   ),
   private = list(
-    # csv-nohead used by certain coverage tables
+    # Register pkg-specific ftype parsers. `dragen-metrics` routes every
+    # `*_metrics.csv` table through the shared `parse_metrics`, so simple metrics
+    # tables need no `parse_<tbl>` one-liner (tidy is routed in `tidy_file` below).
+    # `csv-nohead` is used by certain coverage tables.
     extra_ftypes = function() {
       list(
+        "dragen-metrics" = function(x, table_name) private$parse_metrics(x),
         "csv-nohead" = function(x, table_name) {
           # trim_ws: overall-mean/hist rows have a space after the comma
           # (", 37.32") that breaks double parsing.
           private$parse_file_nohead(x, table_name, delim = ",", trim_ws = TRUE)
         }
       )
+    },
+    # nemo's tidy dispatch has no ftype hook (custom `tidy_<tbl>()` or else
+    # `tidy_file`), so route `dragen-metrics` tables to the shared pivot here.
+    # Tables needing a `normalise`/`drop_constant` still declare an explicit
+    # `tidy_<tbl>()`; the plain ones fall through to this.
+    tidy_file = function(x, table_name, convert_types = FALSE) {
+      if (identical(self$config$get_ftype(table_name), "dragen-metrics")) {
+        return(private$tidy_metrics(x, table_name))
+      }
+      super$tidy_file(x, table_name, convert_types = convert_types)
     },
     # Fold the coverage region (wgs / tmb / qc-coverage-region-<label>) and
     # phenotype (normal / tumor) from the filename into `prefix`, so
@@ -291,6 +307,18 @@ DragenTool <- R6::R6Class(
         }
         warning(glue("{detail} (kept)"), call. = FALSE)
       }
+
+      # Interleave each metric with its paired `_pct` (counts and pcts are pivoted
+      # separately then joined, which would otherwise leave all pcts in a block
+      # after all counts). Retained id cols stay in front, in order.
+      count_names <- setdiff(colnames(d_count), id_cols)
+      paired <- unlist(lapply(count_names, function(nm) {
+        pct <- paste0(nm, "_pct")
+        if (pct %in% colnames(d_tidy)) c(nm, pct) else nm
+      }))
+      keep_ids <- intersect(colnames(d_tidy), id_cols)
+      d_tidy <- d_tidy[, c(keep_ids, paired), drop = FALSE]
+
       list(d_tidy) |>
         rlang::set_names(table_name) |>
         nemo::nemo_enframe()

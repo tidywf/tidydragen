@@ -6,10 +6,11 @@
 \description{
 Intermediate base class for all tidydragen tools. Inherits \link[nemo:Tool]{nemo::Tool} and
 adds DRAGEN-specific shared logic e.g. the metrics parser/tidier used
-by every \verb{*_metrics.csv} table. Tools like \code{DragenCov}
-inherit from \code{DragenTool} rather than \code{nemo::Tool}
-directly, and expose per-table \verb{parse_<tbl>()} / \verb{tidy_<tbl>()} one-liners
-that delegate to these helpers.
+by every \verb{*_metrics.csv} table. Tools like \code{DragenCov} inherit from
+\code{DragenTool} rather than \code{nemo::Tool} directly. The \code{dragen-metrics} ftype is
+registered here (parse via \code{extra_ftypes()}, tidy via the \code{tidy_file}
+override), so a plain metrics table needs no methods — just \code{ftype: 'dragen-metrics'} in its schema. A table needing a \code{normalise}/\code{drop_constant}
+still declares an explicit \verb{tidy_<tbl>()} that delegates to \code{tidy_metrics}.
 }
 \details{
 DRAGEN \verb{*_metrics.csv} files share a headerless 4/5-column shape:
