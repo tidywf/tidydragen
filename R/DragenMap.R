@@ -44,9 +44,6 @@ DragenMap <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenmap", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Parse `mapping_metrics.csv`.
-    #' @param x (`character(1)`)\cr Path to file.
-    parse_metrics = function(x) private$parse_metrics(x),
     #' @description Tidy `mapping_metrics.csv`. Strips the `MAPPING/ALIGNING
     #' (SUMMARY|PER RG)` boilerplate from `section` -> phenotype (`TUMOR`/`NORMAL`,
     #' or `SINGLE` for single-sample runs); blank `rg` (SUMMARY rows) -> `Total`.
@@ -60,9 +57,6 @@ DragenMap <- R6::R6Class(
         d
       })
     },
-    #' @description Parse `time_metrics.csv`.
-    #' @param x (`character(1)`)\cr Path to file.
-    parse_time = function(x) private$parse_metrics(x),
     #' @description Tidy `time_metrics.csv`. The DRAGEN run-time file stores the
     #' HH:MM:SS.ms elapsed time in the `count` column and the equivalent seconds
     #' in the `pct` column; this promotes seconds to the metric value and moves

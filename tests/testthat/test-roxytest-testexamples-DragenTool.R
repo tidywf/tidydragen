@@ -2,7 +2,7 @@
 
 # File R/DragenTool.R: @testexamples
 
-test_that("Function DragenTool() @ L37", {
+test_that("Function DragenTool() @ L39", {
   
   # Abstract base — normally you use a subclass (e.g. DragenVar). The parser/tidier
   # are private; here we just inspect the inherited surface + policy fields.
