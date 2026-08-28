@@ -1,0 +1,656 @@
+tables:
+  metrics:
+    description: 'DRAGEN mapping/aligning summary metrics (SUMMARY + PER RG sections, TUMOR/NORMAL/single).'
+    pattern: "\\.mapping_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Total input reads'
+        tidy: 'reads_tot_input'
+        type: 'float'
+        description: 'total input reads'
+        versions: ['latest']
+      - raw: 'Total reads removed by downsampling'
+        tidy: 'reads_removed_downsamp'
+        type: 'float'
+        description: 'total reads removed by downsampling'
+        versions: ['latest']
+      - raw: 'Number of duplicate marked reads'
+        tidy: 'reads_num_dupmarked'
+        type: 'float'
+        description: 'number of duplicate marked reads'
+        versions: ['latest']
+      - raw: 'Number of duplicate marked and mate reads removed'
+        tidy: 'reads_num_dupmarked_mate_reads_removed'
+        type: 'float'
+        description: 'number of duplicate marked and mate reads removed'
+        versions: ['latest']
+      - raw: 'Number of unique reads (excl. duplicate marked reads)'
+        tidy: 'reads_num_uniq'
+        type: 'float'
+        description: 'number of unique reads (excl. duplicate marked reads)'
+        versions: ['latest']
+      - raw: 'Reads with mate sequenced'
+        tidy: 'reads_w_mate_seq'
+        type: 'float'
+        description: 'reads with mate sequenced'
+        versions: ['latest']
+      - raw: 'Reads without mate sequenced'
+        tidy: 'reads_wo_mate_seq'
+        type: 'float'
+        description: 'reads without mate sequenced'
+        versions: ['latest']
+      - raw: 'QC-failed reads'
+        tidy: 'reads_qcfail'
+        type: 'float'
+        description: 'qc-failed reads'
+        versions: ['latest']
+      - raw: 'Mapped reads'
+        tidy: 'reads_mapped'
+        type: 'float'
+        description: 'mapped reads'
+        versions: ['latest']
+      - raw: 'Mapped reads adjusted for filtered mapping'
+        tidy: 'reads_mapped_adjfilt'
+        type: 'float'
+        description: 'mapped reads adjusted for filtered mapping'
+        versions: ['latest']
+      - raw: 'Mapped reads R1'
+        tidy: 'reads_mapped_r1'
+        type: 'float'
+        description: 'mapped reads r1'
+        versions: ['latest']
+      - raw: 'Mapped reads R2'
+        tidy: 'reads_mapped_r2'
+        type: 'float'
+        description: 'mapped reads r2'
+        versions: ['latest']
+      - raw: 'Number of unique & mapped reads (excl. duplicate marked reads)'
+        tidy: 'reads_num_uniq_mapped'
+        type: 'float'
+        description: 'number of unique & mapped reads (excl. duplicate marked reads)'
+        versions: ['latest']
+      - raw: 'Unmapped reads'
+        tidy: 'reads_unmapped'
+        type: 'float'
+        description: 'unmapped reads'
+        versions: ['latest']
+      - raw: 'Unmapped reads adjusted for filtered mapping'
+        tidy: 'reads_unmapped_adjfilt'
+        type: 'float'
+        description: 'unmapped reads adjusted for filtered mapping'
+        versions: ['latest']
+      - raw: 'Adjustment of reads matching non-reference decoys'
+        tidy: 'reads_match_nonref_decoys_adj'
+        type: 'float'
+        description: 'adjustment of reads matching non-reference decoys'
+        versions: ['latest']
+      - raw: 'Adjustment of reads matching exclude contigs'
+        tidy: 'reads_match_excl_contigs'
+        type: 'float'
+        description: 'adjustment of reads matching exclude contigs'
+        versions: ['latest']
+      - raw: 'Singleton reads (itself mapped; mate unmapped)'
+        tidy: 'reads_singleton'
+        type: 'float'
+        description: 'singleton reads (itself mapped; mate unmapped)'
+        versions: ['latest']
+      - raw: 'Paired reads (itself & mate mapped)'
+        tidy: 'reads_paired'
+        type: 'float'
+        description: 'paired reads (itself & mate mapped)'
+        versions: ['latest']
+      - raw: 'Properly paired reads'
+        tidy: 'reads_paired_proper'
+        type: 'float'
+        description: 'properly paired reads'
+        versions: ['latest']
+      - raw: 'Not properly paired reads (discordant)'
+        tidy: 'reads_discordant'
+        type: 'float'
+        description: 'not properly paired reads (discordant)'
+        versions: ['latest']
+      - raw: 'Paired reads mapped to different chromosomes'
+        tidy: 'reads_paired_mapped_diff_chrom'
+        type: 'float'
+        description: 'paired reads mapped to different chromosomes'
+        versions: ['latest']
+      - raw: 'Paired reads mapped to different chromosomes (MAPQ>=10)'
+        tidy: 'reads_paired_mapped_diff_chrom_mapq10'
+        type: 'float'
+        description: 'paired reads mapped to different chromosomes (mapq>=10)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ [40:inf)'
+        tidy: 'reads_mapq_40_inf'
+        type: 'float'
+        description: 'reads with mapq [40:inf)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ [30:40)'
+        tidy: 'reads_mapq_30_40'
+        type: 'float'
+        description: 'reads with mapq [30:40)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ [20:30)'
+        tidy: 'reads_mapq_20_30'
+        type: 'float'
+        description: 'reads with mapq [20:30)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ [10:20)'
+        tidy: 'reads_mapq_10_20'
+        type: 'float'
+        description: 'reads with mapq [10:20)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ [ 0:10)'
+        tidy: 'reads_mapq_0_10'
+        type: 'float'
+        description: 'reads with mapq [ 0:10)'
+        versions: ['latest']
+      - raw: 'Reads with MAPQ NA (Unmapped reads)'
+        tidy: 'reads_mapq_na_unmapped'
+        type: 'float'
+        description: 'reads with mapq na (unmapped reads)'
+        versions: ['latest']
+      - raw: 'Reads with indel R1'
+        tidy: 'reads_indel_r1'
+        type: 'float'
+        description: 'reads with indel r1'
+        versions: ['latest']
+      - raw: 'Reads with indel R2'
+        tidy: 'reads_indel_r2'
+        type: 'float'
+        description: 'reads with indel r2'
+        versions: ['latest']
+      - raw: 'Total bases'
+        tidy: 'bases_tot'
+        type: 'float'
+        description: 'total bases'
+        versions: ['latest']
+      - raw: 'Total bases removed by downsampling'
+        tidy: 'bases_removed_downsamp'
+        type: 'float'
+        description: 'total bases removed by downsampling'
+        versions: ['latest']
+      - raw: 'Total bases R1'
+        tidy: 'bases_tot_r1'
+        type: 'float'
+        description: 'total bases r1'
+        versions: ['latest']
+      - raw: 'Total bases R2'
+        tidy: 'bases_tot_r2'
+        type: 'float'
+        description: 'total bases r2'
+        versions: ['latest']
+      - raw: 'Mapped bases'
+        tidy: 'bases_mapped'
+        type: 'float'
+        description: 'mapped bases'
+        versions: ['latest']
+      - raw: 'Mapped bases R1'
+        tidy: 'bases_mapped_r1'
+        type: 'float'
+        description: 'mapped bases r1'
+        versions: ['latest']
+      - raw: 'Mapped bases R2'
+        tidy: 'bases_mapped_r2'
+        type: 'float'
+        description: 'mapped bases r2'
+        versions: ['latest']
+      - raw: 'Soft-clipped bases'
+        tidy: 'bases_softclip'
+        type: 'float'
+        description: 'soft-clipped bases'
+        versions: ['latest']
+      - raw: 'Soft-clipped bases R1'
+        tidy: 'bases_softclip_r1'
+        type: 'float'
+        description: 'soft-clipped bases r1'
+        versions: ['latest']
+      - raw: 'Soft-clipped bases R2'
+        tidy: 'bases_softclip_r2'
+        type: 'float'
+        description: 'soft-clipped bases r2'
+        versions: ['latest']
+      - raw: 'Hard-clipped bases'
+        tidy: 'bases_hardclip'
+        type: 'float'
+        description: 'hard-clipped bases'
+        versions: ['latest']
+      - raw: 'Hard-clipped bases R1'
+        tidy: 'bases_hardclip_r1'
+        type: 'float'
+        description: 'hard-clipped bases r1'
+        versions: ['latest']
+      - raw: 'Hard-clipped bases R2'
+        tidy: 'bases_hardclip_r2'
+        type: 'float'
+        description: 'hard-clipped bases r2'
+        versions: ['latest']
+      - raw: 'Mismatched bases R1'
+        tidy: 'bases_mismatched_r1'
+        type: 'float'
+        description: 'mismatched bases r1'
+        versions: ['latest']
+      - raw: 'Mismatched bases R2'
+        tidy: 'bases_mismatched_r2'
+        type: 'float'
+        description: 'mismatched bases r2'
+        versions: ['latest']
+      - raw: 'Mismatched bases R1 (excl. indels)'
+        tidy: 'bases_mismatched_r1_noindels'
+        type: 'float'
+        description: 'mismatched bases r1 (excl. indels)'
+        versions: ['latest']
+      - raw: 'Mismatched bases R2 (excl. indels)'
+        tidy: 'bases_mismatched_r2_noindels'
+        type: 'float'
+        description: 'mismatched bases r2 (excl. indels)'
+        versions: ['latest']
+      - raw: 'Q30 bases'
+        tidy: 'bases_q30'
+        type: 'float'
+        description: 'q30 bases'
+        versions: ['latest']
+      - raw: 'Q30 bases R1'
+        tidy: 'bases_q30_r1'
+        type: 'float'
+        description: 'q30 bases r1'
+        versions: ['latest']
+      - raw: 'Q30 bases R2'
+        tidy: 'bases_q30_r2'
+        type: 'float'
+        description: 'q30 bases r2'
+        versions: ['latest']
+      - raw: 'Q30 bases (excl. dups & clipped bases)'
+        tidy: 'bases_q30_nodups_noclipped'
+        type: 'float'
+        description: 'q30 bases (excl. dups & clipped bases)'
+        versions: ['latest']
+      - raw: 'Total alignments'
+        tidy: 'alignments_tot'
+        type: 'float'
+        description: 'total alignments'
+        versions: ['latest']
+      - raw: 'Secondary alignments'
+        tidy: 'alignments_secondary'
+        type: 'float'
+        description: 'secondary alignments'
+        versions: ['latest']
+      - raw: 'Supplementary (chimeric) alignments'
+        tidy: 'alignments_chimeric'
+        type: 'float'
+        description: 'supplementary (chimeric) alignments'
+        versions: ['latest']
+      - raw: 'Estimated read length'
+        tidy: 'read_len'
+        type: 'float'
+        description: 'estimated read length'
+        versions: ['latest']
+      - raw: 'Bases in reference genome'
+        tidy: 'bases_in_ref_genome'
+        type: 'float'
+        description: 'bases in reference genome'
+        versions: ['latest']
+      - raw: 'Bases in target bed [% of genome]'
+        tidy: 'bases_in_target_bed_genome_pct'
+        type: 'float'
+        description: 'bases in target bed [% of genome]'
+        versions: ['latest']
+      - raw: 'Insert length: mean'
+        tidy: 'insert_len_mean'
+        type: 'float'
+        description: 'insert length: mean'
+        versions: ['latest']
+      - raw: 'Insert length: median'
+        tidy: 'insert_len_median'
+        type: 'float'
+        description: 'insert length: median'
+        versions: ['latest']
+      - raw: 'Insert length: standard deviation'
+        tidy: 'insert_len_std_dev'
+        type: 'float'
+        description: 'insert length: standard deviation'
+        versions: ['latest']
+      - raw: 'Provided sex chromosome ploidy'
+        tidy: 'ploidy_sex_chrom_provided'
+        type: 'float'
+        description: 'provided sex chromosome ploidy'
+        versions: ['latest']
+      - raw: 'Estimated sample contamination'
+        tidy: 'contamination_est'
+        type: 'float'
+        description: 'estimated sample contamination'
+        versions: ['latest']
+      - raw: 'Estimated sample contamination standard error'
+        tidy: 'contamination_stderr_est'
+        type: 'float'
+        description: 'estimated sample contamination standard error'
+        versions: ['latest']
+      - raw: 'DRAGEN mapping rate [mil. reads/second]'
+        tidy: 'mapping_rate_dragen_milreads_per_sec'
+        type: 'float'
+        description: 'dragen mapping rate [mil. reads/second]'
+        versions: ['latest']
+      - raw: 'Total reads in RG'
+        tidy: 'reads_tot_rg'
+        type: 'float'
+        description: 'total reads in rg'
+        versions: ['latest']
+      - raw: 'Mapped reads adjusted for excluded mapping'
+        tidy: 'reads_mapped_adjexcl'
+        type: 'float'
+        description: 'mapped reads adjusted for excluded mapping'
+        versions: ['latest']
+      - raw: 'Mapped reads adjusted for filtered and excluded mapping'
+        tidy: 'reads_mapped_adjfiltexcl'
+        type: 'float'
+        description: 'mapped reads adjusted for filtered and excluded mapping'
+        versions: ['latest']
+      - raw: 'Unmapped reads adjusted for excluded mapping'
+        tidy: 'reads_unmapped_adjexcl'
+        type: 'float'
+        description: 'unmapped reads adjusted for excluded mapping'
+        versions: ['latest']
+      - raw: 'Unmapped reads adjusted for filtered and excluded mapping'
+        tidy: 'reads_unmapped_adjfiltexcl'
+        type: 'float'
+        description: 'unmapped reads adjusted for filtered and excluded mapping'
+        versions: ['latest']
+      - raw: 'Reads mapping to multiple locations'
+        tidy: 'reads_map_multiloc'
+        type: 'float'
+        description: 'reads mapping to multiple locations'
+        versions: ['latest']
+      - raw: 'Adjustment of reads matching filter contigs'
+        tidy: 'reads_match_filt_contig_adj'
+        type: 'float'
+        description: 'adjustment of reads matching filter contigs'
+        versions: ['latest']
+      - raw: 'Reads with splice junction'
+        tidy: 'reads_splicejunc'
+        type: 'float'
+        description: 'reads with splice junction'
+        versions: ['latest']
+      - raw: 'Average sequenced coverage over genome'
+        tidy: 'cov_avg_seq_over_genome'
+        type: 'float'
+        description: 'average sequenced coverage over genome'
+        versions: ['latest']
+      - raw: 'Filtered rRNA reads'
+        tidy: 'reads_rrna_filtered'
+        type: 'float'
+        description: 'filtered rrna reads'
+        versions: ['latest']
+      - raw: 'Mitochondrial reads excluded'
+        tidy: 'reads_mito_excl'
+        type: 'float'
+        description: 'mitochondrial reads excluded'
+        versions: ['latest']
+      - raw: 'Mapped reads to pop-alt insertions (PAI)'
+        tidy: 'reads_mapped_pai'
+        type: 'float'
+        description: 'mapped reads to pop-alt insertions (pai)'
+        versions: ['latest']
+      - raw: 'Mapped reads to non-ref decoys (NRD)'
+        tidy: 'reads_mapped_nrd'
+        type: 'float'
+        description: 'mapped reads to non-ref decoys (nrd)'
+        versions: ['latest']
+      - raw: 'Mapped reads to ref-external sequences (PAI or NRD)'
+        tidy: 'reads_mapped_pai_nrd'
+        type: 'float'
+        description: 'mapped reads to ref-external sequences (pai or nrd)'
+        versions: ['latest']
+      - raw: 'Mapped reads (RNA) to rRNA and filtered'
+        tidy: 'reads_mapped_rna_rrna_filt'
+        type: 'float'
+        description: 'mapped reads (rna) to rrna and filtered'
+        versions: ['latest']
+      - raw: 'Mapped reads (RNA) to chrM and excluded from metrics'
+        tidy: 'reads_mapped_rna_chrm_excl'
+        type: 'float'
+        description: 'mapped reads (rna) to chrm and excluded from metrics'
+        versions: ['latest']
+      - raw: 'Mapped reads including ref-external or filtered or excluded'
+        tidy: 'reads_mapped_incl_refext_filt_excl'
+        type: 'float'
+        description: 'mapped reads including ref-external or filtered or excluded'
+        versions: ['latest']
+      - raw: 'Unmapped reads minus ref-external mappings'
+        tidy: 'reads_unmapped_minus_refext'
+        type: 'float'
+        description: 'unmapped reads minus ref-external mappings'
+        versions: ['latest']
+      - raw: 'Unmapped reads minus filtered mappings'
+        tidy: 'reads_unmapped_minus_filt'
+        type: 'float'
+        description: 'unmapped reads minus filtered mappings'
+        versions: ['latest']
+      - raw: 'Unmapped reads minus excluded mappings'
+        tidy: 'reads_unmapped_minus_excl'
+        type: 'float'
+        description: 'unmapped reads minus excluded mappings'
+        versions: ['latest']
+      - raw: 'Unmapped reads minus ref-external or filtered or excluded'
+        tidy: 'reads_unmapped_minus_refext_filt_excl'
+        type: 'float'
+        description: 'unmapped reads minus ref-external or filtered or excluded'
+        versions: ['latest']
+      - raw: 'Linked alignments from proximity-aware mapping'
+        tidy: 'alignments_linked_proxaware_map'
+        type: 'float'
+        description: 'linked alignments from proximity-aware mapping'
+        versions: ['latest']
+      - raw: 'Remapped alignments from proximity-aware mapping'
+        tidy: 'alignments_remapped_proxaware_map'
+        type: 'float'
+        description: 'remapped alignments from proximity-aware mapping'
+        versions: ['latest']
+      - raw: 'Total input reads for fractional downsampling'
+        tidy: 'reads_tot_input_fracsamp'
+        type: 'float'
+        description: 'total input reads for fractional downsampling'
+        versions: ['latest']
+      - raw: 'Reads kept by fractional downsampling [% of input reads]'
+        tidy: 'reads_kept_fracsamp_pct'
+        type: 'float'
+        description: 'reads kept by fractional downsampling [% of input reads]'
+        versions: ['latest']
+      - raw: 'Input bases divided by reference genome size'
+        tidy: 'bases_input_div_refgenome_size'
+        type: 'float'
+        description: 'input bases divided by reference genome size'
+        versions: ['latest']
+      - raw: 'Input bases divided by target bed size'
+        tidy: 'bases_input_div_targetbed_size'
+        type: 'float'
+        description: 'input bases divided by target bed size'
+        versions: ['latest']
+  time:
+    description: 'DRAGEN run-time metrics (seconds per pipeline step).'
+    pattern: "\\.time_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Time aligning anchored reads'
+        tidy: 'time_aligning_anchored_reads'
+        type: 'float'
+        description: 'aligning anchored reads runtime'
+        versions: ['latest']
+      - raw: 'Time aligning reads'
+        tidy: 'time_aligning_reads'
+        type: 'float'
+        description: 'aligning reads runtime'
+        versions: ['latest']
+      - raw: 'Time annotating outputs'
+        tidy: 'time_annotating_outputs'
+        type: 'float'
+        description: 'annotating outputs runtime'
+        versions: ['latest']
+      - raw: 'Time calculating hrd score'
+        tidy: 'time_calculating_hrd_score'
+        type: 'float'
+        description: 'calculating hrd score runtime'
+        versions: ['latest']
+      - raw: 'Time calculating target counts'
+        tidy: 'time_calculating_target_counts'
+        type: 'float'
+        description: 'calculating target counts runtime'
+        versions: ['latest']
+      - raw: 'Time calculating TMB'
+        tidy: 'time_calculating_tmb'
+        type: 'float'
+        description: 'calculating tmb runtime'
+        versions: ['latest']
+      - raw: 'Time collecting RNA counts'
+        tidy: 'time_collecting_rna_counts'
+        type: 'float'
+        description: 'collecting rna counts runtime'
+        versions: ['latest']
+      - raw: 'Time correcting GC bias'
+        tidy: 'time_correcting_gc_bias'
+        type: 'float'
+        description: 'correcting gc bias runtime'
+        versions: ['latest']
+      - raw: 'Time DRAGStr calibration'
+        tidy: 'time_dragstr_calibration'
+        type: 'float'
+        description: 'dragstr calibration runtime'
+        versions: ['latest']
+      - raw: 'Time duplicate marking'
+        tidy: 'time_duplicate_marking'
+        type: 'float'
+        description: 'duplicate marking runtime'
+        versions: ['latest']
+      - raw: 'Time fitting CNV model'
+        tidy: 'time_fitting_cnv_model'
+        type: 'float'
+        description: 'fitting cnv model runtime'
+        versions: ['latest']
+      - raw: 'Time generating CNV calls'
+        tidy: 'time_generating_cnv_calls'
+        type: 'float'
+        description: 'generating cnv calls runtime'
+        versions: ['latest']
+      - raw: 'Time generating CNV model input'
+        tidy: 'time_generating_cnv_model_input'
+        type: 'float'
+        description: 'generating cnv model input runtime'
+        versions: ['latest']
+      - raw: 'Time generating CNV track files'
+        tidy: 'time_generating_cnv_track_files'
+        type: 'float'
+        description: 'generating cnv track files runtime'
+        versions: ['latest']
+      - raw: 'Time loading gene annotations'
+        tidy: 'time_loading_gene_annotations'
+        type: 'float'
+        description: 'loading gene annotations runtime'
+        versions: ['latest']
+      - raw: 'Time loading reference'
+        tidy: 'time_loading_reference'
+        type: 'float'
+        description: 'loading reference runtime'
+        versions: ['latest']
+      - raw: 'Time merging anchored reads'
+        tidy: 'time_merging_anchored_reads'
+        type: 'float'
+        description: 'merging anchored reads runtime'
+        versions: ['latest']
+      - raw: 'Time normalizing case sample'
+        tidy: 'time_normalizing_case_sample'
+        type: 'float'
+        description: 'normalizing case sample runtime'
+        versions: ['latest']
+      - raw: 'Time optimizing RNA quantification'
+        tidy: 'time_optimizing_rna_quantification'
+        type: 'float'
+        description: 'optimizing rna quantification runtime'
+        versions: ['latest']
+      - raw: 'Time partitioning'
+        tidy: 'time_partitioning'
+        type: 'float'
+        description: 'partitioning runtime'
+        versions: ['latest']
+      - raw: 'Time performing hrd segment merging'
+        tidy: 'time_performing_hrd_segment_merging'
+        type: 'float'
+        description: 'performing hrd segment merging runtime'
+        versions: ['latest']
+      - raw: 'Time performing segmentation'
+        tidy: 'time_performing_segmentation'
+        type: 'float'
+        description: 'performing segmentation runtime'
+        versions: ['latest']
+      - raw: 'Time processing depth of coverage'
+        tidy: 'time_processing_depth_of_coverage'
+        type: 'float'
+        description: 'processing depth of coverage runtime'
+        versions: ['latest']
+      - raw: 'Time running gene fusion event generation'
+        tidy: 'time_running_gene_fusion_event_generation'
+        type: 'float'
+        description: 'running gene fusion event generation runtime'
+        versions: ['latest']
+      - raw: 'Time running gene fusion filter'
+        tidy: 'time_running_gene_fusion_filter'
+        type: 'float'
+        description: 'running gene fusion filter runtime'
+        versions: ['latest']
+      - raw: 'Time running MSI'
+        tidy: 'time_running_msi'
+        type: 'float'
+        description: 'running msi runtime'
+        versions: ['latest']
+      - raw: 'Time running Targeted caller'
+        tidy: 'time_running_targeted_caller'
+        type: 'float'
+        description: 'running targeted caller runtime'
+        versions: ['latest']
+      - raw: 'Time running Targeted VCF reporter'
+        tidy: 'time_running_targeted_vcf_reporter'
+        type: 'float'
+        description: 'running targeted vcf reporter runtime'
+        versions: ['latest']
+      - raw: 'Time saving map/align output'
+        tidy: 'time_saving_map_align_output'
+        type: 'float'
+        description: 'saving map/align output runtime'
+        versions: ['latest']
+      - raw: 'Time sorting and marking duplicates'
+        tidy: 'time_sorting_and_marking_duplicates'
+        type: 'float'
+        description: 'sorting and marking duplicates runtime'
+        versions: ['latest']
+      - raw: 'Time structural variant calling'
+        tidy: 'time_structural_variant_calling'
+        type: 'float'
+        description: 'structural variant calling runtime'
+        versions: ['latest']
+      - raw: 'Time variant calling'
+        tidy: 'time_variant_calling'
+        type: 'float'
+        description: 'variant calling runtime'
+        versions: ['latest']
+      - raw: 'Total runtime'
+        tidy: 'total_runtime'
+        type: 'float'
+        description: 'total runtime in seconds'
+        versions: ['latest']
+  fraglenhist:
+    description: 'DRAGEN fragment length histogram per sample.'
+    pattern: "\\.fragment_length_hist\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'sample'
+        tidy: 'sample'
+        type: 'char'
+        description: 'DRAGEN sample id from the #Sample: block header'
+        versions: ['latest']
+      - raw: 'FragmentLength'
+        tidy: 'fraglen'
+        type: 'int'
+        description: 'fragment length (bp)'
+        versions: ['latest']
+      - raw: 'Count'
+        tidy: 'count'
+        type: 'float'
+        description: 'number of fragments at this length'
+        versions: ['latest']
