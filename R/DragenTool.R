@@ -73,7 +73,7 @@ DragenTool <- R6::R6Class(
       list(
         "dragen-metrics" = function(x, table_name) private$parse_metrics(x),
         "csv-nohead" = function(x, table_name) {
-          # trim_ws: overall-mean/hist rows have a space after the comma
+          # trim_ws: some DRAGEN csv-nohead rows have a space after the comma
           # (", 37.32") that breaks double parsing.
           private$parse_file_nohead(x, table_name, delim = ",", trim_ws = TRUE)
         }
@@ -104,7 +104,7 @@ DragenTool <- R6::R6Class(
       # never match.
       region_re <- paste0(
         "(wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_",
-        "(?:contig_mean_cov|overall_mean_cov|coverage_metrics|fine_hist|hist|",
+        "(?:contig_mean_cov|coverage_metrics|fine_hist|",
         "read_cov_report|cov_report)"
       )
       # Build the "_<region>[_<pheno>]" suffix for one basename. Returns "" for a
