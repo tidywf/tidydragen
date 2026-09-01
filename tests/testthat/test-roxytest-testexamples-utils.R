@@ -38,3 +38,23 @@ test_that("Function dragen_cov_bin_split() @ L78", {
   expect_equal(out$cov_hi, c(NA_integer_, 50L))
 })
 
+
+test_that("Function fastqc_bin_open() @ L114", {
+  
+  fastqc_bin_open(c("150", "145-152", "256+", ">=255"))
+  
+  expect_equal(fastqc_bin_open(c("150", "145-152", "256+", ">=255")),
+    c("150", "145-152", "256", "255"))
+})
+
+
+test_that("Function fastqc_bin_expand() @ L145", {
+  
+  fastqc_bin_expand(c("150", "2-3", "137-140"))
+  
+  out <- fastqc_bin_expand(c("150", "2-3", "137-140"))
+  expect_equal(out[[1]], 150L)
+  expect_equal(out[[2]], 2:3)
+  expect_equal(out[[3]], 137:140)
+})
+
