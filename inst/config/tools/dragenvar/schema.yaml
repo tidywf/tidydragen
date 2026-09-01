@@ -30,6 +30,11 @@ tables:
         type: 'float'
         description: 'SNPs'
         versions: ['latest']
+      - raw: 'MNPs'
+        tidy: 'mnps'
+        type: 'float'
+        description: 'multi-nucleotide-polymorphism count (component of Total = SNPs + MNPs + indels)'
+        versions: ['latest']
       - raw: 'Insertions'
         tidy: 'insertions'
         type: 'float'
@@ -311,6 +316,21 @@ tables:
         tidy: 'ploidy_overall'
         type: 'float'
         description: 'overall ploidy'
+        versions: ['latest']
+      - raw: 'beta-binomial overdispersion M'
+        tidy: 'beta_binomial_overdispersion_m'
+        type: 'float'
+        description: 'beta-binomial over-dispersion M parameter (emitted on somatic WGS CNV; undocumented in the DRAGEN CNV metric list)'
+        versions: ['latest']
+      - raw: 'sex_karyotype'
+        tidy: 'sex_karyotype'
+        type: 'char'
+        description: 'SEX GENOTYPER estimated sex: karyotype (XX/XY/...) for WGS, gender (MALE/FEMALE) for non-WGS. Synthesised from the SEX GENOTYPER preamble row (whose raw metric name is the sample id) by tidy_cnv.'
+        versions: ['latest']
+      - raw: 'sex_genotyper_confidence'
+        tidy: 'sex_genotyper_confidence'
+        type: 'float'
+        description: 'SEX GENOTYPER confidence score (0.0-1.0); 0.0 when the sample sex was specified via --sample-sex rather than estimated.'
         versions: ['latest']
   tmb:
     description: 'DRAGEN tumor mutational burden metrics.'

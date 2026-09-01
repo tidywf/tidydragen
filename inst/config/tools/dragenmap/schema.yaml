@@ -629,6 +629,31 @@ tables:
         type: 'float'
         description: 'variant calling runtime'
         versions: ['latest']
+      - raw: 'Time loading anchor reference'
+        tidy: 'time_loading_anchor_reference'
+        type: 'float'
+        description: 'loading anchor reference runtime'
+        versions: ['latest']
+      - raw: 'Time sorting'
+        tidy: 'time_sorting'
+        type: 'float'
+        description: 'sorting runtime'
+        versions: ['latest']
+      - raw: 'Time UMI read collapsing and remapping'
+        tidy: 'time_umi_read_collapsing_and_remapping'
+        type: 'float'
+        description: 'UMI read collapsing and remapping runtime'
+        versions: ['latest']
+      - raw: 'Time partial reconfiguration'
+        tidy: 'time_partial_reconfiguration'
+        type: 'float'
+        description: 'partial reconfiguration runtime'
+        versions: ['latest']
+      - raw: 'Time estimating beta-binomial over-dispersion (WGS path)'
+        tidy: 'time_estimating_beta_binomial_overdispersion_wgs'
+        type: 'float'
+        description: 'estimating beta-binomial over-dispersion (WGS path) runtime'
+        versions: ['latest']
       - raw: 'Total runtime'
         tidy: 'total_runtime'
         type: 'float'

@@ -4,8 +4,8 @@
 \alias{DragenMap}
 \title{DragenMap Object}
 \description{
-Parses and tidies DRAGEN mapping/alignment outputs (mapping metrics, run-time
-metrics; fastqc and fragment-length histograms handled in later passes).
+Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
+metrics, and the fragment-length histogram.
 }
 \examples{
 cls <- DragenMap; tool <- "dragenmap"
