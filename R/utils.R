@@ -85,3 +85,67 @@ dragen_cov_bin_split <- function(v) {
     cov_hi = ifelse(hi == "inf", NA_integer_, suppressWarnings(as.integer(hi)))
   )
 }
+
+#' Normalise open-ended DRAGEN FASTQC position/length bin tokens
+#'
+#' @description
+#' DRAGEN FASTQC `fastqc_metrics.csv` position and read-length tokens are usually a
+#' single integer (`150`) or a closed range (`145-152`), but with a coarser
+#' `--fastqc-granularity` (or reads longer than the top bin) DRAGEN also emits
+#' open-ended terminal bins: `256+` (positions) and `>=255` (read lengths). This
+#' strips the open-bin markers (`+`, `>=`, `>`, `=`) so the token collapses to its
+#' single integer bound. Closed ranges (`A-B`) are left untouched for a subsequent
+#' `separate_longer_delim("-")` to expand.
+#'
+#' Without this, `as.integer("256+")` / `as.integer(">=255")` would silently coerce
+#' to `NA` and drop the top position/length bin.
+#'
+#' @param v (`character()`)\cr Vector of raw position/length bin tokens (with any
+#'   trailing `bp` already removed).
+#' @return (`character()`) Tokens with open-bin markers stripped.
+#'
+#' @examples
+#' fastqc_bin_open(c("150", "145-152", "256+", ">=255"))
+#'
+#' @testexamples
+#' expect_equal(fastqc_bin_open(c("150", "145-152", "256+", ">=255")),
+#'   c("150", "145-152", "256", "255"))
+#' @export
+fastqc_bin_open <- function(v) {
+  gsub("[<>=+]", "", v)
+}
+
+#' Expand DRAGEN FASTQC position/length bin tokens to integer grains
+#'
+#' @description
+#' Turns each position/length token into the full integer sequence it covers: a
+#' single value (`"150"`) becomes `150L`, a closed range (`"137-140"`) becomes
+#' the whole span `137:140`. Returns a list-column, one integer vector per input,
+#' for a subsequent [tidyr::unnest_longer()].
+#'
+#' Note that [tidyr::separate_longer_delim()] on `"-"` is **not** a substitute: it
+#' yields only the two endpoints (`137`, `140`), silently dropping the interior
+#' positions and giving the wrong grain count when the count is divided across the
+#' span. Feed tokens through [fastqc_bin_open()] first so open-ended bins (`256+`,
+#' `>=255`) have collapsed to a single bound.
+#'
+#' @param v (`character()`)\cr Vector of position/length bin tokens, open-bin
+#'   markers already stripped (single value or `lo-hi` range).
+#' @return (`list()`) One integer vector per input token.
+#'
+#' @examples
+#' fastqc_bin_expand(c("150", "2-3", "137-140"))
+#'
+#' @testexamples
+#' out <- fastqc_bin_expand(c("150", "2-3", "137-140"))
+#' expect_equal(out[[1]], 150L)
+#' expect_equal(out[[2]], 2:3)
+#' expect_equal(out[[3]], 137:140)
+#' @export
+fastqc_bin_expand <- function(v) {
+  parts <- strsplit(v, "-", fixed = TRUE)
+  lapply(parts, function(p) {
+    b <- as.integer(p)
+    if (length(b) == 1L) b else seq(b[1], b[2])
+  })
+}

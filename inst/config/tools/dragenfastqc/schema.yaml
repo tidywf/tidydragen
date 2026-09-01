@@ -1,0 +1,181 @@
+tables:
+  fastqc:
+    description: 'DRAGEN FASTQC metrics. Columns here document the POSITIONAL BASE CONTENT sub-table (dragenfastqc_posbasecontent); the other 7 are documented in their sentinel entries below.'
+    pattern: "\\.fastqc_metrics\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'pos'
+        tidy: 'pos'
+        type: 'int'
+        description: 'read position (bp); binned positions e.g. "2-3" are expanded to one row per position'
+        versions: ['latest']
+      - raw: 'base'
+        tidy: 'base'
+        type: 'char'
+        description: 'base (A/C/G/T/N)'
+        versions: ['latest']
+      - raw: 'prop'
+        tidy: 'prop'
+        type: 'float'
+        description: 'proportion of this base at this position/mate (base bases / total bases at the position); binned counts are divided evenly across the positions they span before the proportion is taken'
+        versions: ['latest']
+  posbasemeanqual:
+    description: 'DRAGEN FASTQC POSITIONAL BASE MEAN QUALITY (long): mean base-call quality per read position, base and mate. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__posbasemeanqual"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'pos'
+        tidy: 'pos'
+        type: 'int'
+        description: 'read position (bp)'
+        versions: ['latest']
+      - raw: 'base'
+        tidy: 'base'
+        type: 'char'
+        description: 'base (A/C/G/T/N)'
+        versions: ['latest']
+      - raw: 'avg_qual'
+        tidy: 'avg_qual'
+        type: 'float'
+        description: 'mean base-call quality (Phred) at this position/base/mate'
+        versions: ['latest']
+  posqual:
+    description: 'DRAGEN FASTQC POSITIONAL QUALITY (long): quantile base-call quality per read position, quantile and mate. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__posqual"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'pos'
+        tidy: 'pos'
+        type: 'int'
+        description: 'read position (bp)'
+        versions: ['latest']
+      - raw: 'pct'
+        tidy: 'pct'
+        type: 'int'
+        description: 'quantile percentage (e.g. 25 = 25th percentile / lower quartile)'
+        versions: ['latest']
+      - raw: 'qv'
+        tidy: 'qv'
+        type: 'float'
+        description: 'base-call quality value (Phred) at this quantile/position/mate'
+        versions: ['latest']
+  readgc:
+    description: 'DRAGEN FASTQC READ GC CONTENT (long): read counts binned by percent GC content, per mate. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__readgc"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'gc_pct'
+        tidy: 'gc_pct'
+        type: 'int'
+        description: 'percent GC content bin (0-100)'
+        versions: ['latest']
+      - raw: 'reads'
+        tidy: 'reads'
+        type: 'float'
+        description: 'number of reads with this GC content'
+        versions: ['latest']
+  readgcqual:
+    description: 'DRAGEN FASTQC READ GC CONTENT QUALITY (long): mean read quality binned by percent GC content, per mate. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__readgcqual"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'gc_pct'
+        tidy: 'gc_pct'
+        type: 'int'
+        description: 'percent GC content bin (0-100)'
+        versions: ['latest']
+      - raw: 'avg_qual'
+        tidy: 'avg_qual'
+        type: 'float'
+        description: 'mean read quality (Phred) for reads with this GC content'
+        versions: ['latest']
+  readlen:
+    description: 'DRAGEN FASTQC READ LENGTHS (long): read counts by read length (bp), per mate. Binned lengths e.g. "149-150" are expanded to one row per length with the count divided evenly across the span. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__readlen"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'bp'
+        tidy: 'bp'
+        type: 'int'
+        description: 'read length (bp)'
+        versions: ['latest']
+      - raw: 'reads'
+        tidy: 'reads'
+        type: 'float'
+        description: 'number of reads with this length (binned counts divided evenly across the span)'
+        versions: ['latest']
+  readmeanqual:
+    description: 'DRAGEN FASTQC READ MEAN QUALITY (long): read counts by mean read quality (Q), per mate. Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__readmeanqual"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'q'
+        tidy: 'q'
+        type: 'int'
+        description: 'mean read quality (Phred Q) bin'
+        versions: ['latest']
+      - raw: 'reads'
+        tidy: 'reads'
+        type: 'float'
+        description: 'number of reads with this mean quality'
+        versions: ['latest']
+  seqpos:
+    description: 'DRAGEN FASTQC SEQUENCE POSITIONS (long): adapter/overrepresented-sequence start counts by read position, per sequence and mate. Binned positions e.g. "137-144" are expanded to one row per position with the count divided evenly across the span. The per-sequence "Total Sequence Starts" summary rows are dropped (derivable from the rest). Produced from the fastqc file by tidy_fastqc; sentinel pattern so it is never matched to a file directly.'
+    pattern: "__no_file_match__seqpos"
+    ftype: 'csv'
+    columns:
+      - raw: 'mate'
+        tidy: 'mate'
+        type: 'char'
+        description: 'read mate (Read1 / Read2)'
+        versions: ['latest']
+      - raw: 'seq'
+        tidy: 'seq'
+        type: 'char'
+        description: 'adapter / overrepresented sequence (quoted)'
+        versions: ['latest']
+      - raw: 'bp'
+        tidy: 'bp'
+        type: 'int'
+        description: 'read position (bp) where the sequence starts'
+        versions: ['latest']
+      - raw: 'starts'
+        tidy: 'starts'
+        type: 'float'
+        description: 'number of reads where this sequence starts at this position (binned counts divided evenly across the span)'
+        versions: ['latest']
