@@ -23,6 +23,7 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \itemize{
 \item \href{#method-DragenVar-new}{\code{DragenVar$new()}}
 \item \href{#method-DragenVar-tidy_vc}{\code{DragenVar$tidy_vc()}}
+\item \href{#method-DragenVar-tidy_cnv}{\code{DragenVar$tidy_cnv()}}
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
 \item \href{#method-DragenVar-tidy_ploidy}{\code{DragenVar$tidy_ploidy()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
@@ -73,6 +74,31 @@ Tidy \code{vc_metrics.csv}. Drops \verb{VARIANT CALLER SUMMARY} (blank
 \code{region} column (genome vs target region).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_vc(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-tidy_cnv"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-tidy_cnv}{}}}
+\subsection{Method \code{tidy_cnv()}}{
+Tidy \code{cnv_metrics.csv}. The \verb{SEX GENOTYPER} preamble row carries
+the sample id as its metric name
+(\verb{SEX GENOTYPER,,<sample>,<karyotype>,<confidence>}), so the generic pivot
+would drop it as an unmapped (per-sample-varying) metric. This rewrites that
+row into two stable \verb{CNV SUMMARY} metrics — \code{sex_karyotype} (XX/XY, or a
+MALE/FEMALE gender for non-WGS) and \code{sex_genotyper_confidence} (0-1 score,
+0.0 when the sex was set via \code{--sample-sex}) — so the call lands on the single
+wide cnv row instead of being lost. A cnv file without the preamble (e.g.
+germline WGS) is unchanged.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_cnv(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

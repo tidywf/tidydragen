@@ -97,7 +97,12 @@ tables:
       - raw: 'Ambiguous strand fragments'
         tidy: 'frags_strand_ambiguous'
         type: 'float'
-        description: 'ambiguous strand fragments'
+        description: 'read pairs matching transcripts in both forward and reverse orientation (only reads aligning fully within exons are counted)'
+        versions: ['latest']
+      - raw: 'Correctly stranded fragments'
+        tidy: 'frags_correctly_stranded'
+        type: 'float'
+        description: 'read pairs matching transcripts in the expected orientation for the library type (based on Picard CORRECT_STRAND_READS); emitted for stranded library orientation, absent for unstranded/auto-detected runs'
         versions: ['latest']
       - raw: 'Unknown transcript fragments'
         tidy: 'frags_unknown_transcript'

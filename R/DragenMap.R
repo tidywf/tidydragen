@@ -1,8 +1,8 @@
 #' @title DragenMap Object
 #'
 #' @description
-#' Parses and tidies DRAGEN mapping/alignment outputs (mapping metrics, run-time
-#' metrics; fastqc and fragment-length histograms handled in later passes).
+#' Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
+#' metrics, and the fragment-length histogram.
 #'
 #' @examples
 #' cls <- DragenMap; tool <- "dragenmap"
@@ -24,6 +24,9 @@
 #' expect_equal(names(tf)[names(tf) != "input_id"][1], "total_runtime")
 #' expect_equal(tf$total_runtime, 8189.85)
 #' expect_equal(tf$time_aligning_reads, 2240.12)
+#' expect_equal(tf$time_sorting, 120)
+#' expect_equal(tf$time_umi_read_collapsing_and_remapping, 90)
+#' expect_equal(tf$time_estimating_beta_binomial_overdispersion_wgs, 5)
 #' # fraglenhist: per-#Sample: blocks split, sample id kept, headers dropped
 #' fl <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_fraglenhist", lf, value = TRUE)))
 #' expect_equal(names(fl)[names(fl) != "input_id"], c("sample", "fraglen", "count"))

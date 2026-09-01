@@ -17,6 +17,7 @@
 #' expect_equal(nrow(vcA), 2L)
 #' expect_setequal(vcA$section, c("prefilter", "postfilter"))
 #' expect_true(all(c("section", "rg", "region", "total", "total_pct", "chrx_snps") %in% names(vcA)))
+#' expect_equal(vcA$mnps[vcA$section == "prefilter"], 318)
 #' # SUMMARY-only metrics are gone with the dropped section
 #' expect_false("child_sample" %in% names(vcA))
 #' expect_true(all(vcA$region == "genome"))
@@ -38,6 +39,11 @@
 #' cnv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_cnv", lf, value = TRUE)))
 #' expect_equal(cnv$purity_tumor, 0.54)
 #' expect_equal(cnv$n_amp_pass_pct, 86.54)
+#' # SEX GENOTYPER preamble captured (not dropped) as two columns on the one cnv row
+#' expect_equal(nrow(cnv), 1L)
+#' expect_equal(cnv$sex_karyotype, "XY")
+#' expect_equal(cnv$sex_genotyper_confidence, 0.95)
+#' expect_equal(cnv$beta_binomial_overdispersion_m, 200)
 #' # tmb (4-col, no pct)
 #' tmb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_tmb", lf, value = TRUE)))
 #' expect_equal(tmb$tmb, 3.46)
@@ -106,6 +112,35 @@ DragenVar <- R6::R6Class(
         r <- private$region_split(d)
         r$x$region <- r$region
         r$x
+      })
+    },
+    #' @description Tidy `cnv_metrics.csv`. The `SEX GENOTYPER` preamble row carries
+    #' the sample id as its metric name
+    #' (`SEX GENOTYPER,,<sample>,<karyotype>,<confidence>`), so the generic pivot
+    #' would drop it as an unmapped (per-sample-varying) metric. This rewrites that
+    #' row into two stable `CNV SUMMARY` metrics — `sex_karyotype` (XX/XY, or a
+    #' MALE/FEMALE gender for non-WGS) and `sex_genotyper_confidence` (0-1 score,
+    #' 0.0 when the sex was set via `--sample-sex`) — so the call lands on the single
+    #' wide cnv row instead of being lost. A cnv file without the preamble (e.g.
+    #' germline WGS) is unchanged.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_cnv = function(x) {
+      private$tidy_metrics(x, "cnv", normalise = function(d) {
+        is_sex <- grepl("SEX GENOTYPER", d$section)
+        if (any(is_sex)) {
+          # one SEX GENOTYPER row per file (the case sample); take the first if a
+          # panel-of-normals run ever emits more.
+          sx <- d[is_sex, , drop = FALSE][1, , drop = FALSE]
+          add <- tibble::tibble(
+            section = "CNV SUMMARY",
+            rg = sx$rg,
+            variable = c("sex_karyotype", "sex_genotyper_confidence"),
+            count = c(sx$count, as.character(sx$pct)),
+            pct = NA_real_
+          )
+          d <- dplyr::bind_rows(d[!is_sex, , drop = FALSE], add)
+        }
+        d
       })
     },
     #' @description Tidy `vc_hethom_ratio_metrics.csv`. Metric names are

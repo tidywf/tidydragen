@@ -2,7 +2,7 @@
 
 # File R/DragenVar.R: @testexamples
 
-test_that("Function DragenVar() @ L80", {
+test_that("Function DragenVar() @ L86", {
   
   cls <- DragenVar; tool <- "dragenvar"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -15,6 +15,7 @@ test_that("Function DragenVar() @ L80", {
   expect_equal(nrow(vcA), 2L)
   expect_setequal(vcA$section, c("prefilter", "postfilter"))
   expect_true(all(c("section", "rg", "region", "total", "total_pct", "chrx_snps") %in% names(vcA)))
+  expect_equal(vcA$mnps[vcA$section == "prefilter"], 318)
   # SUMMARY-only metrics are gone with the dropped section
   expect_false("child_sample" %in% names(vcA))
   expect_true(all(vcA$region == "genome"))
@@ -36,6 +37,11 @@ test_that("Function DragenVar() @ L80", {
   cnv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_cnv", lf, value = TRUE)))
   expect_equal(cnv$purity_tumor, 0.54)
   expect_equal(cnv$n_amp_pass_pct, 86.54)
+  # SEX GENOTYPER preamble captured (not dropped) as two columns on the one cnv row
+  expect_equal(nrow(cnv), 1L)
+  expect_equal(cnv$sex_karyotype, "XY")
+  expect_equal(cnv$sex_genotyper_confidence, 0.95)
+  expect_equal(cnv$beta_binomial_overdispersion_m, 200)
   # tmb (4-col, no pct)
   tmb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_tmb", lf, value = TRUE)))
   expect_equal(tmb$tmb, 3.46)
