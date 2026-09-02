@@ -39,7 +39,7 @@
 DragenTool <- R6::R6Class(
   "DragenTool",
   cloneable = FALSE,
-  inherit = nemo::Tool,
+  inherit = Tool,
   public = list(
     #' @field on_unmapped (`character(1)`)\cr
     #' Policy for metrics present in a `*_metrics.csv` file but absent from the
