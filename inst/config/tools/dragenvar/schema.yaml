@@ -213,27 +213,27 @@ tables:
         description: 'average alignment coverage over genome'
         versions: ['latest']
       - raw: 'Number of alignment records'
-        tidy: 'n_alignment_records'
+        tidy: 'n_alignment'
         type: 'float'
         description: 'number of alignment records'
         versions: ['latest']
       - raw: 'Number of filtered records (total)'
-        tidy: 'n_filtered_records_tot'
+        tidy: 'n_filt_tot'
         type: 'float'
         description: 'filtered records (total)'
         versions: ['latest']
       - raw: 'Number of filtered records (duplicates)'
-        tidy: 'n_filtered_records_dup'
+        tidy: 'n_filt_dup'
         type: 'float'
         description: 'filtered records (duplicates)'
         versions: ['latest']
       - raw: 'Number of filtered records (MAPQ)'
-        tidy: 'n_filtered_records_mapq'
+        tidy: 'n_filt_mapq'
         type: 'float'
         description: 'filtered records (MAPQ)'
         versions: ['latest']
       - raw: 'Number of filtered records (unmapped)'
-        tidy: 'n_filtered_records_unmap'
+        tidy: 'n_filt_unmap'
         type: 'float'
         description: 'filtered records (unmapped)'
         versions: ['latest']
@@ -429,14 +429,14 @@ tables:
         description: 'chromosome / autosomal median coverage ratio'
         versions: ['latest']
   nuctrans:
-    description: 'DRAGEN allele nucleotide transition noise, long: one row per from/to base pair with its count.'
+    description: 'DRAGEN allele nucleotide transition noise, long: one row per transition (e.g. AC) with its count.'
     pattern: "\\.allele_transition_noise_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
       - raw: 'count'
         tidy: 'count'
         type: 'float'
-        description: 'number of observed from -> to allele transitions'
+        description: 'number of observed allele transitions for the transition (e.g. AC)'
         versions: ['latest']
   hethom:
     description: 'DRAGEN per-chromosome het/hom ratio metrics (PREFILTER/POSTFILTER); one row per section/rg/chrom.'
@@ -487,4 +487,74 @@ tables:
         tidy: 'hrd_score'
         type: 'int'
         description: 'total HRD score (LOH+TAI+LST)'
+        versions: ['latest']
+  microsat:
+    description: 'DRAGEN microsatellite instability (MSI) summary from microsat_output.json (single row). The Settings block is dropped.'
+    pattern: "\\.microsat_output\\.json$"
+    ftype: 'csv'
+    columns:
+      - raw: 'TotalMicrosatelliteSitesAssessed'
+        tidy: 'sites_assessed'
+        type: 'float'
+        description: 'total microsatellite sites assessed for instability'
+        versions: ['latest']
+      - raw: 'TotalMicrosatelliteSitesUnstable'
+        tidy: 'sites_unstable'
+        type: 'float'
+        description: 'number of assessed sites called unstable'
+        versions: ['latest']
+      - raw: 'PercentageUnstableSites'
+        tidy: 'pct_unstable'
+        type: 'float'
+        description: 'unstable / assessed x 100 (the MSI score); NA when no sites assessed (NaN in file)'
+        versions: ['latest']
+      - raw: 'ResultIsValid'
+        tidy: 'result_valid'
+        type: 'char'
+        description: 'whether the MSI result is valid ("true"/"false")'
+        versions: ['latest']
+      - raw: 'ResultMessage'
+        tidy: 'result_message'
+        type: 'char'
+        description: 'diagnostic message; empty string when the result is valid'
+        versions: ['latest']
+      - raw: 'SumDistance'
+        tidy: 'sum_distance'
+        type: 'float'
+        description: 'sum of per-site distances between tumor and normal repeat-length distributions'
+        versions: ['latest']
+      - raw: 'SumJsd'
+        tidy: 'sum_jsd'
+        type: 'float'
+        description: 'sum of per-site Jensen-Shannon divergences (emitted by some DRAGEN versions)'
+        versions: ['latest']
+  ploidyvcf:
+    description: 'DRAGEN per-contig coverage summary from ploidy.vcf.gz (one row per contig).'
+    pattern: "\\.ploidy\\.vcf\\.gz$"
+    ftype: 'csv'
+    columns:
+      - raw: 'chrom'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'contig name'
+        versions: ['latest']
+      - raw: 'qual'
+        tidy: 'qual'
+        type: 'float'
+        description: 'variant QUAL score'
+        versions: ['latest']
+      - raw: 'filter'
+        tidy: 'filter'
+        type: 'char'
+        description: 'FILTER status (PASS / LowQual)'
+        versions: ['latest']
+      - raw: 'dc'
+        tidy: 'dc'
+        type: 'float'
+        description: 'FORMAT DC: depth of coverage for the contig'
+        versions: ['latest']
+      - raw: 'ndc'
+        tidy: 'ndc'
+        type: 'float'
+        description: 'FORMAT NDC: normalised depth of coverage (contig DC / autosomal median)'
         versions: ['latest']

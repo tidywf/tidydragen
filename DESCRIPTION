@@ -21,6 +21,7 @@ Remotes:
 Imports:
     dplyr,
     glue,
+    jsonlite,
     nemo,
     R6,
     readr,

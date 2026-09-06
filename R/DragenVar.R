@@ -64,12 +64,12 @@
 #' expect_false("cov_skewness" %in% names(ploB))
 #' pcrB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_ploidyratio", lf, value = TRUE)))
 #' expect_equal(pcrB$autosomal_ratio[pcrB$chrom == "X"], 0.99)
-#' # nuctrans: long, one row per from->to transition
+#' # nuctrans: long, one row per transition code (e.g. AC)
 #' nt <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_nuctrans", lf, value = TRUE)))
-#' expect_equal(names(nt)[names(nt) != "input_id"], c("from", "to", "count"))
+#' expect_equal(names(nt)[names(nt) != "input_id"], c("transition", "count"))
 #' expect_equal(nrow(nt), 12L)
-#' expect_equal(nt$count[nt$from == "A" & nt$to == "C"], 63)
-#' expect_equal(nt$count[nt$from == "T" & nt$to == "G"], 45)
+#' expect_equal(nt$count[nt$transition == "AC"], 63)
+#' expect_equal(nt$count[nt$transition == "TG"], 45)
 #' # hethom: per-chromosome, one row per section/rg/chrom; nan ratio preserved
 #' hh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_hethom", lf, value = TRUE)))
 #' expect_true(all(c("section", "rg", "chrom", "het", "hom", "het_hom_ratio") %in% names(hh)))
@@ -82,6 +82,23 @@
 #' hrd <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_hrd", lf, value = TRUE)))
 #' expect_equal(hrd$hrd_score, 5L)
 #' expect_equal(hrd$loh_score, 2L)
+#' # microsat (JSON, 1 row): Settings dropped, numeric keys cast, result stays char
+#' msi <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_microsat", lf, value = TRUE)))
+#' expect_equal(nrow(msi), 1L)
+#' expect_equal(msi$sites_assessed, 14783)
+#' expect_equal(msi$sites_unstable, 204)
+#' expect_equal(msi$pct_unstable, 1.38)
+#' expect_equal(msi$result_valid, "true")
+#' expect_equal(msi$sum_jsd, 12.34)
+#' expect_false(any(c("command", "outputprefix") %in% tolower(names(msi))))
+#' # ploidyvcf (native gz VCF parse): one row per contig, FORMAT DC:NDC split out
+#' pv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_ploidyvcf", lf, value = TRUE)))
+#' expect_equal(names(pv)[names(pv) != "input_id"], c("chrom", "qual", "filter", "dc", "ndc"))
+#' xrow <- pv[pv$chrom == "chrX", ]
+#' expect_equal(xrow$dc, 45.1178)
+#' expect_equal(xrow$ndc, 0.972261)
+#' expect_equal(pv$filter[pv$chrom == "chrY"], "LowQual")
+#' expect_true(all(pv$filter[pv$chrom != "chrY"] == "PASS"))
 #' @export
 DragenVar <- R6::R6Class(
   "DragenVar",
@@ -114,15 +131,7 @@ DragenVar <- R6::R6Class(
         r$x
       })
     },
-    #' @description Tidy `cnv_metrics.csv`. The `SEX GENOTYPER` preamble row carries
-    #' the sample id as its metric name
-    #' (`SEX GENOTYPER,,<sample>,<karyotype>,<confidence>`), so the generic pivot
-    #' would drop it as an unmapped (per-sample-varying) metric. This rewrites that
-    #' row into two stable `CNV SUMMARY` metrics — `sex_karyotype` (XX/XY, or a
-    #' MALE/FEMALE gender for non-WGS) and `sex_genotyper_confidence` (0-1 score,
-    #' 0.0 when the sex was set via `--sample-sex`) — so the call lands on the single
-    #' wide cnv row instead of being lost. A cnv file without the preamble (e.g.
-    #' germline WGS) is unchanged.
+    #' @description Tidy `cnv_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_cnv = function(x) {
       private$tidy_metrics(x, "cnv", normalise = function(d) {
@@ -143,9 +152,7 @@ DragenVar <- R6::R6Class(
         d
       })
     },
-    #' @description Tidy `vc_hethom_ratio_metrics.csv`. Metric names are
-    #' `"<chrom> <metric>"` (e.g. `"1 Heterozygous"`); `chrom` is split into an id
-    #' column, giving one row per section/rg/chrom.
+    #' @description Tidy `vc_hethom_ratio_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_hethom = function(x) {
       private$tidy_metrics(x, "hethom", drop_constant = character(), normalise = function(d) {
@@ -160,11 +167,8 @@ DragenVar <- R6::R6Class(
       })
     },
     #' @description Tidy `ploidy_estimation_metrics.csv` into two tables:
-    #' `ploidystats` (sample scalars: `ploidy_est`, `cov_skewness`,
-    #' `cov_{autosomal,x,y}`) and `ploidyratio` (long, one row per chromosome
-    #' ratio). Ratio rows (those with `/`) are split off and the chromosome parsed
-    #' from the metric name, handling both `"1 / Autosomal ratio"` and
-    #' `"1 median / Autosomal median"` namings.
+    #' `ploidystats` (`ploidy_est`, `cov_skewness`,`cov_{autosomal,x,y}`)
+    #' and `ploidyratio` (long, one row per chromosome ratio).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_ploidy = function(x) {
       if (!tibble::is_tibble(x)) {
@@ -188,17 +192,68 @@ DragenVar <- R6::R6Class(
       ratio$name <- "ratio"
       dplyr::bind_rows(stats, ratio)
     },
-    #' @description Tidy `allele_transition_noise_metrics.csv` to long form: one row
-    #' per nucleotide transition with `from`/`to` base id columns and its `count`.
-    #' The metric name (e.g. `"A->C"`) is split into the two bases.
+    #' @description Tidy `allele_transition_noise_metrics.csv`
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_nuctrans = function(x) {
       private$tidy_metrics(x, "nuctrans", normalise = function(d) {
-        d$from <- sub("->.*$", "", d$variable)
-        d$to <- sub("^.*->", "", d$variable)
+        d$transition <- gsub("->", "", d$variable)
         d$variable <- "count"
         d
       })
+    },
+    #' @description Parse `microsat_output.json` (MSI).
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_microsat = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
+      # Settings = tool config (paths, thresholds), not a metric.
+      j[["Settings"]] <- NULL
+      j[["ResultMessage"]] <- j[["ResultMessage"]] %||% NA_character_
+      if (identical(j[["PercentageUnstableSites"]], "NaN")) {
+        j[["PercentageUnstableSites"]] <- NA_character_
+      }
+      expected <- c(
+        "TotalMicrosatelliteSitesAssessed",
+        "TotalMicrosatelliteSitesUnstable",
+        "PercentageUnstableSites",
+        "ResultIsValid",
+        "ResultMessage",
+        "SumDistance",
+        "SumJsd"
+      )
+      for (k in setdiff(expected, names(j))) {
+        j[[k]] <- NA_character_
+      }
+      num_cols <- c(
+        "TotalMicrosatelliteSitesAssessed",
+        "TotalMicrosatelliteSitesUnstable",
+        "PercentageUnstableSites",
+        "SumDistance",
+        "SumJsd"
+      )
+      d <- tibble::as_tibble_row(j) |>
+        dplyr::mutate(
+          dplyr::across(dplyr::any_of(num_cols), as.numeric),
+          ResultIsValid = as.character(.data$ResultIsValid)
+        )
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Parse `ploidy.vcf.gz` depth-of-coverage `dc` and normalised
+    #' depth `ndc`.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_ploidyvcf = function(x) {
+      cnames <- list(
+        all = c("chrom", "pos", "id", "ref", "alt", "qual", "filter", "info", "fmt", "sample"),
+        num = c("qual", "dc", "ndc"),
+        final = c("chrom", "qual", "filter", "dc", "ndc")
+      )
+      d <- readr::read_tsv(x, comment = "##", col_types = readr::cols(.default = "c")) |>
+        setNames(cnames$all) |>
+        tidyr::separate_wider_delim("sample", delim = ":", names = c("dc", "ndc")) |>
+        dplyr::select(dplyr::all_of(cnames$final)) |>
+        dplyr::mutate(dplyr::across(dplyr::all_of(cnames$num), as.numeric))
+      attr(d, "file_version") <- "latest"
+      d[]
     }
   )
 )

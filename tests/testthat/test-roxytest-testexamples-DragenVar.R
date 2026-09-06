@@ -2,7 +2,7 @@
 
 # File R/DragenVar.R: @testexamples
 
-test_that("Function DragenVar() @ L86", {
+test_that("Function DragenVar() @ L103", {
   
   cls <- DragenVar; tool <- "dragenvar"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -62,12 +62,12 @@ test_that("Function DragenVar() @ L86", {
   expect_false("cov_skewness" %in% names(ploB))
   pcrB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_ploidyratio", lf, value = TRUE)))
   expect_equal(pcrB$autosomal_ratio[pcrB$chrom == "X"], 0.99)
-  # nuctrans: long, one row per from->to transition
+  # nuctrans: long, one row per transition code (e.g. AC)
   nt <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_nuctrans", lf, value = TRUE)))
-  expect_equal(names(nt)[names(nt) != "input_id"], c("from", "to", "count"))
+  expect_equal(names(nt)[names(nt) != "input_id"], c("transition", "count"))
   expect_equal(nrow(nt), 12L)
-  expect_equal(nt$count[nt$from == "A" & nt$to == "C"], 63)
-  expect_equal(nt$count[nt$from == "T" & nt$to == "G"], 45)
+  expect_equal(nt$count[nt$transition == "AC"], 63)
+  expect_equal(nt$count[nt$transition == "TG"], 45)
   # hethom: per-chromosome, one row per section/rg/chrom; nan ratio preserved
   hh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_hethom", lf, value = TRUE)))
   expect_true(all(c("section", "rg", "chrom", "het", "hom", "het_hom_ratio") %in% names(hh)))
@@ -80,5 +80,22 @@ test_that("Function DragenVar() @ L86", {
   hrd <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_hrd", lf, value = TRUE)))
   expect_equal(hrd$hrd_score, 5L)
   expect_equal(hrd$loh_score, 2L)
+  # microsat (JSON, 1 row): Settings dropped, numeric keys cast, result stays char
+  msi <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_microsat", lf, value = TRUE)))
+  expect_equal(nrow(msi), 1L)
+  expect_equal(msi$sites_assessed, 14783)
+  expect_equal(msi$sites_unstable, 204)
+  expect_equal(msi$pct_unstable, 1.38)
+  expect_equal(msi$result_valid, "true")
+  expect_equal(msi$sum_jsd, 12.34)
+  expect_false(any(c("command", "outputprefix") %in% tolower(names(msi))))
+  # ploidyvcf (native gz VCF parse): one row per contig, FORMAT DC:NDC split out
+  pv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_ploidyvcf", lf, value = TRUE)))
+  expect_equal(names(pv)[names(pv) != "input_id"], c("chrom", "qual", "filter", "dc", "ndc"))
+  xrow <- pv[pv$chrom == "chrX", ]
+  expect_equal(xrow$dc, 45.1178)
+  expect_equal(xrow$ndc, 0.972261)
+  expect_equal(pv$filter[pv$chrom == "chrY"], "LowQual")
+  expect_true(all(pv$filter[pv$chrom != "chrY"] == "PASS"))
 })
 

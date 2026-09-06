@@ -27,6 +27,8 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
 \item \href{#method-DragenVar-tidy_ploidy}{\code{DragenVar$tidy_ploidy()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
+\item \href{#method-DragenVar-parse_microsat}{\code{DragenVar$parse_microsat()}}
+\item \href{#method-DragenVar-parse_ploidyvcf}{\code{DragenVar$parse_ploidyvcf()}}
 }
 }
 \if{html}{\out{
@@ -88,15 +90,7 @@ Tidy \code{vc_metrics.csv}. Drops \verb{VARIANT CALLER SUMMARY} (blank
 \if{html}{\out{<a id="method-DragenVar-tidy_cnv"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_cnv}{}}}
 \subsection{Method \code{tidy_cnv()}}{
-Tidy \code{cnv_metrics.csv}. The \verb{SEX GENOTYPER} preamble row carries
-the sample id as its metric name
-(\verb{SEX GENOTYPER,,<sample>,<karyotype>,<confidence>}), so the generic pivot
-would drop it as an unmapped (per-sample-varying) metric. This rewrites that
-row into two stable \verb{CNV SUMMARY} metrics — \code{sex_karyotype} (XX/XY, or a
-MALE/FEMALE gender for non-WGS) and \code{sex_genotyper_confidence} (0-1 score,
-0.0 when the sex was set via \code{--sample-sex}) — so the call lands on the single
-wide cnv row instead of being lost. A cnv file without the preamble (e.g.
-germline WGS) is unchanged.
+Tidy \code{cnv_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_cnv(x)}\if{html}{\out{</div>}}
 }
@@ -113,9 +107,7 @@ germline WGS) is unchanged.
 \if{html}{\out{<a id="method-DragenVar-tidy_hethom"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_hethom}{}}}
 \subsection{Method \code{tidy_hethom()}}{
-Tidy \code{vc_hethom_ratio_metrics.csv}. Metric names are
-\code{"<chrom> <metric>"} (e.g. \code{"1 Heterozygous"}); \code{chrom} is split into an id
-column, giving one row per section/rg/chrom.
+Tidy \code{vc_hethom_ratio_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_hethom(x)}\if{html}{\out{</div>}}
 }
@@ -133,11 +125,8 @@ column, giving one row per section/rg/chrom.
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidy}{}}}
 \subsection{Method \code{tidy_ploidy()}}{
 Tidy \code{ploidy_estimation_metrics.csv} into two tables:
-\code{ploidystats} (sample scalars: \code{ploidy_est}, \code{cov_skewness},
-\verb{cov_\{autosomal,x,y\}}) and \code{ploidyratio} (long, one row per chromosome
-ratio). Ratio rows (those with \code{/}) are split off and the chromosome parsed
-from the metric name, handling both \code{"1 / Autosomal ratio"} and
-\code{"1 median / Autosomal median"} namings.
+\code{ploidystats} (\code{ploidy_est}, \code{cov_skewness},\verb{cov_\{autosomal,x,y\}})
+and \code{ploidyratio} (long, one row per chromosome ratio).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidy(x)}\if{html}{\out{</div>}}
 }
@@ -154,9 +143,7 @@ from the metric name, handling both \code{"1 / Autosomal ratio"} and
 \if{html}{\out{<a id="method-DragenVar-tidy_nuctrans"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_nuctrans}{}}}
 \subsection{Method \code{tidy_nuctrans()}}{
-Tidy \code{allele_transition_noise_metrics.csv} to long form: one row
-per nucleotide transition with \code{from}/\code{to} base id columns and its \code{count}.
-The metric name (e.g. \code{"A->C"}) is split into the two bases.
+Tidy \code{allele_transition_noise_metrics.csv}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_nuctrans(x)}\if{html}{\out{</div>}}
 }
@@ -165,6 +152,41 @@ The metric name (e.g. \code{"A->C"}) is split into the two bases.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-parse_microsat"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-parse_microsat}{}}}
+\subsection{Method \code{parse_microsat()}}{
+Parse \code{microsat_output.json} (MSI).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_microsat(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-parse_ploidyvcf"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-parse_ploidyvcf}{}}}
+\subsection{Method \code{parse_ploidyvcf()}}{
+Parse \code{ploidy.vcf.gz} depth-of-coverage \code{dc} and normalised
+depth \code{ndc}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_ploidyvcf(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }
