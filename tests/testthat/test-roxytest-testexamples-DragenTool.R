@@ -4,7 +4,7 @@
 
 test_that("Function DragenTool() @ L39", {
   
-  # Abstract base — normally you use a subclass (e.g. DragenVar). The parser/tidier
+  # Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
   # are private; here we just inspect the inherited surface + policy fields.
   indir <- system.file("extdata/dragenmap", package = "tidydragen")
   tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)

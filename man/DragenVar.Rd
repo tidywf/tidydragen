@@ -18,6 +18,17 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super classes}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{\link[tidydragen:DragenTool]{tidydragen::DragenTool}} -> \code{DragenVar}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
+\code{TRUE}: fanned-out sub-tables are named \verb{<tool>_<tidy_name>} directly (the
+parser token is dropped). \code{tidy_ploidystats} fans one file into the
+\code{ploidystats} + \code{ploidyratio} tables, whose names are the final outputs; every
+other DragenVar table has \code{tidy_name == parser}, so its name is unchanged.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -25,7 +36,7 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \item \href{#method-DragenVar-tidy_vc}{\code{DragenVar$tidy_vc()}}
 \item \href{#method-DragenVar-tidy_cnv}{\code{DragenVar$tidy_cnv()}}
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
-\item \href{#method-DragenVar-tidy_ploidy}{\code{DragenVar$tidy_ploidy()}}
+\item \href{#method-DragenVar-tidy_ploidystats}{\code{DragenVar$tidy_ploidystats()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
 \item \href{#method-DragenVar-parse_microsat}{\code{DragenVar$parse_microsat()}}
 \item \href{#method-DragenVar-parse_ploidyvcf}{\code{DragenVar$parse_ploidyvcf()}}
@@ -70,10 +81,8 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenVar-tidy_vc"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_vc}{}}}
 \subsection{Method \code{tidy_vc()}}{
-Tidy \code{vc_metrics.csv}. Drops \verb{VARIANT CALLER SUMMARY} (blank
-\code{rg}, duplicates prefilter), keeping \code{PREFILTER}/\code{POSTFILTER} as \code{section};
-\code{rg} (the sample id) is kept raw. Strips the region from metric names into a
-\code{region} column (genome vs target region).
+Tidy \code{vc_metrics.csv}. \code{rg} (sample id) kept raw; region moved
+from metric names into a \code{region} column.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_vc(x)}\if{html}{\out{</div>}}
 }
@@ -121,14 +130,13 @@ Tidy \code{vc_hethom_ratio_metrics.csv}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenVar-tidy_ploidy"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidy}{}}}
-\subsection{Method \code{tidy_ploidy()}}{
-Tidy \code{ploidy_estimation_metrics.csv} into two tables:
-\code{ploidystats} (\code{ploidy_est}, \code{cov_skewness},\verb{cov_\{autosomal,x,y\}})
-and \code{ploidyratio} (long, one row per chromosome ratio).
+\if{html}{\out{<a id="method-DragenVar-tidy_ploidystats"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidystats}{}}}
+\subsection{Method \code{tidy_ploidystats()}}{
+Tidy \code{ploidy_estimation_metrics.csv} into \code{ploidystats} (sample
+scalars) and \code{ploidyratio} (long, one row per chromosome ratio).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidy(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidystats(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

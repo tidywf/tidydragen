@@ -1,6 +1,6 @@
 tables:
-  metrics:
-    description: 'DRAGEN coverage summary metrics (region folded into prefix). Coverage is computed post read-deduplication/UMI-collapsing; by default reads with MAPQ=0 are filtered, soft/hard-clipped bases are ignored, and overlapping mates are double-counted. Coverage-depth bins are split off into the metricsbins table.'
+  metricsmain:
+    description: 'DRAGEN coverage summary metrics.'
     pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -94,9 +94,9 @@ tables:
         type: 'float'
         description: 'average chr Y coverage / average autosomal coverage'
         versions: ['latest']
-  bins:
-    description: 'DRAGEN coverage-depth histogram (long, bucketed): PCT of region bases with coverage in each finite "[cov_lo: cov_hi)" bin. Produced from the coverage_metrics file by tidy_metrics; sentinel pattern so it is never matched to a file directly.'
-    pattern: "__no_file_match__bins"
+  metricsbins:
+    description: 'DRAGEN coverage-depth histogram: percent of region bases with coverage in each finite [cov_lo, cov_hi) bin.'
+    pattern: "__no_file_match__metricsbins"
     ftype: 'dragen-metrics'
     columns:
       - raw: 'cov_pct'
@@ -104,9 +104,9 @@ tables:
         type: 'float'
         description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
         versions: ['latest']
-  cumu:
-    description: 'DRAGEN cumulative coverage (long): PCT of region bases with coverage at least cov_min x (the open "[Nx: inf)" bins). Produced from the coverage_metrics file by tidy_metrics; sentinel pattern so it is never matched to a file directly.'
-    pattern: "__no_file_match__cumu"
+  metricscumu:
+    description: 'DRAGEN cumulative coverage: percent of region bases with coverage at least cov_min.'
+    pattern: "__no_file_match__metricscumu"
     ftype: 'dragen-metrics'
     columns:
       - raw: 'cov_pct'
@@ -127,12 +127,12 @@ tables:
       - raw: 'bases'
         tidy: 'bases'
         type: 'float'
-        description: 'number of bases aligned to the contig; excludes bases from duplicate-marked reads, reads with MAPQ=0, and clipped bases'
+        description: 'number of bases aligned to the contig'
         versions: ['latest']
       - raw: 'coverage'
         tidy: 'cov_mean'
         type: 'float'
-        description: 'estimated coverage: aligned bases (bases column) divided by the contig length, or the total length of the target region spanning the contig when a target BED is used'
+        description: 'estimated coverage: aligned bases (bases column) divided by the contig length'
         versions: ['latest']
   finehist:
     description: 'DRAGEN fine coverage histogram (per-depth base counts).'
@@ -142,15 +142,15 @@ tables:
       - raw: 'Depth'
         tidy: 'depth'
         type: 'int'
-        description: 'coverage depth; terminal "2000+" bin has its + stripped to the integer 2000'
+        description: 'coverage depth'
         versions: ['latest']
       - raw: 'Overall'
         tidy: 'count'
         type: 'float'
         description: 'number of loci covered at this depth'
         versions: ['latest']
-  reportbed:
-    description: 'DRAGEN coverage report BED, distribution stats per region interval (this table -> reportbedmain). The user-configurable pct_above thresholds are split into the long reportbedcumu table by tidy_reportbed.'
+  reportbedmain:
+    description: 'DRAGEN coverage report BED, distribution stats per region interval.'
     pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     ftype: 'tsv'
     columns:
@@ -205,7 +205,7 @@ tables:
         description: 'maximum coverage over the interval'
         versions: ['latest']
   reportbedcumu:
-    description: 'DRAGEN coverage-report cumulative thresholds (long): from the cov_report BED pct_above_<N> columns — percentage of bases in each region interval with depth coverage strictly greater than cov_min. Split out by tidy_reportbed because the pct_above thresholds are user-configurable (variable columns; default 5,15,20,30,50,100,200,300,400,500,1000); sentinel pattern so it is never matched to a file directly.'
+    description: 'DRAGEN coverage-report cumulative thresholds: percent of interval bases above each coverage threshold, long.'
     pattern: "__no_file_match__reportbedcumu"
     ftype: 'tsv'
     columns:

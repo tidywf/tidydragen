@@ -1,6 +1,6 @@
 tables:
   metrics:
-    description: 'DRAGEN mapping/aligning summary metrics (SUMMARY + PER RG sections, TUMOR/NORMAL/single).'
+    description: 'DRAGEN mapping/aligning summary metrics.'
     pattern: "\\.mapping_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -85,7 +85,7 @@ tables:
         description: 'adjustment of reads matching non-reference decoys'
         versions: ['latest']
       - raw: 'Adjustment of reads matching exclude contigs'
-        tidy: 'reads_match_excl_contigs'
+        tidy: 'reads_match_excl_contigs_adj'
         type: 'float'
         description: 'adjustment of reads matching exclude contigs'
         versions: ['latest']

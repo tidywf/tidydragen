@@ -9,7 +9,7 @@ adds DRAGEN-specific shared logic e.g. the metrics parser/tidier used
 by every \verb{*_metrics.csv} table. Tools like \code{DragenCov} inherit from
 \code{DragenTool} rather than \code{nemo::Tool} directly. The \code{dragen-metrics} ftype is
 registered here (parse via \code{extra_ftypes()}, tidy via the \code{tidy_file}
-override), so a plain metrics table needs no methods — just \code{ftype: 'dragen-metrics'} in its schema. A table needing a \code{normalise}/\code{drop_constant}
+override), so a plain metrics table needs no methods, just \code{ftype: 'dragen-metrics'} in its schema. A table needing a \code{normalise}/\code{drop_constant}
 still declares an explicit \verb{tidy_<tbl>()} that delegates to \code{tidy_metrics}.
 }
 \details{
@@ -21,7 +21,7 @@ string values (e.g. \verb{Ploidy estimation} = \code{"XX"}) and counts can excee
 range; each tidy column is coerced to its schema \code{type} after the wide pivot.
 }
 \examples{
-# Abstract base — normally you use a subclass (e.g. DragenVar). The parser/tidier
+# Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
 # are private; here we just inspect the inherited surface + policy fields.
 indir <- system.file("extdata/dragenmap", package = "tidydragen")
 tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)

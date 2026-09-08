@@ -51,25 +51,25 @@
 #' # ploidy: split into `ploidystats` (sample scalars) + `ploidyratio` (per-chrom, long)
 #' plo <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_ploidystats", lf, value = TRUE)))
 #' expect_equal(plo$ploidy_est, "XX")
-#' expect_equal(plo$cov_x, 45.99)
+#' expect_equal(plo$cov_x_pctile, 45.99)
 #' expect_false("cov_x_div_auto" %in% names(plo))
 #' pcr <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_ploidyratio", lf, value = TRUE)))
-#' expect_equal(names(pcr)[names(pcr) != "input_id"], c("chrom", "autosomal_ratio"))
-#' expect_equal(pcr$autosomal_ratio[pcr$chrom == "X"], 0.99)
-#' expect_equal(pcr$autosomal_ratio[pcr$chrom == "1"], 1.00)
+#' expect_equal(names(pcr)[names(pcr) != "input_id"], c("chrom", "ratio"))
+#' expect_equal(pcr$ratio[pcr$chrom == "X"], 0.99)
+#' expect_equal(pcr$ratio[pcr$chrom == "1"], 1.00)
 #' # sampleB: 'median coverage'/'median / Autosomal median' naming -> same tidy names
 #' ploB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_ploidystats", lf, value = TRUE)))
-#' expect_equal(ploB$cov_x, 19.24)
+#' expect_equal(ploB$cov_x_median, 19.24)
 #' expect_equal(ploB$ploidy_est, "XX")
 #' expect_false("cov_skewness" %in% names(ploB))
 #' pcrB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_ploidyratio", lf, value = TRUE)))
-#' expect_equal(pcrB$autosomal_ratio[pcrB$chrom == "X"], 0.99)
+#' expect_equal(pcrB$ratio[pcrB$chrom == "X"], 0.99)
 #' # nuctrans: long, one row per transition code (e.g. AC)
 #' nt <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_nuctrans", lf, value = TRUE)))
-#' expect_equal(names(nt)[names(nt) != "input_id"], c("transition", "count"))
+#' expect_equal(names(nt)[names(nt) != "input_id"], c("transition", "value"))
 #' expect_equal(nrow(nt), 12L)
-#' expect_equal(nt$count[nt$transition == "AC"], 63)
-#' expect_equal(nt$count[nt$transition == "TG"], 45)
+#' expect_equal(nt$value[nt$transition == "AC"], 63)
+#' expect_equal(nt$value[nt$transition == "TG"], 45)
 #' # hethom: per-chromosome, one row per section/rg/chrom; nan ratio preserved
 #' hh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_hethom", lf, value = TRUE)))
 #' expect_true(all(c("section", "rg", "chrom", "het", "hom", "het_hom_ratio") %in% names(hh)))
@@ -105,6 +105,12 @@ DragenVar <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
+    #' @field flat_tidy_names (`logical(1)`)\cr
+    #' `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly (the
+    #' parser token is dropped). `tidy_ploidystats` fans one file into the
+    #' `ploidystats` + `ploidyratio` tables, whose names are the final outputs; every
+    #' other DragenVar table has `tidy_name == parser`, so its name is unchanged.
+    flat_tidy_names = TRUE,
     #' @description Create a new DragenVar object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -113,19 +119,19 @@ DragenVar <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenvar", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `vc_metrics.csv`. Drops `VARIANT CALLER SUMMARY` (blank
-    #' `rg`, duplicates prefilter), keeping `PREFILTER`/`POSTFILTER` as `section`;
-    #' `rg` (the sample id) is kept raw. Strips the region from metric names into a
-    #' `region` column (genome vs target region).
+    #' @description Tidy `vc_metrics.csv`. `rg` (sample id) kept raw; region moved
+    #' from metric names into a `region` column.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_vc = function(x) {
       private$tidy_metrics(x, "vc", drop_constant = character(), normalise = function(d) {
+        # drop VARIANT CALLER SUMMARY (blank rg, duplicates prefilter)
         d <- d[!grepl("SUMMARY", d$section), , drop = FALSE]
         d$section <- dplyr::case_when(
           grepl("PREFILTER", d$section) ~ "prefilter",
           grepl("POSTFILTER", d$section) ~ "postfilter",
           TRUE ~ d$section
         )
+        # region (genome vs target region) -> its own column
         r <- private$region_split(d)
         r$x$region <- r$region
         r$x
@@ -166,30 +172,30 @@ DragenVar <- R6::R6Class(
         d
       })
     },
-    #' @description Tidy `ploidy_estimation_metrics.csv` into two tables:
-    #' `ploidystats` (`ploidy_est`, `cov_skewness`,`cov_{autosomal,x,y}`)
-    #' and `ploidyratio` (long, one row per chromosome ratio).
+    #' @description Tidy `ploidy_estimation_metrics.csv` into `ploidystats` (sample
+    #' scalars) and `ploidyratio` (long, one row per chromosome ratio).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_ploidy = function(x) {
+    tidy_ploidystats = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_ratio <- grepl("/", x$variable)
-      # scalar col_map is on the file-matching "ploidy" table; ratio col_map on the
-      # sentinel "ploidyratio".
-      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidy")
+      # scalar col_map is on the file-matching "ploidystats" table; ratio col_map on
+      # the sentinel "ploidyratio".
+      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidystats")
       ratio <- private$tidy_metrics(
         x[is_ratio, , drop = FALSE],
         "ploidyratio",
         normalise = function(d) {
           d$chrom <- sub("^(\\S+).*$", "\\1", d$variable)
-          d$variable <- "autosomal_ratio"
+          d$variable <- "ratio"
           d
         }
       )
-      # sub-table name concatenates onto the parser -> dragenvar_ploidystats / _ploidyratio
-      stats$name <- "stats"
-      ratio$name <- "ratio"
+      # flat_tidy_names drops the parser token -> output is dragenvar_<name>, so the
+      # sub-table names ARE the final output tables: dragenvar_ploidystats / _ploidyratio.
+      stats$name <- "ploidystats"
+      ratio$name <- "ploidyratio"
       dplyr::bind_rows(stats, ratio)
     },
     #' @description Tidy `allele_transition_noise_metrics.csv`
@@ -197,7 +203,7 @@ DragenVar <- R6::R6Class(
     tidy_nuctrans = function(x) {
       private$tidy_metrics(x, "nuctrans", normalise = function(d) {
         d$transition <- gsub("->", "", d$variable)
-        d$variable <- "count"
+        d$variable <- "value"
         d
       })
     },

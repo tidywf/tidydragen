@@ -1,6 +1,6 @@
 tables:
   vc:
-    description: 'DRAGEN variant caller metrics (SUMMARY section dropped).'
+    description: 'DRAGEN variant caller metrics.'
     pattern: "\\.vc_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -33,7 +33,7 @@ tables:
       - raw: 'MNPs'
         tidy: 'mnps'
         type: 'float'
-        description: 'multi-nucleotide-polymorphism count (component of Total = SNPs + MNPs + indels)'
+        description: 'multi-nucleotide polymorphisms'
         versions: ['latest']
       - raw: 'Insertions'
         tidy: 'insertions'
@@ -80,8 +80,8 @@ tables:
         type: 'float'
         description: 'heterozygous indels'
         versions: ['latest']
-      # region ("over genome" / "over target region") stripped by region_split;
-      # the region is recorded in the `region` column.
+      # per-region metrics: the region ("over genome" / "over target region") is
+      # captured in the region column.
       - raw: 'Chr X number of SNPs'
         tidy: 'chrx_snps'
         type: 'float'
@@ -98,17 +98,17 @@ tables:
         description: 'chr X / chr Y SNP ratio over the called region'
         versions: ['latest']
       - raw: 'SNP Transitions'
-        tidy: 'snp_transitions'
+        tidy: 'snp_ti'
         type: 'float'
         description: 'SNP transitions'
         versions: ['latest']
       - raw: 'SNP Transversions'
-        tidy: 'snp_transversions'
+        tidy: 'snp_tv'
         type: 'float'
         description: 'SNP transversions'
         versions: ['latest']
       - raw: 'Ti/Tv ratio'
-        tidy: 'ti_tv_ratio'
+        tidy: 'titv_ratio'
         type: 'float'
         description: 'transition/transversion ratio'
         versions: ['latest']
@@ -138,12 +138,12 @@ tables:
         description: 'indel mosaics'
         versions: ['latest']
       - raw: 'In dbSNP'
-        tidy: 'in_dbsnp'
+        tidy: 'dbsnp_yes'
         type: 'float'
         description: 'variants in dbSNP'
         versions: ['latest']
       - raw: 'Not in dbSNP'
-        tidy: 'not_in_dbsnp'
+        tidy: 'dbsnp_not'
         type: 'float'
         description: 'variants not in dbSNP'
         versions: ['latest']
@@ -240,7 +240,7 @@ tables:
       - raw: 'PMAD'
         tidy: 'pmad'
         type: 'float'
-        description: 'per-bin median absolute deviation'
+        description: 'Pairwise Median Absolute Deviation: variation in read coverage between adjacent bins'
         versions: ['latest']
       - raw: 'OutlierBafFraction'
         tidy: 'outlier_baf_fraction'
@@ -320,17 +320,17 @@ tables:
       - raw: 'beta-binomial overdispersion M'
         tidy: 'beta_binomial_overdispersion_m'
         type: 'float'
-        description: 'beta-binomial over-dispersion M parameter (emitted on somatic WGS CNV; undocumented in the DRAGEN CNV metric list)'
+        description: 'beta-binomial over-dispersion M parameter'
         versions: ['latest']
       - raw: 'sex_karyotype'
         tidy: 'sex_karyotype'
         type: 'char'
-        description: 'SEX GENOTYPER estimated sex: karyotype (XX/XY/...) for WGS, gender (MALE/FEMALE) for non-WGS. Synthesised from the SEX GENOTYPER preamble row (whose raw metric name is the sample id) by tidy_cnv.'
+        description: 'estimated sex (karyotype XX/XY for WGS, MALE/FEMALE for non-WGS)'
         versions: ['latest']
       - raw: 'sex_genotyper_confidence'
         tidy: 'sex_genotyper_confidence'
         type: 'float'
-        description: 'SEX GENOTYPER confidence score (0.0-1.0); 0.0 when the sample sex was specified via --sample-sex rather than estimated.'
+        description: 'sex genotyper confidence score (0.0-1.0)'
         versions: ['latest']
   tmb:
     description: 'DRAGEN tumor mutational burden metrics.'
@@ -372,7 +372,7 @@ tables:
         type: 'float'
         description: 'non-synonymous TMB'
         versions: ['latest']
-  ploidy:
+  ploidystats:
     description: 'DRAGEN ploidy estimation sample-level metrics; per-chromosome ratios go to the ploidyratio table.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     ftype: 'dragen-metrics'
@@ -387,59 +387,58 @@ tables:
         type: 'float'
         description: 'coverage skewness'
         versions: ['latest']
-      # coverage scalars: 'coverage percentile' or 'median coverage' naming (per DRAGEN version)
       - raw: 'Autosomal coverage percentile'
-        tidy: 'cov_autosomal'
+        tidy: 'cov_auto_pctile'
         type: 'float'
-        description: 'autosomal coverage'
+        description: 'autosomal coverage percentile'
         versions: ['latest']
       - raw: 'X coverage percentile'
-        tidy: 'cov_x'
+        tidy: 'cov_x_pctile'
         type: 'float'
-        description: 'chr X coverage'
+        description: 'chrX coverage percentile'
         versions: ['latest']
       - raw: 'Y coverage percentile'
-        tidy: 'cov_y'
+        tidy: 'cov_y_pctile'
         type: 'float'
-        description: 'chr Y coverage'
+        description: 'chrY coverage percentile'
         versions: ['latest']
       - raw: 'Autosomal median coverage'
-        tidy: 'cov_autosomal'
+        tidy: 'cov_auto_median'
         type: 'float'
-        description: 'autosomal coverage'
+        description: 'autosomal median coverage'
         versions: ['latest']
       - raw: 'X median coverage'
-        tidy: 'cov_x'
+        tidy: 'cov_x_median'
         type: 'float'
-        description: 'chr X coverage'
+        description: 'chrX median coverage'
         versions: ['latest']
       - raw: 'Y median coverage'
-        tidy: 'cov_y'
+        tidy: 'cov_y_median'
         type: 'float'
-        description: 'chr Y coverage'
+        description: 'chrY median coverage'
         versions: ['latest']
   ploidyratio:
-    description: 'DRAGEN per-chromosome ploidy ratio (chrom / autosomal), long. Produced from the ploidy file by tidy_ploidy; sentinel pattern so it is never matched to a file directly.'
+    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage), long.'
     pattern: "__no_file_match__ploidyratio"
     ftype: 'dragen-metrics'
     columns:
-      - raw: 'autosomal_ratio'
-        tidy: 'autosomal_ratio'
+      - raw: 'ratio'
+        tidy: 'ratio'
         type: 'float'
         description: 'chromosome / autosomal median coverage ratio'
         versions: ['latest']
   nuctrans:
-    description: 'DRAGEN allele nucleotide transition noise, long: one row per transition (e.g. AC) with its count.'
+    description: 'DRAGEN allele nucleotide transition noise.'
     pattern: "\\.allele_transition_noise_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
-      - raw: 'count'
-        tidy: 'count'
+      - raw: 'value'
+        tidy: 'value'
         type: 'float'
-        description: 'number of observed allele transitions for the transition (e.g. AC)'
+        description: 'error bias estimation as a phred-scaled integer (high value, low error rate)'
         versions: ['latest']
   hethom:
-    description: 'DRAGEN per-chromosome het/hom ratio metrics (PREFILTER/POSTFILTER); one row per section/rg/chrom.'
+    description: 'DRAGEN per-chromosome het/hom ratio metrics (PREFILTER/POSTFILTER).'
     pattern: "\\.vc_hethom_ratio_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -459,7 +458,7 @@ tables:
         description: 'heterozygous/homozygous ratio on the chromosome (nan when hom=0)'
         versions: ['latest']
   hrd:
-    description: 'DRAGEN HRD score (single row: LOH/TAI/LST component scores + total).'
+    description: 'DRAGEN HRD score.'
     pattern: "\\.hrdscore\\.csv$"
     ftype: 'csv'
     columns:
@@ -489,29 +488,29 @@ tables:
         description: 'total HRD score (LOH+TAI+LST)'
         versions: ['latest']
   microsat:
-    description: 'DRAGEN microsatellite instability (MSI) summary from microsat_output.json (single row). The Settings block is dropped.'
+    description: 'DRAGEN microsatellite instability (MSI) summary.'
     pattern: "\\.microsat_output\\.json$"
     ftype: 'csv'
     columns:
       - raw: 'TotalMicrosatelliteSitesAssessed'
         tidy: 'sites_assessed'
         type: 'float'
-        description: 'total microsatellite sites assessed for instability'
+        description: 'number of MS sites assessed for instability'
         versions: ['latest']
       - raw: 'TotalMicrosatelliteSitesUnstable'
         tidy: 'sites_unstable'
         type: 'float'
-        description: 'number of assessed sites called unstable'
+        description: 'number of MS sites called unstable'
         versions: ['latest']
       - raw: 'PercentageUnstableSites'
         tidy: 'pct_unstable'
         type: 'float'
-        description: 'unstable / assessed x 100 (the MSI score); NA when no sites assessed (NaN in file)'
+        description: 'MSI score: unstable / assessed x 100; NA when no sites assessed'
         versions: ['latest']
       - raw: 'ResultIsValid'
         tidy: 'result_valid'
         type: 'char'
-        description: 'whether the MSI result is valid ("true"/"false")'
+        description: 'is the MSI result valid'
         versions: ['latest']
       - raw: 'ResultMessage'
         tidy: 'result_message'
@@ -521,15 +520,15 @@ tables:
       - raw: 'SumDistance'
         tidy: 'sum_distance'
         type: 'float'
-        description: 'sum of per-site distances between tumor and normal repeat-length distributions'
+        description: 'sum of Jensen-Shannon distance of all unstable sites based on distances of T vs. N distributions'
         versions: ['latest']
       - raw: 'SumJsd'
         tidy: 'sum_jsd'
         type: 'float'
-        description: 'sum of per-site Jensen-Shannon divergences (emitted by some DRAGEN versions)'
+        description: 'sum of Jensen-Shannon distance of all unstable sites'
         versions: ['latest']
   ploidyvcf:
-    description: 'DRAGEN per-contig coverage summary from ploidy.vcf.gz (one row per contig).'
+    description: 'DRAGEN per-contig coverage summary.'
     pattern: "\\.ploidy\\.vcf\\.gz$"
     ftype: 'csv'
     columns:
@@ -551,10 +550,10 @@ tables:
       - raw: 'dc'
         tidy: 'dc'
         type: 'float'
-        description: 'FORMAT DC: depth of coverage for the contig'
+        description: 'depth of coverage for the contig'
         versions: ['latest']
       - raw: 'ndc'
         tidy: 'ndc'
         type: 'float'
-        description: 'FORMAT NDC: normalised depth of coverage (contig DC / autosomal median)'
+        description: 'normalised depth of coverage (contig DC / autosomal median)'
         versions: ['latest']

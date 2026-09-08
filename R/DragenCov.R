@@ -2,19 +2,17 @@
 #'
 #' @description
 #' Parses and tidies DRAGEN coverage outputs (per-contig mean coverage, coverage
-#' metrics, fine histograms, and coverage-report BEDs).
+#' metrics, fine histograms, and coverage-report BEDs). Some files fan out into
+#' multiple output tables: `tidy_metricsmain` splits the coverage metrics into
+#' `metricsmain`/`metricsbins`/`metricscumu`, and `tidy_reportbedmain` splits the
+#' coverage-report BED into `reportbedmain`/`reportbedcumu`. Every other table has
+#' `tidy_name == parser`, so its name is unchanged. The per-method docs below cover
+#' each table's specifics.
+#'
 #' The coverage region (`wgs` / `tmb` /`qc-coverage-region-{<region>}`) and
 #' phenotype (`normal` / `tumor`) are folded from the filename into the output
 #' `prefix` by `DragenTool`'s `refine_files()` hook, so one schema table serves
 #' every region/phenotype variant.
-#'
-#' Several tables carry custom `parse_`/`tidy_` methods: the coverage metrics
-#' split into `metricsmain`/`metricsbins`/`metricscumu`; the fine histogram
-#' strips its terminal `2000+` bin to an integer; and the coverage-report BED
-#' splits its user-configurable `pct_above` thresholds into a long `reportbedcumu`
-#' table. The rest - the headless contig-mean CSV (`csv-nohead` extra ftype) and
-#' the per-gene read-report BED (`tsv`) - dispatch through nemo's ftype parser and
-#' the standard positional `tidy_file` rename.
 #'
 #' @examples
 #' cls <- DragenCov; tool <- "dragencov"
@@ -72,6 +70,11 @@ DragenCov <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
+    #' @field flat_tidy_names (`logical(1)`)\cr
+    #' `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly (parser
+    #' token dropped), so each sub-table's `name` is its final output table. See the
+    #' class description for the fan-out map.
+    flat_tidy_names = TRUE,
     #' @description Create a new DragenCov object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -80,18 +83,10 @@ DragenCov <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragencov", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `*_coverage_metrics.csv` into three tables: the summary
-    #' metrics (`metricsmain`, wide); the bucketed coverage-depth histogram
-    #' (`metricsbins`, long - one row per finite `(cov_lo, cov_hi)` bin); and the
-    #' cumulative coverage (`metricscumu`, long - one row per open `(cov_min, inf)`
-    #' bin, i.e. PCT of bases with coverage >= cov_min). The two bin families are
-    #' kept in separate tables so each is homogeneous (no infinite/NA upper bound,
-    #' and `sum(pct)` is meaningful within a table). The region is stripped from the
-    #' summary names (it is carried in the prefix via `refine_files()`) with
-    #' [dragen_cov_metric_normalize()]; bin bounds are parsed with
-    #' [dragen_cov_bin_split()].
+    #' @description Tidy `*_coverage_metrics.csv` into `metricsmain` (wide summary),
+    #' `metricsbins` (bucketed depth histogram), and `metricscumu` (cumulative).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_metrics = function(x) {
+    tidy_metricsmain = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
@@ -102,14 +97,16 @@ DragenCov <- R6::R6Class(
       )
       main <- private$tidy_metrics(
         x[!is_bin, , drop = FALSE],
-        "metrics",
+        "metricsmain",
+        # strip region from names (carried in prefix via refine_files())
         normalise = function(d) {
           d$variable <- dragen_cov_metric_normalize(d$variable)
           d
         }
       )
-      # attach bin bounds, then partition: bucketed [lo:hi) vs cumulative [N:inf)
-      # (the open bins, where cov_hi is NA).
+      # attach bin bounds, then partition into two tables kept separate so each is
+      # homogeneous (no NA upper bound, sum(pct) meaningful within a table):
+      # bucketed [lo:hi) vs cumulative [N:inf) (open bins, where cov_hi is NA).
       binx <- x[is_bin, , drop = FALSE]
       bnd <- dragen_cov_bin_split(binx$variable)
       binx$cov_lo <- bnd$cov_lo
@@ -117,7 +114,7 @@ DragenCov <- R6::R6Class(
       is_cumu <- is.na(binx$cov_hi)
       bins <- private$tidy_metrics(
         binx[!is_cumu, , drop = FALSE],
-        "bins",
+        "metricsbins",
         normalise = function(d) {
           d$variable <- "cov_pct"
           d
@@ -125,7 +122,7 @@ DragenCov <- R6::R6Class(
       )
       cumu <- private$tidy_metrics(
         binx[is_cumu, , drop = FALSE],
-        "cumu",
+        "metricscumu",
         normalise = function(d) {
           d$cov_min <- d$cov_lo
           d$cov_lo <- NULL
@@ -134,17 +131,14 @@ DragenCov <- R6::R6Class(
           d
         }
       )
-      # sub-table names concatenate onto the parser "metrics" ->
-      # dragencov_metricsmain / dragencov_metricsbins / dragencov_metricscumu
-      main$name <- "main"
-      bins$name <- "bins"
-      cumu$name <- "cumu"
+      # flat_tidy_names drops the parser token -> output is dragencov_<name>, so the
+      # sub-table names ARE the output tables
+      main$name <- "metricsmain"
+      bins$name <- "metricsbins"
+      cumu$name <- "metricscumu"
       dplyr::bind_rows(main, bins, cumu)
     },
-    #' @description Parse `*_fine_hist.csv`. The terminal depth bin is written as
-    #' e.g. `2000+` ("2000 or more"); the trailing `+` is stripped and `depth`
-    #' returned as an integer so downstream numeric use needs no cast. `2000+`
-    #' collapses to `2000` - DRAGEN never emits a bare `2000` row alongside it.
+    #' @description Parse `*_fine_hist.csv`, returning `depth` as an integer.
     #' @param x (`character(1)`)\cr Path to file.
     parse_finehist = function(x) {
       d <- readr::read_csv(
@@ -154,30 +148,26 @@ DragenCov <- R6::R6Class(
           Overall = readr::col_double()
         )
       )
+      # "2000+" -> 2000
       d[["Depth"]] <- as.integer(sub("\\+$", "", d[["Depth"]]))
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse `*_cov_report.bed`. Read generically (all columns as
-    #' character) rather than through the fixed `tsv` schema, because the trailing
-    #' `pct_above_<N>` threshold columns are user-configurable and so vary between
-    #' runs; `tidy_reportbed()` types and splits the frame.
+    #' @description Parse `*_cov_report.bed`; `tidy_reportbedmain()` types and splits it.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_reportbed = function(x) {
+    parse_reportbedmain = function(x) {
+      # all-character: trailing pct_above_<N> columns are user-configurable, so can't use
+      # the fixed tsv schema
       d <- readr::read_tsv(x, col_types = readr::cols(.default = readr::col_character()))
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Tidy `*_cov_report.bed` into two tables: the per-interval
-    #' distribution stats (`reportbedmain`, wide) and the cumulative coverage
-    #' thresholds (`reportbedcumu`, long - one row per interval x `pct_above_<N>`
-    #' column, with `cov_min` = N and `pct_above` the value). The thresholds are
-    #' split off rather than kept as wide columns because they are user-configurable
-    #' and so vary between runs.
+    #' @description Tidy `*_cov_report.bed` into `reportbedmain` (per-interval
+    #' distribution stats, wide) and `reportbedcumu` (coverage thresholds, long).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_reportbed = function(x) {
+    tidy_reportbedmain = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- private$parse_reportbed(x)
+        x <- private$parse_reportbedmain(x)
       }
       main <- x |>
         dplyr::transmute(
@@ -192,6 +182,8 @@ DragenCov <- R6::R6Class(
           min_cvg = as.double(.data$min_cvg),
           max_cvg = as.double(.data$max_cvg)
         )
+      # split thresholds long (one row per interval x pct_above_<N>) rather than wide,
+      # since the column set is user-configurable
       cumu <- x |>
         dplyr::select(chrom = "#chrom", "start", "end", dplyr::starts_with("pct_above_")) |>
         tidyr::pivot_longer(
@@ -207,8 +199,8 @@ DragenCov <- R6::R6Class(
           cov_min = as.integer(.data$cov_min),
           pct_above = as.double(.data$pct_above)
         )
-      main <- list(main) |> rlang::set_names("main") |> nemo::nemo_enframe()
-      cumu <- list(cumu) |> rlang::set_names("cumu") |> nemo::nemo_enframe()
+      main <- list(main) |> rlang::set_names("reportbedmain") |> nemo::nemo_enframe()
+      cumu <- list(cumu) |> rlang::set_names("reportbedcumu") |> nemo::nemo_enframe()
       dplyr::bind_rows(main, cumu)
     }
   )

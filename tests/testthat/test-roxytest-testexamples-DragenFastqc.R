@@ -43,13 +43,13 @@ test_that("Function DragenFastqc() @ L60", {
   expect_equal(sp$starts[sp$mate == "Read1" & sp$bp == 138], 10)
   expect_setequal(sp$bp[sp$mate == "Read1"], c(1, 137, 138, 139, 140))
   # empty seqpos (adapter never found at a position, only a Total row) still
-  # yields an integer bp column; also exercises the path-input branch of tidy_fastqc
+  # yields an integer bp column; also exercises the path-input branch of tidy_posbasecontent
   d2 <- file.path(tempdir(), "fqempty"); dir.create(d2, showWarnings = FALSE)
   writeLines(c(
     "READ MEAN QUALITY,Read1,Q30 Reads,10",
     "SEQUENCE POSITIONS,Read1,'AGATCGGAAGAG' Total Sequence Starts,5,0.01"
   ), file.path(d2, "sampleZ.fastqc_metrics.csv"))
-  ez <- DragenFastqc$new(d2)$tidy_fastqc(list.files(d2, full.names = TRUE))
+  ez <- DragenFastqc$new(d2)$tidy_posbasecontent(list.files(d2, full.names = TRUE))
   ezsp <- ez$data[[which(ez$name == "seqpos")]]
   expect_equal(nrow(ezsp), 0L)
   expect_true(is.integer(ezsp$bp))
