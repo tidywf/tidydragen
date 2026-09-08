@@ -11,6 +11,7 @@ dummy1 <- function() {
   # most are in R6 classes and thus not detected by R CMD check
   dplyr::filter
   readr::read_csv
+  jsonlite::read_json
   tibble::tibble
   tidyr::pivot_wider
 }

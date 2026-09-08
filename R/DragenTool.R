@@ -6,7 +6,7 @@
 #' by every `*_metrics.csv` table. Tools like `DragenCov` inherit from
 #' `DragenTool` rather than `nemo::Tool` directly. The `dragen-metrics` ftype is
 #' registered here (parse via `extra_ftypes()`, tidy via the `tidy_file`
-#' override), so a plain metrics table needs no methods — just `ftype:
+#' override), so a plain metrics table needs no methods, just `ftype:
 #' 'dragen-metrics'` in its schema. A table needing a `normalise`/`drop_constant`
 #' still declares an explicit `tidy_<tbl>()` that delegates to `tidy_metrics`.
 #'
@@ -19,7 +19,7 @@
 #' range; each tidy column is coerced to its schema `type` after the wide pivot.
 #'
 #' @examples
-#' # Abstract base — normally you use a subclass (e.g. DragenVar). The parser/tidier
+#' # Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
 #' # are private; here we just inspect the inherited surface + policy fields.
 #' indir <- system.file("extdata/dragenmap", package = "tidydragen")
 #' tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)
@@ -212,7 +212,7 @@ DragenTool <- R6::R6Class(
         if (identical(mode, "error")) {
           stop(
             glue(
-              "{detail}. Refusing to drop data — add these to the schema, or set ",
+              "{detail}. Refusing to drop data. Add these to the schema, or set ",
               "the tool's `on_unmapped = \"warn\"` field to drop them with a warning."
             ),
             call. = FALSE

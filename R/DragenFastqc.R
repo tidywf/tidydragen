@@ -46,13 +46,13 @@
 #' expect_equal(sp$starts[sp$mate == "Read1" & sp$bp == 138], 10)
 #' expect_setequal(sp$bp[sp$mate == "Read1"], c(1, 137, 138, 139, 140))
 #' # empty seqpos (adapter never found at a position, only a Total row) still
-#' # yields an integer bp column; also exercises the path-input branch of tidy_fastqc
+#' # yields an integer bp column; also exercises the path-input branch of tidy_posbasecontent
 #' d2 <- file.path(tempdir(), "fqempty"); dir.create(d2, showWarnings = FALSE)
 #' writeLines(c(
 #'   "READ MEAN QUALITY,Read1,Q30 Reads,10",
 #'   "SEQUENCE POSITIONS,Read1,'AGATCGGAAGAG' Total Sequence Starts,5,0.01"
 #' ), file.path(d2, "sampleZ.fastqc_metrics.csv"))
-#' ez <- DragenFastqc$new(d2)$tidy_fastqc(list.files(d2, full.names = TRUE))
+#' ez <- DragenFastqc$new(d2)$tidy_posbasecontent(list.files(d2, full.names = TRUE))
 #' ezsp <- ez$data[[which(ez$name == "seqpos")]]
 #' expect_equal(nrow(ezsp), 0L)
 #' expect_true(is.integer(ezsp$bp))
@@ -74,14 +74,14 @@ DragenFastqc <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenfastqc", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Parse `fastqc_metrics.csv` into a long tibble. The file is a
-    #' headerless `section,mate,metric,value` CSV; the per-sequence
-    #' `Total Sequence Starts` rows carry an extra field (and are derivable from the
-    #' rest of the SEQUENCE POSITIONS section) so they are dropped before the split.
+    #' @description Parse headerless `section,mate,metric,value` `fastqc_metrics.csv`
+    #' into a long tibble.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_fastqc = function(x) {
+    parse_posbasecontent = function(x) {
       d <- readr::read_lines(x) |>
         tibble::as_tibble_col(column_name = "raw") |>
+        # drop "Total Sequence Starts" rows: extra field, derivable from the rest
+        # of the SEQUENCE POSITIONS section
         dplyr::filter(!grepl("Total Sequence Starts", .data$raw)) |>
         tidyr::separate_wider_delim(
           "raw",
@@ -96,16 +96,10 @@ DragenFastqc <- R6::R6Class(
       d[]
     },
     #' @description Tidy `fastqc_metrics.csv` into 8 long per-section sub-tables.
-    #' Binned positions/lengths (e.g. `149-150`) are expanded to one row per grain.
-    #' The value is then handled per its kind: count-style sections (`posbasecontent`,
-    #' `readlen`, `seqpos`) hold an accumulated count and divide it evenly across the
-    #' grains, while quality/quantile sections (`posbasemeanqual`, `posqual`) hold an
-    #' average and keep it across grains. `posbasecontent` is further emitted as a
-    #' per-position base proportion.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_fastqc = function(x) {
+    tidy_posbasecontent = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- self$parse_fastqc(x)
+        x <- self$parse_posbasecontent(x)
       }
       # count: expand binned positions, divide count across grains, then express
       # each base as a proportion of the total bases at that (mate, pos).

@@ -32,8 +32,8 @@ drop the parser token so the 8 sub-tables are named
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DragenFastqc-new}{\code{DragenFastqc$new()}}
-\item \href{#method-DragenFastqc-parse_fastqc}{\code{DragenFastqc$parse_fastqc()}}
-\item \href{#method-DragenFastqc-tidy_fastqc}{\code{DragenFastqc$tidy_fastqc()}}
+\item \href{#method-DragenFastqc-parse_posbasecontent}{\code{DragenFastqc$parse_posbasecontent()}}
+\item \href{#method-DragenFastqc-tidy_posbasecontent}{\code{DragenFastqc$tidy_posbasecontent()}}
 }
 }
 \if{html}{\out{
@@ -72,15 +72,13 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenFastqc-parse_fastqc"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenFastqc-parse_fastqc}{}}}
-\subsection{Method \code{parse_fastqc()}}{
-Parse \code{fastqc_metrics.csv} into a long tibble. The file is a
-headerless \verb{section,mate,metric,value} CSV; the per-sequence
-\verb{Total Sequence Starts} rows carry an extra field (and are derivable from the
-rest of the SEQUENCE POSITIONS section) so they are dropped before the split.
+\if{html}{\out{<a id="method-DragenFastqc-parse_posbasecontent"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenFastqc-parse_posbasecontent}{}}}
+\subsection{Method \code{parse_posbasecontent()}}{
+Parse headerless \verb{section,mate,metric,value} \code{fastqc_metrics.csv}
+into a long tibble.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenFastqc$parse_fastqc(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenFastqc$parse_posbasecontent(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -92,18 +90,12 @@ rest of the SEQUENCE POSITIONS section) so they are dropped before the split.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenFastqc-tidy_fastqc"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenFastqc-tidy_fastqc}{}}}
-\subsection{Method \code{tidy_fastqc()}}{
+\if{html}{\out{<a id="method-DragenFastqc-tidy_posbasecontent"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenFastqc-tidy_posbasecontent}{}}}
+\subsection{Method \code{tidy_posbasecontent()}}{
 Tidy \code{fastqc_metrics.csv} into 8 long per-section sub-tables.
-Binned positions/lengths (e.g. \code{149-150}) are expanded to one row per grain.
-The value is then handled per its kind: count-style sections (\code{posbasecontent},
-\code{readlen}, \code{seqpos}) hold an accumulated count and divide it evenly across the
-grains, while quality/quantile sections (\code{posbasemeanqual}, \code{posqual}) hold an
-average and keep it across grains. \code{posbasecontent} is further emitted as a
-per-position base proportion.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenFastqc$tidy_fastqc(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenFastqc$tidy_posbasecontent(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

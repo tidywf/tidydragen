@@ -66,9 +66,8 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenMap-tidy_metrics"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_metrics}{}}}
 \subsection{Method \code{tidy_metrics()}}{
-Tidy \code{mapping_metrics.csv}. Strips the \verb{MAPPING/ALIGNING (SUMMARY|PER RG)} boilerplate from \code{section} -> phenotype (\code{TUMOR}/\code{NORMAL},
-or \code{SINGLE} for single-sample runs); blank \code{rg} (SUMMARY rows) -> \code{Total}.
-Both id columns retained (\code{drop_constant = character()}).
+Tidy \code{mapping_metrics.csv}. Both id columns retained
+(\code{drop_constant = character()}).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_metrics(x)}\if{html}{\out{</div>}}
 }
@@ -85,10 +84,8 @@ Both id columns retained (\code{drop_constant = character()}).
 \if{html}{\out{<a id="method-DragenMap-tidy_time"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_time}{}}}
 \subsection{Method \code{tidy_time()}}{
-Tidy \code{time_metrics.csv}. The DRAGEN run-time file stores the
-HH:MM:SS.ms elapsed time in the \code{count} column and the equivalent seconds
-in the \code{pct} column; this promotes seconds to the metric value and moves
-\code{total_runtime} to the front.
+Tidy \code{time_metrics.csv}, using seconds (not HH:MM:SS) as the
+metric value and surfacing \code{total_runtime} first.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_time(x)}\if{html}{\out{</div>}}
 }
@@ -105,10 +102,7 @@ in the \code{pct} column; this promotes seconds to the metric value and moves
 \if{html}{\out{<a id="method-DragenMap-parse_fraglenhist"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-parse_fraglenhist}{}}}
 \subsection{Method \code{parse_fraglenhist()}}{
-Parse \code{fragment_length_hist.csv}. Somatic files concatenate one
-histogram per sample, each opening with a \verb{#Sample: <id>} line then a
-\verb{FragmentLength,Count} header. Splits on those markers, parses each block,
-and keeps the sample id in a \code{sample} column so tumor/normal stay separable.
+Parse \code{fragment_length_hist.csv} into a long tibble.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_fraglenhist(x)}\if{html}{\out{</div>}}
 }

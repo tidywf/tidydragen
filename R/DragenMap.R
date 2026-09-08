@@ -47,41 +47,39 @@ DragenMap <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenmap", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `mapping_metrics.csv`. Strips the `MAPPING/ALIGNING
-    #' (SUMMARY|PER RG)` boilerplate from `section` -> phenotype (`TUMOR`/`NORMAL`,
-    #' or `SINGLE` for single-sample runs); blank `rg` (SUMMARY rows) -> `Total`.
-    #' Both id columns retained (`drop_constant = character()`).
+    #' @description Tidy `mapping_metrics.csv`. Both id columns retained
+    #' (`drop_constant = character()`).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_metrics = function(x) {
       private$tidy_metrics(x, "metrics", drop_constant = character(), normalise = function(d) {
+        # strip boilerplate: section -> phenotype (SINGLE for single-sample runs),
+        # blank rg (SUMMARY rows) -> Total
         d$section <- trimws(sub("MAPPING/ALIGNING (SUMMARY|PER RG)", "", d$section))
         d$section[d$section == ""] <- "SINGLE"
         d$rg[d$rg == ""] <- "Total"
         d
       })
     },
-    #' @description Tidy `time_metrics.csv`. The DRAGEN run-time file stores the
-    #' HH:MM:SS.ms elapsed time in the `count` column and the equivalent seconds
-    #' in the `pct` column; this promotes seconds to the metric value and moves
-    #' `total_runtime` to the front.
+    #' @description Tidy `time_metrics.csv`, using seconds (not HH:MM:SS) as the
+    #' metric value and surfacing `total_runtime` first.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_time = function(x) {
+      # use seconds col instead of HH:MM:SS col
       r <- private$tidy_metrics(x, "time", normalise = function(d) {
         d$count <- as.character(d$pct)
         d$pct <- NA_real_
         d
       })
-      # surface the overall runtime ahead of the per-step timings
+      # keep overall runtime first
       r$data[[1]] <- dplyr::relocate(r$data[[1]], dplyr::any_of("total_runtime"))
       r
     },
-    #' @description Parse `fragment_length_hist.csv`. Somatic files concatenate one
-    #' histogram per sample, each opening with a `#Sample: <id>` line then a
-    #' `FragmentLength,Count` header. Splits on those markers, parses each block,
-    #' and keeps the sample id in a `sample` column so tumor/normal stay separable.
+    #' @description Parse `fragment_length_hist.csv` into a long tibble.
     #' @param x (`character(1)`)\cr Path to file.
     parse_fraglenhist = function(x) {
       lines <- readr::read_lines(x)
+      # somatic files concatenate one histogram per sample, each opening with a
+      # "#Sample: <id>" line; split on markers
       starts <- grep("^#Sample:", lines)
       ids <- trimws(sub("^#Sample:", "", lines[starts]))
       ends <- c(starts[-1] - 1L, length(lines))
