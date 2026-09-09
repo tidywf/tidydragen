@@ -55,3 +55,84 @@ s3sync <- function(src, dest, pats = NULL, dryrun = FALSE) {
   pats <- pats %||% pats_default
   nemo::s3sync(src = src, dest = dest, pats = pats, dryrun = dryrun)
 }
+
+#' AWS S3 Sync Helper (ctTSO / dragen-tso500-ctdna)
+#'
+#' Sync only the small, parse-relevant files from a DRAGEN TSO500 ctDNA run.
+#' Excludes the large binaries (BAM, gVCF, bigwig etc.) and the
+#' pipeline/nextflow logs. Files live deep under `Logs_Intermediates/DragenCaller/<sample>/`
+#' and `Results/<sample>/`.
+#'
+#' Folder-prefix excludes: `aws s3 sync` filters are ordered and last-match wins,
+#' so an `"ex"` row placed *after* an `"in"` row carves a subset back out (e.g.
+#' `"in", "*Tmb/*"` then `"ex", "*Tmb/*.tmb.trace.tsv"`). The default patterns use
+#' this to drop the `Logs_Intermediates/` duplicates while keeping the `Results/`
+#' copy.
+#'
+#' @inheritParams nemo::s3sync
+#'
+#' @examples
+#' \dontrun{
+#' d1 <- "s3://pipeline-prod-cache-503977275616-ap-southeast-2/byob-icav2/production/analysis"
+#' src <- file.path(d1, "dragen-tso500-ctdna/20260827e81c2a44")
+#' dest <- sub(d1, here::here("nogit"), src)
+#' s3sync_cttso(src, dest, dryrun = TRUE)
+#'
+#' # custom: whole Results/ folder except one file (folder-prefix exclude)
+#' pats <- tibble::tribble(
+#'   ~inex, ~pat,
+#'   "ex", "*",
+#'   "in", "*Results/*",
+#'   "ex", "*Results/*_MetricsOutput.tsv"
+#' )
+#' s3sync_cttso(src, dest, pats = pats, dryrun = TRUE)
+#' }
+#' @export
+s3sync_cttso <- function(src, dest, pats = NULL, dryrun = FALSE) {
+  pats_default <- tibble::tribble(
+    ~inex , ~pat                                              ,
+    "ex"  , "*"                                               ,
+    # --- DRAGEN metrics (existing M-tables) ---
+    "in"  , "*.mapping_metrics.csv"                           ,
+    "in"  , "*.time_metrics.csv"                              ,
+    "in"  , "*.fastqc_metrics.csv"                            ,
+    "in"  , "*.fragment_length_hist.csv"                      ,
+    "in"  , "*.cnv_metrics.csv"                               ,
+    "in"  , "*.sv_metrics.csv"                                ,
+    "in"  , "*.vc_metrics.csv"                                ,
+    "in"  , "*.microsat_output.json"                          ,
+    # --- DRAGEN metrics (new Tier-1 cttso M-tables) ---
+    "in"  , "*.trimmer_metrics.csv"                           ,
+    "in"  , "*.umi_metrics.csv"                               ,
+    "in"  , "*.gc_metrics.csv"                                ,
+    "in"  , "*.gvcf_metrics.csv"                              ,
+    # --- small non-metrics smalls (Tier 1c) ---
+    "in"  , "*.contamination.json"                            , # p-value not in SAR
+    "in"  , "*events.csv"                                     , # investigate vs time_metrics
+    # --- coverage (all 4 regions: wgs / tmb / exon / target_bed) ---
+    "in"  , "*_coverage_metrics.csv"                          ,
+    "in"  , "*_contig_mean_cov.csv"                           ,
+    "in"  , "*_fine_hist.csv"                                 ,
+    "in"  , "*read_cov_report.bed"                            ,
+    "in"  , "*_cov_report.bed"                                ,
+    # --- tmb (Tmb/ subdir) ---
+    "in"  , "*.tmb.metrics.csv"                               ,
+    "in"  , "*.tmb.msaf.csv"                                  ,
+    # --- Tier-2 TSO500 app-layer (custom parsers; NOT dragen-metrics) ---
+    "in"  , "*_CombinedVariantOutput.tsv"                     ,
+    "in"  , "*_Fusions.csv"                                   ,
+    "in"  , "*.tmb.trace.tsv"                                 ,
+    "in"  , "*.exon_cov_report.tsv"                           ,
+    "in"  , "*.gene_cov_report.tsv"                           ,
+    "in"  , "*_SampleAnalysisResults.json"                    ,
+    # --- drop the Logs_Intermediates/ duplicates; keep the Results/ copy ---
+    "ex"  , "*Logs_Intermediates/*_CombinedVariantOutput.tsv" ,
+    "ex"  , "*Logs_Intermediates/*_Fusions.csv"               ,
+    "ex"  , "*Logs_Intermediates/*.tmb.trace.tsv"             ,
+    "ex"  , "*Logs_Intermediates/*.exon_cov_report.tsv"       ,
+    "ex"  , "*Logs_Intermediates/*.gene_cov_report.tsv"       ,
+    "ex"  , "*Logs_Intermediates/*.microsat_output.json"
+  )
+  pats <- pats %||% pats_default
+  nemo::s3sync(src = src, dest = dest, pats = pats, dryrun = dryrun)
+}
