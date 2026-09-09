@@ -22,10 +22,8 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: fanned-out sub-tables are named \verb{<tool>_<tidy_name>} directly (the
-parser token is dropped). \code{tidy_ploidystats} fans one file into the
-\code{ploidystats} + \code{ploidyratio} tables, whose names are the final outputs; every
-other DragenVar table has \code{tidy_name == parser}, so its name is unchanged.}
+\code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
+dropped). Needed for the \code{ploidystats}/\code{ploidyratio} split.}
 }
 \if{html}{\out{</div>}}
 }
@@ -34,6 +32,7 @@ other DragenVar table has \code{tidy_name == parser}, so its name is unchanged.}
 \itemize{
 \item \href{#method-DragenVar-new}{\code{DragenVar$new()}}
 \item \href{#method-DragenVar-tidy_vc}{\code{DragenVar$tidy_vc()}}
+\item \href{#method-DragenVar-tidy_gvcf}{\code{DragenVar$tidy_gvcf()}}
 \item \href{#method-DragenVar-tidy_cnv}{\code{DragenVar$tidy_cnv()}}
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
 \item \href{#method-DragenVar-tidy_ploidystats}{\code{DragenVar$tidy_ploidystats()}}
@@ -85,6 +84,24 @@ Tidy \code{vc_metrics.csv}. \code{rg} (sample id) kept raw; region moved
 from metric names into a \code{region} column.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_vc(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-tidy_gvcf"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-tidy_gvcf}{}}}
+\subsection{Method \code{tidy_gvcf()}}{
+Tidy \code{gvcf_metrics.csv} (gVCF postfilter). Same shape as
+\code{vc_metrics}; region moved into a \code{region} column.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_gvcf(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
