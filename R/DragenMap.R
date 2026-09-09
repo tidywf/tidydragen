@@ -33,12 +33,50 @@
 #' expect_setequal(unique(fl$sample), c("sampleA", "sampleA_tn"))
 #' expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA"], 12345)
 #' expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA_tn"], 999)
+#' # trimmer metrics (cttso): plain dragen-metrics table, pct auto-paired
+#' tr <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_trimmer", lf, value = TRUE)))
+#' expect_true(all(c("reads_tot_input", "reads_trim_tot", "reads_trim_tot_pct", "polygkmers3r1_remaining") %in% names(tr)))
+#' expect_equal(tr$reads_tot_input, 157866430)
+#' expect_equal(tr$polygkmers3r1_remaining, 54953)
+#' expect_equal(tr$polygkmers3r1_remaining_pct, 0.07)
+#' # umi split: summary (umimain, wide) + histograms (umihist, long)
+#' um <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_umimain", lf, value = TRUE)))
+#' expect_equal(nrow(um), 1L)
+#' expect_equal(um$reads_tot, 849205054)
+#' expect_equal(um$reads_umi_valid_correctable_pct, 99.85)
+#' expect_equal(um$avg_family_depth, 4.89)
+#' expect_equal(um$reads_tot_ontarget, 606111466)
+#' uh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_umihist", lf, value = TRUE)))
+#' expect_equal(names(uh)[names(uh) != "input_id"], c("hist_type", "bin", "count"))
+#' expect_true(is.integer(uh$bin))
+#' expect_setequal(unique(uh$hist_type), c("num_supporting_fragments", "num_supporting_fragments_ontarget", "unique_umis_per_fragpos"))
+#' nsf <- uh[uh$hist_type == "num_supporting_fragments", ]
+#' expect_equal(nsf$count[nsf$bin == 2], 22645846)
+#' uu <- uh[uh$hist_type == "unique_umis_per_fragpos", ]
+#' expect_equal(uu$count[uu$bin == 1], 95680458)
+#' # gc split: summary (gcmain, wide) + per-GC-window (gcbias, long)
+#' gc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_gcmain", lf, value = TRUE)))
+#' expect_equal(nrow(gc), 1L)
+#' expect_true(is.integer(gc$window_size))
+#' expect_equal(gc$gc_ref_avg, 40.90)
+#' expect_equal(gc$at_dropout, 29.40)
+#' gb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_gcbias", lf, value = TRUE)))
+#' expect_equal(names(gb)[names(gb) != "input_id"], c("gc_window", "windows", "pct", "cov_norm"))
+#' expect_true(is.integer(gb$gc_window))
+#' expect_equal(nrow(gb), 101L)
+#' expect_equal(gb$windows[gb$gc_window == 0], 132617)
+#' expect_equal(gb$pct[gb$gc_window == 40], 3.595)
+#' expect_equal(gb$cov_norm[gb$gc_window == 0], 0.0120)
 #' @export
 DragenMap <- R6::R6Class(
   "DragenMap",
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
+    #' @field flat_tidy_names (`logical(1)`)\cr
+    #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
+    #' dropped). Needed for the `umimain`/`umihist` and `gcmain`/`gcbias` splits.
+    flat_tidy_names = TRUE,
     #' @description Create a new DragenMap object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -52,19 +90,77 @@ DragenMap <- R6::R6Class(
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_metrics = function(x) {
       private$tidy_metrics(x, "metrics", drop_constant = character(), normalise = function(d) {
-        # strip boilerplate: section -> phenotype (SINGLE for single-sample runs),
-        # blank rg (SUMMARY rows) -> Total
+        # section -> phenotype (SINGLE for single-sample); blank SUMMARY rg -> Total
         d$section <- trimws(sub("MAPPING/ALIGNING (SUMMARY|PER RG)", "", d$section))
         d$section[d$section == ""] <- "SINGLE"
         d$rg[d$rg == ""] <- "Total"
         d
       })
     },
+    #' @description Tidy `umi_metrics.csv` into `umimain` (summary, wide) and
+    #' `umihist` (the `{a|b|c}` histograms, long).
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_umimain = function(x) {
+      if (!tibble::is_tibble(x)) {
+        x <- private$parse_metrics(x)
+      }
+      is_hist <- grepl("istogram", x$variable)
+      stats <- private$tidy_metrics(x[!is_hist, , drop = FALSE], "umimain")
+      stats$name <- "umimain"
+      # "{a|b|c}" -> long, 0-based bin; on-target variant encoded in hist_type
+      htype <- c(
+        "Histogram of num supporting fragments" = "num_supporting_fragments",
+        "On target histogram of num supporting fragments" = "num_supporting_fragments_ontarget",
+        "Histogram of unique UMIs per fragment position" = "unique_umis_per_fragpos"
+      )
+      hx <- x[is_hist, , drop = FALSE]
+      hist_tbl <- tibble::tibble(
+        hist_type = unname(htype[hx$variable]),
+        count = strsplit(gsub("[{}]", "", hx$count), "\\|")
+      ) |>
+        dplyr::mutate(bin = lapply(.data$count, \(v) seq_along(v) - 1L)) |>
+        tidyr::unnest(c("bin", "count")) |>
+        dplyr::transmute(
+          .data$hist_type,
+          bin = as.integer(.data$bin),
+          count = as.double(.data$count)
+        )
+      attr(hist_tbl, "file_version") <- "latest"
+      dplyr::bind_rows(stats, tibble::tibble(name = "umihist", data = list(hist_tbl)))
+    },
+    #' @description Tidy `gc_metrics.csv` into `gcmain` (GC METRICS SUMMARY, wide)
+    #' and `gcbias` (per-GC-window GC BIAS DETAILS, long — GC 0-100).
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_gcmain = function(x) {
+      if (!tibble::is_tibble(x)) {
+        x <- private$parse_metrics(x)
+      }
+      is_detail <- x$section == "GC BIAS DETAILS"
+      stats <- private$tidy_metrics(x[!is_detail, , drop = FALSE], "gcmain")
+      stats$name <- "gcmain"
+      # two per-GC series -> merge on GC value: window count + pct, and normalized cov
+      det <- x[is_detail, , drop = FALSE]
+      win <- det[grepl("^Windows at GC ", det$variable), , drop = FALSE]
+      cov <- det[grepl("^Normalized coverage at GC ", det$variable), , drop = FALSE]
+      windows_tbl <- tibble::tibble(
+        gc_window = as.integer(sub("^Windows at GC ", "", win$variable)),
+        windows = as.double(win$count),
+        pct = as.double(win$pct)
+      )
+      cov_tbl <- tibble::tibble(
+        gc_window = as.integer(sub("^Normalized coverage at GC ", "", cov$variable)),
+        cov_norm = as.double(cov$count)
+      )
+      bias_tbl <- dplyr::full_join(windows_tbl, cov_tbl, by = "gc_window") |>
+        dplyr::arrange(.data$gc_window)
+      attr(bias_tbl, "file_version") <- "latest"
+      dplyr::bind_rows(stats, tibble::tibble(name = "gcbias", data = list(bias_tbl)))
+    },
     #' @description Tidy `time_metrics.csv`, using seconds (not HH:MM:SS) as the
     #' metric value and surfacing `total_runtime` first.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_time = function(x) {
-      # use seconds col instead of HH:MM:SS col
+      # value = seconds (pct col), not the HH:MM:SS count col
       r <- private$tidy_metrics(x, "time", normalise = function(d) {
         d$count <- as.character(d$pct)
         d$pct <- NA_real_
@@ -78,8 +174,7 @@ DragenMap <- R6::R6Class(
     #' @param x (`character(1)`)\cr Path to file.
     parse_fraglenhist = function(x) {
       lines <- readr::read_lines(x)
-      # somatic files concatenate one histogram per sample, each opening with a
-      # "#Sample: <id>" line; split on markers
+      # somatic files concatenate one histogram per sample, each led by "#Sample: <id>"
       starts <- grep("^#Sample:", lines)
       ids <- trimws(sub("^#Sample:", "", lines[starts]))
       ends <- c(starts[-1] - 1L, length(lines))

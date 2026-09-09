@@ -679,3 +679,423 @@ tables:
         type: 'float'
         description: 'number of fragments at this length'
         versions: ['latest']
+  trimmer:
+    description: 'DRAGEN read trimmer statistics (adapter/poly-G/quality trimming).'
+    pattern: "\\.trimmer_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Total input reads'
+        tidy: 'reads_tot_input'
+        type: 'float'
+        description: 'total input reads'
+        versions: ['latest']
+      - raw: 'Total input bases'
+        tidy: 'bases_tot'
+        type: 'float'
+        description: 'total input bases'
+        versions: ['latest']
+      - raw: 'Total input bases R1'
+        tidy: 'bases_r1'
+        type: 'float'
+        description: 'total input bases r1'
+        versions: ['latest']
+      - raw: 'Total input bases R2'
+        tidy: 'bases_r2'
+        type: 'float'
+        description: 'total input bases r2'
+        versions: ['latest']
+      - raw: 'Average input read length'
+        tidy: 'read_len_avg'
+        type: 'float'
+        description: 'average input read length'
+        versions: ['latest']
+      - raw: 'Total trimmed reads'
+        tidy: 'reads_trim_tot'
+        type: 'float'
+        description: 'total trimmed reads'
+        versions: ['latest']
+      - raw: 'Total trimmed bases'
+        tidy: 'bases_trim_tot'
+        type: 'float'
+        description: 'total trimmed bases'
+        versions: ['latest']
+      - raw: 'Average bases trimmed per read'
+        tidy: 'bases_trim_avg_per_read'
+        type: 'float'
+        description: 'average bases trimmed per read'
+        versions: ['latest']
+      - raw: 'Average bases trimmed per trimmed read'
+        tidy: 'bases_trim_avg_per_trimread'
+        type: 'float'
+        description: 'average bases trimmed per trimmed read'
+        versions: ['latest']
+      - raw: 'Remaining poly-G K-mers R1 3prime'
+        tidy: 'polygkmers3r1_remaining'
+        type: 'float'
+        description: 'remaining poly-g k-mers r1 3prime'
+        versions: ['latest']
+      - raw: 'Remaining poly-G K-mers R2 3prime'
+        tidy: 'polygkmers3r2_remaining'
+        type: 'float'
+        description: 'remaining poly-g k-mers r2 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads unfiltered R1 3prime'
+        tidy: 'polyg_soft_trim_reads_unfilt_3r1'
+        type: 'float'
+        description: 'poly-g soft trimmed reads unfiltered r1 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads unfiltered R2 3prime'
+        tidy: 'polyg_soft_trim_reads_unfilt_3r2'
+        type: 'float'
+        description: 'poly-g soft trimmed reads unfiltered r2 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads unfiltered R1 5prime'
+        tidy: 'polyg_soft_trim_reads_unfilt_5r1'
+        type: 'float'
+        description: 'poly-g soft trimmed reads unfiltered r1 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads unfiltered R2 5prime'
+        tidy: 'polyg_soft_trim_reads_unfilt_5r2'
+        type: 'float'
+        description: 'poly-g soft trimmed reads unfiltered r2 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads filtered R1 3prime'
+        tidy: 'polyg_soft_trim_reads_filt_3r1'
+        type: 'float'
+        description: 'poly-g soft trimmed reads filtered r1 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads filtered R2 3prime'
+        tidy: 'polyg_soft_trim_reads_filt_3r2'
+        type: 'float'
+        description: 'poly-g soft trimmed reads filtered r2 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads filtered R1 5prime'
+        tidy: 'polyg_soft_trim_reads_filt_5r1'
+        type: 'float'
+        description: 'poly-g soft trimmed reads filtered r1 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed reads filtered R2 5prime'
+        tidy: 'polyg_soft_trim_reads_filt_5r2'
+        type: 'float'
+        description: 'poly-g soft trimmed reads filtered r2 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases unfiltered R1 3prime'
+        tidy: 'polyg_soft_trim_bases_unfilt_3r1'
+        type: 'float'
+        description: 'poly-g soft trimmed bases unfiltered r1 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases unfiltered R2 3prime'
+        tidy: 'polyg_soft_trim_bases_unfilt_3r2'
+        type: 'float'
+        description: 'poly-g soft trimmed bases unfiltered r2 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases unfiltered R1 5prime'
+        tidy: 'polyg_soft_trim_bases_unfilt_5r1'
+        type: 'float'
+        description: 'poly-g soft trimmed bases unfiltered r1 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases unfiltered R2 5prime'
+        tidy: 'polyg_soft_trim_bases_unfilt_5r2'
+        type: 'float'
+        description: 'poly-g soft trimmed bases unfiltered r2 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases filtered R1 3prime'
+        tidy: 'polyg_soft_trim_bases_filt_3r1'
+        type: 'float'
+        description: 'poly-g soft trimmed bases filtered r1 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases filtered R2 3prime'
+        tidy: 'polyg_soft_trim_bases_filt_3r2'
+        type: 'float'
+        description: 'poly-g soft trimmed bases filtered r2 3prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases filtered R1 5prime'
+        tidy: 'polyg_soft_trim_bases_filt_5r1'
+        type: 'float'
+        description: 'poly-g soft trimmed bases filtered r1 5prime'
+        versions: ['latest']
+      - raw: 'Poly-G soft trimmed bases filtered R2 5prime'
+        tidy: 'polyg_soft_trim_bases_filt_5r2'
+        type: 'float'
+        description: 'poly-g soft trimmed bases filtered r2 5prime'
+        versions: ['latest']
+      - raw: 'Total filtered reads'
+        tidy: 'reads_tot_filt'
+        type: 'float'
+        description: 'total filtered reads'
+        versions: ['latest']
+      - raw: 'Reads filtered for minimum read length R1'
+        tidy: 'reads_filt_minreadlenr1'
+        type: 'float'
+        description: 'reads filtered for minimum read length r1'
+        versions: ['latest']
+      - raw: 'Reads filtered for minimum read length R2'
+        tidy: 'reads_filt_minreadlenr2'
+        type: 'float'
+        description: 'reads filtered for minimum read length r2'
+        versions: ['latest']
+  umimain:
+    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants). Histograms split into the umihist table.'
+    pattern: "\\.umi_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Collapsible region size standard deviation'
+        tidy: 'collapsible_region_size_sd'
+        type: 'float'
+        description: 'collapsible region size standard deviation'
+        versions: ['latest']
+      - raw: 'Consensus pairs emitted'
+        tidy: 'consensus_pairs_emitted'
+        type: 'float'
+        description: 'consensus pairs emitted'
+        versions: ['latest']
+      - raw: 'Duplex families'
+        tidy: 'duplex_families'
+        type: 'float'
+        description: 'duplex families'
+        versions: ['latest']
+      - raw: 'Families contextually corrected'
+        tidy: 'families_contextually_corrected'
+        type: 'float'
+        description: 'families contextually corrected'
+        versions: ['latest']
+      - raw: 'Families discarded'
+        tidy: 'families_discarded_tot'
+        type: 'float'
+        description: 'families discarded'
+        versions: ['latest']
+      - raw: 'Families discarded by duplex/simplex'
+        tidy: 'families_discarded_duplexsimplex'
+        type: 'float'
+        description: 'families discarded by duplex/simplex'
+        versions: ['latest']
+      - raw: 'Families discarded by min-support-reads'
+        tidy: 'families_discarded_minsupportreads'
+        type: 'float'
+        description: 'families discarded by min-support-reads'
+        versions: ['latest']
+      - raw: 'Families shifted'
+        tidy: 'families_shifted'
+        type: 'float'
+        description: 'families shifted'
+        versions: ['latest']
+      - raw: 'Families with ambiguous correction'
+        tidy: 'families_ambiguous_correction'
+        type: 'float'
+        description: 'families with ambiguous correction'
+        versions: ['latest']
+      - raw: 'Max collapsible region size (num reads)'
+        tidy: 'collapsible_region_size_max'
+        type: 'float'
+        description: 'max collapsible region size (num reads)'
+        versions: ['latest']
+      - raw: 'Mean collapsible region size (num reads)'
+        tidy: 'collapsible_region_size_mean'
+        type: 'float'
+        description: 'mean collapsible region size (num reads)'
+        versions: ['latest']
+      - raw: 'Mean family depth'
+        tidy: 'avg_family_depth'
+        type: 'float'
+        description: 'mean family depth'
+        versions: ['latest']
+      - raw: 'Min collapsible region size (num reads)'
+        tidy: 'collapsible_region_size_min'
+        type: 'float'
+        description: 'min collapsible region size (num reads)'
+        versions: ['latest']
+      - raw: 'Number of collapsible regions'
+        tidy: 'collapsible_regions_tot'
+        type: 'float'
+        description: 'number of collapsible regions'
+        versions: ['latest']
+      - raw: 'Number of reads'
+        tidy: 'reads_tot'
+        type: 'float'
+        description: 'number of reads'
+        versions: ['latest']
+      - raw: 'Number of reads in discarded families'
+        tidy: 'reads_discarded_families'
+        type: 'float'
+        description: 'number of reads in discarded families'
+        versions: ['latest']
+      - raw: 'Number of reads with valid or correctable UMIs'
+        tidy: 'reads_umi_valid_correctable'
+        type: 'float'
+        description: 'number of reads with valid or correctable umis'
+        versions: ['latest']
+      - raw: 'On target duplex families'
+        tidy: 'duplex_families_ontarget'
+        type: 'float'
+        description: 'on target duplex families'
+        versions: ['latest']
+      - raw: 'On target families discarded'
+        tidy: 'families_discarded_tot_ontarget'
+        type: 'float'
+        description: 'on target families discarded'
+        versions: ['latest']
+      - raw: 'On target families discarded by duplex/simplex'
+        tidy: 'families_discarded_duplexsimplex_ontarget'
+        type: 'float'
+        description: 'on target families discarded by duplex/simplex'
+        versions: ['latest']
+      - raw: 'On target families discarded by min-support-reads'
+        tidy: 'families_discarded_minsupportreads_ontarget'
+        type: 'float'
+        description: 'on target families discarded by min-support-reads'
+        versions: ['latest']
+      - raw: 'On target families with ambiguous correction'
+        tidy: 'families_ambiguous_correction_ontarget'
+        type: 'float'
+        description: 'on target families with ambiguous correction'
+        versions: ['latest']
+      - raw: 'On target mean family depth'
+        tidy: 'avg_family_depth_ontarget'
+        type: 'float'
+        description: 'on target mean family depth'
+        versions: ['latest']
+      - raw: 'On target number of reads'
+        tidy: 'reads_tot_ontarget'
+        type: 'float'
+        description: 'on target number of reads'
+        versions: ['latest']
+      - raw: 'On target number of reads in discarded families'
+        tidy: 'reads_discarded_families_ontarget'
+        type: 'float'
+        description: 'on target number of reads in discarded families'
+        versions: ['latest']
+      - raw: 'On target number of reads with valid or correctable UMIs'
+        tidy: 'reads_umi_valid_correctable_ontarget'
+        type: 'float'
+        description: 'on target number of reads with valid or correctable umis'
+        versions: ['latest']
+      - raw: 'Reads filtered out'
+        tidy: 'reads_filtered_out'
+        type: 'float'
+        description: 'reads filtered out'
+        versions: ['latest']
+      - raw: 'Reads with all-G UMIs filtered out'
+        tidy: 'reads_filtered_out_all_g_umis'
+        type: 'float'
+        description: 'reads with all-g umis filtered out'
+        versions: ['latest']
+      - raw: 'Reads with uncorrectable UMIs'
+        tidy: 'reads_uncorrectable_umis'
+        type: 'float'
+        description: 'reads with uncorrectable umis'
+        versions: ['latest']
+      - raw: 'Total number of families'
+        tidy: 'families_tot'
+        type: 'float'
+        description: 'total number of families'
+        versions: ['latest']
+  umihist:
+    description: 'DRAGEN UMI histograms (long): num-supporting-fragments (+ its on-target variant) and unique-UMIs-per-fragment-position. One row per (hist_type, bin).'
+    pattern: '__no_file_match__umihist'
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'hist_type'
+        tidy: 'hist_type'
+        type: 'char'
+        description: 'histogram id: num_supporting_fragments, num_supporting_fragments_ontarget, or unique_umis_per_fragpos'
+        versions: ['latest']
+      - raw: 'bin'
+        tidy: 'bin'
+        type: 'int'
+        description: 'histogram bin index (0-based)'
+        versions: ['latest']
+      - raw: 'count'
+        tidy: 'count'
+        type: 'float'
+        description: 'count in this bin'
+        versions: ['latest']
+  gcmain:
+    description: 'DRAGEN GC bias summary metrics (GC METRICS SUMMARY section). Per-GC-window counts split into the gcbias table.'
+    pattern: "\\.gc_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Window size'
+        tidy: 'window_size'
+        type: 'int'
+        description: 'GC window size (bp)'
+        versions: ['latest']
+      - raw: 'Number of valid windows'
+        tidy: 'windows_valid'
+        type: 'float'
+        description: 'number of valid GC windows'
+        versions: ['latest']
+      - raw: 'Number of discarded windows'
+        tidy: 'windows_discarded'
+        type: 'float'
+        description: 'number of discarded GC windows'
+        versions: ['latest']
+      - raw: 'Average reference GC'
+        tidy: 'gc_ref_avg'
+        type: 'float'
+        description: 'average reference GC content (%)'
+        versions: ['latest']
+      - raw: 'Mean global coverage'
+        tidy: 'cov_global_mean'
+        type: 'float'
+        description: 'mean global coverage'
+        versions: ['latest']
+      - raw: 'Normalized coverage at GCs 0-19'
+        tidy: 'cov_norm_gc_0_19'
+        type: 'float'
+        description: 'normalized coverage at GC 0-19%'
+        versions: ['latest']
+      - raw: 'Normalized coverage at GCs 20-39'
+        tidy: 'cov_norm_gc_20_39'
+        type: 'float'
+        description: 'normalized coverage at GC 20-39%'
+        versions: ['latest']
+      - raw: 'Normalized coverage at GCs 40-59'
+        tidy: 'cov_norm_gc_40_59'
+        type: 'float'
+        description: 'normalized coverage at GC 40-59%'
+        versions: ['latest']
+      - raw: 'Normalized coverage at GCs 60-79'
+        tidy: 'cov_norm_gc_60_79'
+        type: 'float'
+        description: 'normalized coverage at GC 60-79%'
+        versions: ['latest']
+      - raw: 'Normalized coverage at GCs 80-100'
+        tidy: 'cov_norm_gc_80_100'
+        type: 'float'
+        description: 'normalized coverage at GC 80-100%'
+        versions: ['latest']
+      - raw: 'AT Dropout'
+        tidy: 'at_dropout'
+        type: 'float'
+        description: 'AT dropout metric (Picard)'
+        versions: ['latest']
+      - raw: 'GC Dropout'
+        tidy: 'gc_dropout'
+        type: 'float'
+        description: 'GC dropout metric (Picard)'
+        versions: ['latest']
+  gcbias:
+    description: 'DRAGEN per-GC-window counts (GC BIAS DETAILS, long): one row per GC value 0-100 with window count and its percentage.'
+    pattern: '__no_file_match__gcbias'
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'gc_window'
+        tidy: 'gc_window'
+        type: 'int'
+        description: 'GC content value (0-100)'
+        versions: ['latest']
+      - raw: 'windows'
+        tidy: 'windows'
+        type: 'float'
+        description: 'number of windows at this GC value'
+        versions: ['latest']
+      - raw: 'pct'
+        tidy: 'pct'
+        type: 'float'
+        description: 'percentage of windows at this GC value'
+        versions: ['latest']
+      - raw: 'cov_norm'
+        tidy: 'cov_norm'
+        type: 'float'
+        description: 'normalized coverage at this GC value'
+        versions: ['latest']
