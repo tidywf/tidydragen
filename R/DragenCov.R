@@ -64,6 +64,13 @@
 #' expect_true(all(c("cov_min", "pct") %in% names(cvc)))
 #' expect_false("cov_hi" %in% names(cvc))
 #' expect_equal(cvc$pct[cvc$cov_min == 100], 0.07)
+#' # cttso ctDNA regions (exon, target_bed) fold into the prefix like wgs/tmb
+#' expect_true(any(grepl("sampleA_exon_dragencov_metricsmain", lf)))
+#' expect_true(any(grepl("sampleA_target_bed_dragencov_metricsmain", lf)))
+#' exm <- arrow::read_parquet(file.path(odir, grep("sampleA_exon_dragencov_metricsmain", lf, value = TRUE)))
+#' expect_equal(exm$cov_alignment_avg, 3211.57)
+#' expect_equal(exm$bases_aligned_in_region, 4793826014)
+#' expect_equal(exm$bases_aligned_in_region_pct, 36.25)
 #' @export
 DragenCov <- R6::R6Class(
   "DragenCov",

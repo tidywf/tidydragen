@@ -1,7 +1,7 @@
 tables:
   metricsmain:
     description: 'DRAGEN coverage summary metrics.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Aligned bases'
@@ -116,7 +116,7 @@ tables:
         versions: ['latest']
   contigmean:
     description: 'DRAGEN per-contig mean coverage (chrom, aligned bases, mean coverage).'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
     ftype: 'csv-nohead'
     columns:
       - raw: 'chrom'
@@ -136,7 +136,7 @@ tables:
         versions: ['latest']
   finehist:
     description: 'DRAGEN fine coverage histogram (per-depth base counts).'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_fine_hist(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_fine_hist(?:_normal|_tumor)?\\.csv$"
     ftype: 'csv'
     columns:
       - raw: 'Depth'
@@ -151,7 +151,7 @@ tables:
         versions: ['latest']
   reportbedmain:
     description: 'DRAGEN coverage report BED, distribution stats per region interval.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     ftype: 'tsv'
     columns:
       - raw: '#chrom'
@@ -236,7 +236,7 @@ tables:
         versions: ['latest']
   readreportbed:
     description: 'DRAGEN per-gene read coverage report BED.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"
     ftype: 'tsv'
     columns:
       - raw: '#chrom'
