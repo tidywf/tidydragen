@@ -121,7 +121,12 @@ DragenTso <- R6::R6Class(
       if (length(hdr) == 0 || (length(ln) >= hdr + 2 && grepl("^NA\t", ln[hdr + 2]))) {
         d <- nemo::empty_tbl(cnames = cols, ctypes = ct)
       } else {
-        d <- ln[(hdr + 1):length(ln)] |>
+        # bound the block at the next "[Section]" header (if any) so trailing
+        # sections are never read as data rows; usually last, so falls to EOF.
+        nxt <- grep("^\\[", ln)
+        nxt <- nxt[nxt > hdr]
+        eob <- if (length(nxt) > 0) min(nxt) - 1L else length(ln)
+        d <- ln[(hdr + 1):eob] |>
           I() |>
           readr::read_tsv(col_names = TRUE, col_types = ct)
       }
