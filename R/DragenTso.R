@@ -20,7 +20,7 @@
 #' # smallvariants: CVO [Small Variants] section only; empty-gene row kept
 #' sv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_smallvariants", lf, value = TRUE)))
 #' expect_equal(names(sv)[names(sv) != "input_id"],
-#'   c("gene", "chrom", "pos", "ref", "alt", "vaf", "dp", "pdot", "cdot", "csq", "exons"))
+#'   c("gene", "chrom", "pos", "ref", "alt", "vaf", "dp", "pdot", "cdot", "consequence", "exons"))
 #' expect_equal(nrow(sv), 3L)
 #' expect_equal(sv$gene[sv$pos == 2488153], "TNFRSF14")
 #' expect_true(is.na(sv$gene[sv$pos == 4367323]))
@@ -44,11 +44,35 @@
 #' # exoncov / genecov
 #' ec <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_exoncov", lf, value = TRUE)))
 #' expect_equal(names(ec)[names(ec) != "input_id"],
-#'   c("chrom", "start", "end", "gene", "cov_mean", "cov_median", "cov_min", "cov_max"))
-#' expect_equal(ec$cov_mean[1], 3004.16)
+#'   c("chrom", "start", "end", "gene", "mean", "median", "min", "max"))
+#' expect_equal(ec$mean[1], 3004.16)
 #' gc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_genecov", lf, value = TRUE)))
-#' expect_false("cov_median" %in% names(gc))
+#' expect_false("median" %in% names(gc))
 #' expect_equal(gc$gene[1], "TNFRSF14")
+#' # SAR fan-out: sarinfo / sarqc / sarsnv / sarcnv / sarswds / sarsw
+#' si <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarinfo", lf, value = TRUE)))
+#' expect_equal(si$sample_id, "L2600560")
+#' expect_equal(nrow(si), 1L)
+#' qc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarqc", lf, value = TRUE)))
+#' expect_equal(nrow(qc), 1L)
+#' expect_equal(qc$contamination_score, 50)
+#' expect_equal(qc$tmb_per_mb, 2.4)
+#' expect_equal(qc$msi_pct_unstable_sites, 0)
+#' expect_true("pct_target_04x_mean" %in% names(qc))
+#' sn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarsnv", lf, value = TRUE)))
+#' expect_equal(nrow(sn), 3L)
+#' expect_equal(sn$hgnc[sn$pos == 2488153], "TNFRSF14")
+#' expect_equal(sn$consequence[sn$pos == 2488153], "missense_variant")
+#' expect_true(all(c("chrom", "pos", "transcript", "hgvsc") %in% names(sn)))
+#' cn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarcnv", lf, value = TRUE)))
+#' expect_equal(cn$gene, "MET")
+#' expect_equal(cn$cn_type, "AMPLIFICATION")
+#' ds <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarswds", lf, value = TRUE)))
+#' expect_equal(nrow(ds), 7L)
+#' expect_true("RefSeq" %in% ds$name)
+#' sw <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarsw\\.parquet", lf, value = TRUE)))
+#' expect_equal(nrow(sw), 1L)
+#' expect_true(!is.na(sw$software_version))
 #' @include DragenTool.R
 #' @export
 DragenTso <- R6::R6Class(
@@ -122,9 +146,208 @@ DragenTso <- R6::R6Class(
       d <- readr::read_csv(x, comment = "#", col_types = ct)
       attr(d, "file_version") <- "latest"
       d[]
+    },
+    #' @description Parse a `SampleAnalysisResults.json` file; returns its `data`
+    #' block wrapped in a one-row tibble list-column. `tidy_sarinfo()` fans it out.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_sarinfo = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
+      d <- tibble::tibble(data = list(j[["data"]]))
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Fan a `SampleAnalysisResults.json` `data` block into six
+    #' tables: `sarinfo` (sample info), `sarqc` (QC + expanded metrics + TMB/MSI
+    #' biomarkers, wide), `sarswds` (Nirvana data sources), `sarsw` (software +
+    #' Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv` (CNVs).
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_sarinfo = function(x) {
+      if (!tibble::is_tibble(x)) {
+        x <- self$parse_sarinfo(x)
+      }
+      dat <- x$data[[1]]
+      ## sampleInformation
+      si <- dat[["sampleInformation"]]
+      sarinfo <- tibble::tibble(
+        sample_id = si[["sampleId"]] %||% NA_character_,
+        analysis_date = si[["analysisDate"]] %||% NA_character_,
+        analysis_time = si[["analysisTime"]] %||% NA_character_,
+        analysis_run_name = si[["analysisRunName"]] %||% NA_character_,
+        analysis_name = si[["analysisName"]] %||% NA_character_
+      )
+      ## sampleMetrics -> qualityControlMetrics + expandedMetrics (long -> wide)
+      sm <- dat[["sampleMetrics"]]
+      m2row <- function(m) tibble::tibble(name = m[["name"]], value = m[["value"]])
+      qc_rows <- purrr::map(sm[["qualityControlMetrics"]], \(g) {
+        purrr::map(g[["metrics"]], m2row) |> purrr::list_rbind()
+      }) |>
+        purrr::list_rbind()
+      em_rows <- purrr::map(sm[["expandedMetrics"]][[1]][["metrics"]], m2row) |>
+        purrr::list_rbind()
+      sarqc <- dplyr::bind_rows(qc_rows, em_rows) |>
+        dplyr::mutate(
+          name = sub("\\.", "", tolower(.data$name)),
+          value = as.numeric(.data$value)
+        ) |>
+        dplyr::distinct() |>
+        tidyr::pivot_wider(names_from = "name", values_from = "value")
+      ## biomarkers -> folded into sarqc
+      biom <- dat[["biomarkers"]]
+      bl <- list()
+      if (!is.null(biom[["microsatelliteInstability"]])) {
+        msi <- biom[["microsatelliteInstability"]]
+        bl[["msi_pct_unstable_sites"]] <- msi[["msiPercentUnstableSites"]]
+        am <- private$sar_amet(msi[["additionalMetrics"]])
+        bl[["msi_sum_jsd"]] <- am[["SumJsd"]]
+      }
+      if (!is.null(biom[["tumorMutationalBurden"]])) {
+        tmb <- biom[["tumorMutationalBurden"]]
+        am <- private$sar_amet(tmb[["additionalMetrics"]])
+        bl[["tmb_per_mb"]] <- tmb[["tumorMutationalBurdenPerMegabase"]]
+        bl[["tmb_coding_region_size_mb"]] <- am[["CodingRegionSizeMb"]]
+        bl[["tmb_somatic_coding_variants_count"]] <- am[["SomaticCodingVariantsCount"]]
+      }
+      if (length(bl) > 0) {
+        sarqc <- tibble::tibble(!!!sarqc, !!!lapply(bl, as.numeric))
+      }
+      ## softwareConfiguration
+      sc <- dat[["softwareConfiguration"]]
+      nvl <- sc[["nirvanaVersionList"]]
+      if (length(nvl) >= 1) {
+        sarswds <- purrr::map(nvl[[1]][["dataSources"]], function(s) {
+          tibble::tibble(
+            name = s[["name"]] %||% NA_character_,
+            version = s[["version"]] %||% NA_character_,
+            description = s[["description"]] %||% NA_character_,
+            release_date = s[["releaseDate"]] %||% NA_character_
+          )
+        }) |>
+          purrr::list_rbind()
+        nv <- nvl[[1]]
+        nrest <- tibble::tibble(
+          instance_name = nv[["instanceName"]] %||% NA_character_,
+          nirvana_software_version = nv[["nirvanaSoftwareVersion"]] %||% NA_character_,
+          genome_assembly = nv[["genomeAssembly"]] %||% NA_character_,
+          refseq_version = nv[["refseqVersion"]] %||% NA_character_
+        )
+      } else {
+        sarswds <- nemo::empty_tbl(cnames = c("name", "version", "description", "release_date"))
+        nrest <- tibble::tibble(
+          instance_name = NA_character_,
+          nirvana_software_version = NA_character_,
+          genome_assembly = NA_character_,
+          refseq_version = NA_character_
+        )
+      }
+      sarsw <- tibble::tibble(
+        software_display_name = sc[["analysisSoftwareDisplayName"]] %||% NA_character_,
+        software_name = sc[["analysisSoftwareName"]] %||% NA_character_,
+        software_version = sc[["analysisSoftwareVersion"]] %||% NA_character_,
+        genome_build = sc[["genomeBuild"]] %||% NA_character_,
+        !!!nrest
+      )
+      ## variants
+      sarsnv <- private$sar_snv(dat[["variants"]][["smallVariants"]])
+      cnvs <- dat[["variants"]][["copyNumberVariants"]]
+      cnv_ren <- c(
+        chrom = "chromosome",
+        cn_type = "copynumbertype",
+        start = "startposition",
+        end = "endposition"
+      )
+      if (length(cnvs) > 0) {
+        sarcnv <- purrr::map(cnvs, tibble::as_tibble_row) |>
+          purrr::list_rbind() |>
+          dplyr::rename_with(tolower) |>
+          dplyr::rename(dplyr::any_of(cnv_ren))
+      } else {
+        sarcnv <- nemo::empty_tbl(
+          cnames = c("foldchange", "qual", "cn_type", "gene", "chrom", "start", "end")
+        )
+      }
+      list(
+        sarinfo = sarinfo,
+        sarqc = sarqc,
+        sarsnv = sarsnv,
+        sarcnv = sarcnv,
+        sarswds = sarswds,
+        sarsw = sarsw
+      ) |>
+        purrr::map(function(t) {
+          attr(t, "file_version") <- "latest"
+          t
+        }) |>
+        nemo::nemo_enframe()
     }
   ),
   private = list(
+    # name/value pairs from an additionalMetrics array -> named list
+    sar_amet = function(am) {
+      stats::setNames(
+        lapply(am, function(m) m[["value"]]),
+        vapply(am, function(m) m[["name"]], character(1))
+      )
+    },
+    # small variants -> one row per (variant x transcript), lowercased columns
+    sar_snv = function(snvs) {
+      cols <- c(
+        "chrom",
+        "pos",
+        "ref",
+        "alt",
+        "af",
+        "qual",
+        "dp_tot",
+        "dp_alt",
+        "transcript",
+        "source",
+        "biotype",
+        "codons",
+        "aminoacids",
+        "cdnapos",
+        "cdspos",
+        "exons",
+        "proteinpos",
+        "geneid",
+        "hgnc",
+        "hgvsc",
+        "hgvsp",
+        "iscanonical",
+        "proteinid",
+        "introns",
+        "consequence"
+      )
+      if (length(snvs) == 0) {
+        return(nemo::empty_tbl(cnames = cols))
+      }
+      # Transcripts fanned out first: one row per (variant x transcript), a single
+      # NA placeholder row for a variant with no transcripts.
+      txs_list <- lapply(snvs, \(snv) {
+        txs <- snv[["nirvana"]][[1]][["transcripts"]]
+        if (length(txs) == 0) {
+          return(list(list(transcript = NA_character_)))
+        }
+        lapply(txs, \(tx) {
+          tx[["consequence"]] <- paste(unlist(tx[["consequence"]]), collapse = ",")
+          tx
+        })
+      })
+      txt <- dplyr::bind_rows(unlist(txs_list, recursive = FALSE))
+      idx <- rep(seq_along(snvs), lengths(txs_list))
+      main <- tibble::tibble(
+        chrom = vapply(snvs, \(s) s[["vcfChromosome"]] %||% NA_character_, character(1)),
+        pos = vapply(snvs, \(s) as.numeric(s[["vcfPosition"]] %||% NA), numeric(1)),
+        ref = vapply(snvs, \(s) s[["vcfRefAllele"]] %||% NA_character_, character(1)),
+        alt = vapply(snvs, \(s) s[["vcfAltAllele"]] %||% NA_character_, character(1)),
+        af = vapply(snvs, \(s) as.numeric(s[["vcfVariantFrequency"]] %||% NA), numeric(1)),
+        qual = vapply(snvs, \(s) as.numeric(s[["quality"]] %||% NA), numeric(1)),
+        dp_tot = vapply(snvs, \(s) as.numeric(s[["totalDepth"]] %||% NA), numeric(1)),
+        dp_alt = vapply(snvs, \(s) as.numeric(s[["altAlleleDepth"]] %||% NA), numeric(1))
+      )[idx, , drop = FALSE]
+      # main is pre-expanded by idx so the two are already row-aligned
+      tibble::tibble(!!!main, !!!txt) |>
+        dplyr::rename_with(tolower)
+    },
     # The CVO/Fusions/trace/coverage files are duplicated in Results/ and
     # Logs_Intermediates/; nemo matches on bname so both collide. Keep the
     # Results/ copy, and fall back to the first row for bnames that appear once.
@@ -143,7 +366,7 @@ DragenTso <- R6::R6Class(
           .by = "bname"
         ) |>
         dplyr::filter(.data$.keep_row) |>
-        dplyr::select(-".in_results", -".keep_row")
+        dplyr::select(-c(".in_results", ".keep_row"))
     }
   )
 )

@@ -2,7 +2,7 @@
 
 # File R/DragenTso.R: @testexamples
 
-test_that("Function DragenTso() @ L54", {
+test_that("Function DragenTso() @ L78", {
   
   cls <- DragenTso; tool <- "dragentso"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -13,7 +13,7 @@ test_that("Function DragenTso() @ L54", {
   # smallvariants: CVO [Small Variants] section only; empty-gene row kept
   sv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_smallvariants", lf, value = TRUE)))
   expect_equal(names(sv)[names(sv) != "input_id"],
-    c("gene", "chrom", "pos", "ref", "alt", "vaf", "dp", "pdot", "cdot", "csq", "exons"))
+    c("gene", "chrom", "pos", "ref", "alt", "vaf", "dp", "pdot", "cdot", "consequence", "exons"))
   expect_equal(nrow(sv), 3L)
   expect_equal(sv$gene[sv$pos == 2488153], "TNFRSF14")
   expect_true(is.na(sv$gene[sv$pos == 4367323]))
@@ -37,10 +37,34 @@ test_that("Function DragenTso() @ L54", {
   # exoncov / genecov
   ec <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_exoncov", lf, value = TRUE)))
   expect_equal(names(ec)[names(ec) != "input_id"],
-    c("chrom", "start", "end", "gene", "cov_mean", "cov_median", "cov_min", "cov_max"))
-  expect_equal(ec$cov_mean[1], 3004.16)
+    c("chrom", "start", "end", "gene", "mean", "median", "min", "max"))
+  expect_equal(ec$mean[1], 3004.16)
   gc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_genecov", lf, value = TRUE)))
-  expect_false("cov_median" %in% names(gc))
+  expect_false("median" %in% names(gc))
   expect_equal(gc$gene[1], "TNFRSF14")
+  # SAR fan-out: sarinfo / sarqc / sarsnv / sarcnv / sarswds / sarsw
+  si <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarinfo", lf, value = TRUE)))
+  expect_equal(si$sample_id, "L2600560")
+  expect_equal(nrow(si), 1L)
+  qc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarqc", lf, value = TRUE)))
+  expect_equal(nrow(qc), 1L)
+  expect_equal(qc$contamination_score, 50)
+  expect_equal(qc$tmb_per_mb, 2.4)
+  expect_equal(qc$msi_pct_unstable_sites, 0)
+  expect_true("pct_target_04x_mean" %in% names(qc))
+  sn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarsnv", lf, value = TRUE)))
+  expect_equal(nrow(sn), 3L)
+  expect_equal(sn$hgnc[sn$pos == 2488153], "TNFRSF14")
+  expect_equal(sn$consequence[sn$pos == 2488153], "missense_variant")
+  expect_true(all(c("chrom", "pos", "transcript", "hgvsc") %in% names(sn)))
+  cn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarcnv", lf, value = TRUE)))
+  expect_equal(cn$gene, "MET")
+  expect_equal(cn$cn_type, "AMPLIFICATION")
+  ds <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarswds", lf, value = TRUE)))
+  expect_equal(nrow(ds), 7L)
+  expect_true("RefSeq" %in% ds$name)
+  sw <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarsw\\.parquet", lf, value = TRUE)))
+  expect_equal(nrow(sw), 1L)
+  expect_true(!is.na(sw$software_version))
 })
 

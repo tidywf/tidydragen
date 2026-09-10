@@ -835,7 +835,7 @@ tables:
         description: 'reads filtered for minimum read length r2'
         versions: ['latest']
   umimain:
-    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants). Histograms split into the umihist table.'
+    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
     pattern: "\\.umi_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -990,7 +990,7 @@ tables:
         description: 'total number of families'
         versions: ['latest']
   umihist:
-    description: 'DRAGEN UMI histograms (long): num-supporting-fragments (+ its on-target variant) and unique-UMIs-per-fragment-position. One row per (hist_type, bin).'
+    description: 'DRAGEN UMI histograms: num-supporting-fragments (+ on-target variant) and unique-UMIs-per-fragment-position.'
     pattern: '__no_file_match__umihist'
     ftype: 'dragen-metrics'
     columns:
@@ -1010,7 +1010,7 @@ tables:
         description: 'count in this bin'
         versions: ['latest']
   gcmain:
-    description: 'DRAGEN GC bias summary metrics (GC METRICS SUMMARY section). Per-GC-window counts split into the gcbias table.'
+    description: 'DRAGEN GC bias summary metrics.'
     pattern: "\\.gc_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -1075,7 +1075,7 @@ tables:
         description: 'GC dropout metric (Picard)'
         versions: ['latest']
   gcbias:
-    description: 'DRAGEN per-GC-window counts (GC BIAS DETAILS, long): one row per GC value 0-100 with window count and its percentage.'
+    description: 'DRAGEN per-GC-window counts (GC value 0-100 with window count and percentage).'
     pattern: '__no_file_match__gcbias'
     ftype: 'dragen-metrics'
     columns:

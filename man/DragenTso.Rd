@@ -9,7 +9,7 @@ alongside the DRAGEN metrics files: the CombinedVariantOutput small variants,
 DNA fusions, TMB trace / MSAF, and per-exon / per-gene coverage reports.
 
 These files appear in both \verb{Results/<sample>/} and a \verb{Logs_Intermediates/}
-subdirectory (byte-identical). nemo matches on basename only, so the two
+subdirectory (byte-identical). nemo matches on bname only, so the two
 copies would collide; \code{refine_files()} keeps the \verb{Results/} copy.
 }
 \examples{
@@ -37,6 +37,8 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \item \href{#method-DragenTso-new}{\code{DragenTso$new()}}
 \item \href{#method-DragenTso-parse_smallvariants}{\code{DragenTso$parse_smallvariants()}}
 \item \href{#method-DragenTso-parse_fusions}{\code{DragenTso$parse_fusions()}}
+\item \href{#method-DragenTso-parse_sarinfo}{\code{DragenTso$parse_sarinfo()}}
+\item \href{#method-DragenTso-tidy_sarinfo}{\code{DragenTso$tidy_sarinfo()}}
 }
 }
 \if{html}{\out{
@@ -107,6 +109,44 @@ then a CSV table; may hold zero data rows).
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenTso-parse_sarinfo"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-parse_sarinfo}{}}}
+\subsection{Method \code{parse_sarinfo()}}{
+Parse a \code{SampleAnalysisResults.json} file; returns its \code{data}
+block wrapped in a one-row tibble list-column. \code{tidy_sarinfo()} fans it out.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sarinfo(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenTso-tidy_sarinfo"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-tidy_sarinfo}{}}}
+\subsection{Method \code{tidy_sarinfo()}}{
+Fan a \code{SampleAnalysisResults.json} \code{data} block into six
+tables: \code{sarinfo} (sample info), \code{sarqc} (QC + expanded metrics + TMB/MSI
+biomarkers, wide), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
+Nirvana config), \code{sarsnv} (per-transcript small variants), \code{sarcnv} (CNVs).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sarinfo(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
 }
 \if{html}{\out{</div>}}
 }

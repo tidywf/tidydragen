@@ -373,7 +373,7 @@ tables:
         description: 'non-synonymous TMB'
         versions: ['latest']
   ploidystats:
-    description: 'DRAGEN ploidy estimation sample-level metrics; per-chromosome ratios go to the ploidyratio table.'
+    description: 'DRAGEN ploidy estimation sample-level metrics.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -418,7 +418,7 @@ tables:
         description: 'chrY median coverage'
         versions: ['latest']
   ploidyratio:
-    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage), long.'
+    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage).'
     pattern: "__no_file_match__ploidyratio"
     ftype: 'dragen-metrics'
     columns:
@@ -683,7 +683,7 @@ tables:
         description: 'percent QC region callability, region 2 (targeted)'
         versions: ['latest']
   contamination:
-    description: 'DRAGEN cross-sample contamination summary (cttso). Flat JSON; the per-SNP SNPsUsed array is dropped.'
+    description: 'DRAGEN cross-sample contamination summary (cttso).'
     pattern: "\\.contamination\\.json$"
     ftype: 'csv'
     columns:

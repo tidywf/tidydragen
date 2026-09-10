@@ -95,7 +95,7 @@ tables:
         description: 'average chr Y coverage / average autosomal coverage'
         versions: ['latest']
   metricsbins:
-    description: 'DRAGEN coverage-depth histogram: percent of region bases with coverage in each finite [cov_lo, cov_hi) bin.'
+    description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin).'
     pattern: "__no_file_match__metricsbins"
     ftype: 'dragen-metrics'
     columns:
@@ -105,7 +105,7 @@ tables:
         description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
         versions: ['latest']
   metricscumu:
-    description: 'DRAGEN cumulative coverage: percent of region bases with coverage at least cov_min.'
+    description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min).'
     pattern: "__no_file_match__metricscumu"
     ftype: 'dragen-metrics'
     columns:
@@ -205,7 +205,7 @@ tables:
         description: 'maximum coverage over the interval'
         versions: ['latest']
   reportbedcumu:
-    description: 'DRAGEN coverage-report cumulative thresholds: percent of interval bases above each coverage threshold, long.'
+    description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold).'
     pattern: "__no_file_match__reportbedcumu"
     ftype: 'tsv'
     columns:
