@@ -47,7 +47,7 @@ Collate:
     'DragenRna.R'
     'DragenVar.R'
     'DragenCov.R'
-    'DragenFastqc.R'
+    'DragenFqc.R'
     'DragenMap.R'
     'Dragen.R'
     's3.R'

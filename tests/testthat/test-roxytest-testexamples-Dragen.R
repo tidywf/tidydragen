@@ -11,7 +11,7 @@ test_that("Function Dragen() @ L31", {
   (lf <- list.files(odir, pattern = "dragen.*parquet", full.names = FALSE))
   # every registered tool emits at least one table from the combined fixtures
   expect_true(any(grepl("_dragenmap_", lf)))
-  expect_true(any(grepl("_dragenfastqc_", lf)))
+  expect_true(any(grepl("_dragenfqc_", lf)))
   expect_true(any(grepl("_dragencov_", lf)))
   expect_true(any(grepl("_dragenvar_", lf)))
   expect_true(any(grepl("_dragenrna_", lf)))

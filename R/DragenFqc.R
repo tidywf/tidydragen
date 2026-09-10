@@ -1,26 +1,26 @@
-#' @title DragenFastqc Object
+#' @title DragenFqc Object
 #'
 #' @description
 #' Parses and tidies the DRAGEN FASTQC metrics file (`fastqc_metrics.csv`).
 #' Splits into 8 per-section sub-tables. Setting `flat_tidy_names = TRUE`
-#' gives flat `dragenfastqc_<section>` tables rather than the concatenated form.
+#' gives flat `dragenfqc_<section>` tables rather than the concatenated form.
 #'
 #' @examples
-#' cls <- DragenFastqc; tool <- "dragenfastqc"
+#' cls <- DragenFqc; tool <- "dragenfqc"
 #' indir <- system.file("extdata", tool, package = "tidydragen")
 #' odir <- tempdir()
 #' obj <- cls$new(indir)
 #' obj$run(output_dir = odir, format = "parquet", input_id = "run1")
-#' (lf <- list.files(odir, pattern = "dragenfastqc_.*parquet", full.names = FALSE))
+#' (lf <- list.files(odir, pattern = "dragenfqc_.*parquet", full.names = FALSE))
 #' @testexamples
 #' # one file -> 8 flat per-section sub-tables (parser token dropped)
-#' fqc <- grep("sampleA_dragenfastqc_", lf, value = TRUE)
+#' fqc <- grep("sampleA_dragenfqc_", lf, value = TRUE)
 #' expect_length(fqc, 8)
 #' expect_true(all(c(
-#'   "sampleA_dragenfastqc_posbasecontent", "sampleA_dragenfastqc_posbasemeanqual",
-#'   "sampleA_dragenfastqc_posqual", "sampleA_dragenfastqc_readgc",
-#'   "sampleA_dragenfastqc_readgcqual", "sampleA_dragenfastqc_readlen",
-#'   "sampleA_dragenfastqc_readmeanqual", "sampleA_dragenfastqc_seqpos"
+#'   "sampleA_dragenfqc_posbasecontent", "sampleA_dragenfqc_posbasemeanqual",
+#'   "sampleA_dragenfqc_posqual", "sampleA_dragenfqc_readgc",
+#'   "sampleA_dragenfqc_readgcqual", "sampleA_dragenfqc_readlen",
+#'   "sampleA_dragenfqc_readmeanqual", "sampleA_dragenfqc_seqpos"
 #' ) %in% sub("\\.parquet$", "", fqc)))
 #' pbc <- arrow::read_parquet(file.path(odir, grep("posbasecontent", fqc, value = TRUE)))
 #' expect_equal(names(pbc)[names(pbc) != "input_id"], c("mate", "pos", "base", "prop"))
@@ -52,27 +52,27 @@
 #'   "READ MEAN QUALITY,Read1,Q30 Reads,10",
 #'   "SEQUENCE POSITIONS,Read1,'AGATCGGAAGAG' Total Sequence Starts,5,0.01"
 #' ), file.path(d2, "sampleZ.fastqc_metrics.csv"))
-#' ez <- DragenFastqc$new(d2)$tidy_posbasecontent(list.files(d2, full.names = TRUE))
+#' ez <- DragenFqc$new(d2)$tidy_posbasecontent(list.files(d2, full.names = TRUE))
 #' ezsp <- ez$data[[which(ez$name == "seqpos")]]
 #' expect_equal(nrow(ezsp), 0L)
 #' expect_true(is.integer(ezsp$bp))
 #' @export
-DragenFastqc <- R6::R6Class(
-  "DragenFastqc",
+DragenFqc <- R6::R6Class(
+  "DragenFqc",
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
     #' @field flat_tidy_names (`logical(1)`)\cr
     #' drop the parser token so the 8 sub-tables are named
-    #' `dragenfastqc_<section>` (see [nemo::Tool]).
+    #' `dragenfqc_<section>` (see [nemo::Tool]).
     flat_tidy_names = TRUE,
-    #' @description Create a new DragenFastqc object.
+    #' @description Create a new DragenFqc object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
     #' @param files_tbl (`tibble(n)`)\cr
     #' Tibble of files from [nemo::list_files_dir()].
     initialize = function(path = NULL, files_tbl = NULL) {
-      super$initialize(name = "dragenfastqc", pkg = pkg_name, path = path, files_tbl = files_tbl)
+      super$initialize(name = "dragenfqc", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
     #' @description Parse headerless `section,mate,metric,value` `fastqc_metrics.csv`
     #' into a long tibble.

@@ -3,7 +3,7 @@
 export(DRAGEN_TOOLS)
 export(Dragen)
 export(DragenCov)
-export(DragenFastqc)
+export(DragenFqc)
 export(DragenMap)
 export(DragenRna)
 export(DragenTool)

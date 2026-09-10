@@ -108,7 +108,6 @@ s3sync_cttso <- function(src, dest, pats = NULL, dryrun = FALSE) {
     "in"  , "*.gvcf_metrics.csv"                              ,
     # --- small non-metrics smalls (Tier 1c) ---
     "in"  , "*.contamination.json"                            , # p-value not in SAR
-    "in"  , "*events.csv"                                     , # investigate vs time_metrics
     # --- coverage (all 4 regions: wgs / tmb / exon / target_bed) ---
     "in"  , "*_coverage_metrics.csv"                          ,
     "in"  , "*_contig_mean_cov.csv"                           ,

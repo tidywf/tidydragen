@@ -1,7 +1,7 @@
 #' @title Dragen Object
 #'
 #' @description
-#' Orchestrates all DRAGEN tools ([DragenMap], [DragenFastqc], [DragenCov],
+#' Orchestrates all DRAGEN tools ([DragenMap], [DragenFqc], [DragenCov],
 #' [DragenVar], [DragenRna], [DragenTso]) over a shared results directory. A DRAGEN run
 #' exposes a different subset of files depending on the pipeline (germline,
 #' somatic tumor-normal, RNA); tools whose files are absent contribute nothing,
@@ -16,7 +16,7 @@
 #' @testexamples
 #' # every registered tool emits at least one table from the combined fixtures
 #' expect_true(any(grepl("_dragenmap_", lf)))
-#' expect_true(any(grepl("_dragenfastqc_", lf)))
+#' expect_true(any(grepl("_dragenfqc_", lf)))
 #' expect_true(any(grepl("_dragencov_", lf)))
 #' expect_true(any(grepl("_dragenvar_", lf)))
 #' expect_true(any(grepl("_dragenrna_", lf)))
@@ -26,7 +26,7 @@
 #' # spot-check one output round-trips
 #' mapf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_metrics", lf, value = TRUE)))
 #' expect_true(all(c("section", "rg") %in% names(mapf)))
-#' @include DragenMap.R DragenFastqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R
+#' @include DragenMap.R DragenFqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R
 #' @export
 Dragen <- R6::R6Class(
   "Dragen",
@@ -54,7 +54,7 @@ Dragen <- R6::R6Class(
 #' @export
 DRAGEN_TOOLS <- list(
   dragenmap = DragenMap,
-  dragenfastqc = DragenFastqc,
+  dragenfqc = DragenFqc,
   dragencov = DragenCov,
   dragenvar = DragenVar,
   dragenrna = DragenRna,

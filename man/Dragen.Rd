@@ -4,7 +4,7 @@
 \alias{Dragen}
 \title{Dragen Object}
 \description{
-Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFastqc}, \link{DragenCov},
+Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFqc}, \link{DragenCov},
 \link{DragenVar}, \link{DragenRna}, \link{DragenTso}) over a shared results directory. A DRAGEN run
 exposes a different subset of files depending on the pipeline (germline,
 somatic tumor-normal, RNA); tools whose files are absent contribute nothing,
