@@ -2,7 +2,7 @@
 
 # File R/DragenMap.R: @testexamples
 
-test_that("Function DragenMap() @ L37", {
+test_that("Function DragenMap() @ L71", {
   
   cls <- DragenMap; tool <- "dragenmap"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -31,5 +31,39 @@ test_that("Function DragenMap() @ L37", {
   expect_setequal(unique(fl$sample), c("sampleA", "sampleA_tn"))
   expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA"], 12345)
   expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA_tn"], 999)
+  # trimmer metrics (cttso): plain dragen-metrics table, pct auto-paired
+  tr <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_trimmer", lf, value = TRUE)))
+  expect_true(all(c("reads_tot_input", "reads_trim_tot", "reads_trim_tot_pct", "polygkmers3r1_remaining") %in% names(tr)))
+  expect_equal(tr$reads_tot_input, 157866430)
+  expect_equal(tr$polygkmers3r1_remaining, 54953)
+  expect_equal(tr$polygkmers3r1_remaining_pct, 0.07)
+  # umi split: summary (umimain, wide) + histograms (umihist, long)
+  um <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_umimain", lf, value = TRUE)))
+  expect_equal(nrow(um), 1L)
+  expect_equal(um$reads_tot, 849205054)
+  expect_equal(um$reads_umi_valid_correctable_pct, 99.85)
+  expect_equal(um$avg_family_depth, 4.89)
+  expect_equal(um$reads_tot_ontarget, 606111466)
+  uh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_umihist", lf, value = TRUE)))
+  expect_equal(names(uh)[names(uh) != "input_id"], c("hist_type", "bin", "count"))
+  expect_true(is.integer(uh$bin))
+  expect_setequal(unique(uh$hist_type), c("num_supporting_fragments", "num_supporting_fragments_ontarget", "unique_umis_per_fragpos"))
+  nsf <- uh[uh$hist_type == "num_supporting_fragments", ]
+  expect_equal(nsf$count[nsf$bin == 2], 22645846)
+  uu <- uh[uh$hist_type == "unique_umis_per_fragpos", ]
+  expect_equal(uu$count[uu$bin == 1], 95680458)
+  # gc split: summary (gcmain, wide) + per-GC-window (gcbias, long)
+  gc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_gcmain", lf, value = TRUE)))
+  expect_equal(nrow(gc), 1L)
+  expect_true(is.integer(gc$window_size))
+  expect_equal(gc$gc_ref_avg, 40.90)
+  expect_equal(gc$at_dropout, 29.40)
+  gb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_gcbias", lf, value = TRUE)))
+  expect_equal(names(gb)[names(gb) != "input_id"], c("gc_window", "windows", "pct", "cov_norm"))
+  expect_true(is.integer(gb$gc_window))
+  expect_equal(nrow(gb), 101L)
+  expect_equal(gb$windows[gb$gc_window == 0], 132617)
+  expect_equal(gb$pct[gb$gc_window == 40], 3.595)
+  expect_equal(gb$cov_norm[gb$gc_window == 0], 0.0120)
 })
 

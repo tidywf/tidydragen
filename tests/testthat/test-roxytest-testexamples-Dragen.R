@@ -2,7 +2,7 @@
 
 # File R/Dragen.R: @testexamples
 
-test_that("Function Dragen() @ L30", {
+test_that("Function Dragen() @ L31", {
   
   indir <- system.file("extdata", package = "tidydragen")
   odir <- tempdir()
@@ -11,10 +11,11 @@ test_that("Function Dragen() @ L30", {
   (lf <- list.files(odir, pattern = "dragen.*parquet", full.names = FALSE))
   # every registered tool emits at least one table from the combined fixtures
   expect_true(any(grepl("_dragenmap_", lf)))
-  expect_true(any(grepl("_dragenfastqc_", lf)))
+  expect_true(any(grepl("_dragenfqc_", lf)))
   expect_true(any(grepl("_dragencov_", lf)))
   expect_true(any(grepl("_dragenvar_", lf)))
   expect_true(any(grepl("_dragenrna_", lf)))
+  expect_true(any(grepl("_dragentso_", lf)))
   # a metadata file is written alongside the tidy outputs
   expect_true(file.exists(file.path(odir, "metadata.parquet")))
   # spot-check one output round-trips

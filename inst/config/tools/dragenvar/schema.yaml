@@ -373,7 +373,7 @@ tables:
         description: 'non-synonymous TMB'
         versions: ['latest']
   ploidystats:
-    description: 'DRAGEN ploidy estimation sample-level metrics; per-chromosome ratios go to the ploidyratio table.'
+    description: 'DRAGEN ploidy estimation sample-level metrics.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     ftype: 'dragen-metrics'
     columns:
@@ -418,7 +418,7 @@ tables:
         description: 'chrY median coverage'
         versions: ['latest']
   ploidyratio:
-    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage), long.'
+    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage).'
     pattern: "__no_file_match__ploidyratio"
     ftype: 'dragen-metrics'
     columns:
@@ -556,4 +556,149 @@ tables:
         tidy: 'ndc'
         type: 'float'
         description: 'normalised depth of coverage (contig DC / autosomal median)'
+        versions: ['latest']
+  gvcf:
+    description: 'DRAGEN gVCF variant caller postfilter metrics.'
+    pattern: "\\.gvcf_metrics\\.csv$"
+    ftype: 'dragen-metrics'
+    columns:
+      - raw: 'Total'
+        tidy: 'total'
+        type: 'float'
+        description: 'total variants'
+        versions: ['latest']
+      - raw: 'Biallelic'
+        tidy: 'biallelic'
+        type: 'float'
+        description: 'biallelic sites'
+        versions: ['latest']
+      - raw: 'Multiallelic'
+        tidy: 'multiallelic'
+        type: 'float'
+        description: 'multiallelic sites'
+        versions: ['latest']
+      - raw: 'SNPs'
+        tidy: 'snps'
+        type: 'float'
+        description: 'SNPs'
+        versions: ['latest']
+      - raw: 'Insertions (Hom)'
+        tidy: 'insertions_hom'
+        type: 'float'
+        description: 'homozygous insertions'
+        versions: ['latest']
+      - raw: 'Insertions (Het)'
+        tidy: 'insertions_het'
+        type: 'float'
+        description: 'heterozygous insertions'
+        versions: ['latest']
+      - raw: 'Deletions (Hom)'
+        tidy: 'deletions_hom'
+        type: 'float'
+        description: 'homozygous deletions'
+        versions: ['latest']
+      - raw: 'Deletions (Het)'
+        tidy: 'deletions_het'
+        type: 'float'
+        description: 'heterozygous deletions'
+        versions: ['latest']
+      - raw: 'Indels (Het)'
+        tidy: 'indels_het'
+        type: 'float'
+        description: 'heterozygous indels'
+        versions: ['latest']
+      - raw: 'Chr X number of SNPs'
+        tidy: 'chrx_snps'
+        type: 'float'
+        description: 'chr X SNPs over the called region'
+        versions: ['latest']
+      - raw: 'Chr Y number of SNPs'
+        tidy: 'chry_snps'
+        type: 'float'
+        description: 'chr Y SNPs over the called region'
+        versions: ['latest']
+      - raw: '(Chr X SNPs)/(chr Y SNPs) ratio'
+        tidy: 'chrx_chry_snp_ratio'
+        type: 'float'
+        description: 'chr X / chr Y SNP ratio over the called region'
+        versions: ['latest']
+      - raw: 'SNP Transitions'
+        tidy: 'snp_ti'
+        type: 'float'
+        description: 'SNP transitions'
+        versions: ['latest']
+      - raw: 'SNP Transversions'
+        tidy: 'snp_tv'
+        type: 'float'
+        description: 'SNP transversions'
+        versions: ['latest']
+      - raw: 'Ti/Tv ratio'
+        tidy: 'titv_ratio'
+        type: 'float'
+        description: 'transition/transversion ratio'
+        versions: ['latest']
+      - raw: 'Heterozygous'
+        tidy: 'heterozygous'
+        type: 'float'
+        description: 'heterozygous variants'
+        versions: ['latest']
+      - raw: 'Homozygous'
+        tidy: 'homozygous'
+        type: 'float'
+        description: 'homozygous variants'
+        versions: ['latest']
+      - raw: 'Het/Hom ratio'
+        tidy: 'het_hom_ratio'
+        type: 'float'
+        description: 'heterozygous/homozygous ratio'
+        versions: ['latest']
+      - raw: 'In dbSNP'
+        tidy: 'dbsnp_yes'
+        type: 'float'
+        description: 'variants in dbSNP'
+        versions: ['latest']
+      - raw: 'Not in dbSNP'
+        tidy: 'dbsnp_not'
+        type: 'float'
+        description: 'variants not in dbSNP'
+        versions: ['latest']
+      - raw: 'Percent Callability'
+        tidy: 'callability_pct'
+        type: 'float'
+        description: 'percent callability'
+        versions: ['latest']
+      - raw: 'Percent Autosome Callability'
+        tidy: 'autosome_callability_pct'
+        type: 'float'
+        description: 'percent autosome callability'
+        versions: ['latest']
+      - raw: 'Percent QC Region Callability in Region 1'
+        tidy: 'qc_region_callability_region1_pct'
+        type: 'float'
+        description: 'percent QC region callability, region 1 (targeted)'
+        versions: ['latest']
+      - raw: 'Percent QC Region Callability in Region 2'
+        tidy: 'qc_region_callability_region2_pct'
+        type: 'float'
+        description: 'percent QC region callability, region 2 (targeted)'
+        versions: ['latest']
+  contamination:
+    description: 'DRAGEN cross-sample contamination summary (cttso).'
+    pattern: "\\.contamination\\.json$"
+    ftype: 'csv'
+    columns:
+      - raw: 'ContaminationScore'
+        tidy: 'score'
+        type: 'float'
+        description: 'contamination score'
+        versions: ['latest']
+      - raw: 'ContaminationLevel'
+        tidy: 'level'
+        type: 'float'
+        description: 'estimated fraction of contaminating reads'
+        versions: ['latest']
+      - raw: 'CONTAMINATION_P_VALUE'
+        tidy: 'pvalue'
+        type: 'float'
+        description: 'contamination p-value; NA when reported as NaN (not present in the SAR JSON)'
         versions: ['latest']

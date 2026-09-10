@@ -2,7 +2,7 @@
 
 # File R/DragenVar.R: @testexamples
 
-test_that("Function DragenVar() @ L103", {
+test_that("Function DragenVar() @ L119", {
   
   cls <- DragenVar; tool <- "dragenvar"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -97,5 +97,21 @@ test_that("Function DragenVar() @ L103", {
   expect_equal(xrow$ndc, 0.972261)
   expect_equal(pv$filter[pv$chrom == "chrY"], "LowQual")
   expect_true(all(pv$filter[pv$chrom != "chrY"] == "PASS"))
+  # gvcf (cttso): vc-shaped postfilter metrics; region -> targetreg column, pct auto-paired
+  gv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_gvcf", lf, value = TRUE)))
+  expect_equal(nrow(gv), 1L)
+  expect_equal(gv$region, "targetreg")
+  expect_equal(gv$total, 1234)
+  expect_equal(gv$snps, 1168)
+  expect_equal(gv$snps_pct, 94.65)
+  expect_equal(gv$titv_ratio, 2.99)
+  expect_equal(gv$chrx_snps, 11)
+  # contamination (cttso, flat JSON): SNPsUsed dropped, NaN p-value -> NA
+  ct <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_contamination", lf, value = TRUE)))
+  expect_equal(nrow(ct), 1L)
+  expect_equal(ct$score, 50)
+  expect_equal(round(ct$level, 4), 0.0402)
+  expect_true(is.na(ct$pvalue))
+  expect_false("snpsused" %in% tolower(names(ct)))
 })
 

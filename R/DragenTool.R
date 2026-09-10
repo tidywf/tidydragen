@@ -89,13 +89,15 @@ DragenTool <- R6::R6Class(
       }
       super$tidy_file(x, table_name, convert_types = convert_types)
     },
-    # Fold the coverage region (wgs / tmb / qc-coverage-region-<label>) and
-    # phenotype (normal / tumor) from the filename into `prefix`, so
-    # `sampleA.wgs_coverage_metrics_tumor.csv` -> `sampleA_wgs_tumor_dragencov_metrics`.
-    # Appends `_<region>[_<pheno>]` before nemo's `_2/_3` collision fallback fires.
-    # No-op on non-coverage files (regex never matches). The qc-coverage-region
-    # <label> is the user's `--qc-coverage-region-N` name, matched generically and
-    # the stem dropped to leave the label; wgs/tmb are fixed keywords, enumerated.
+    # Fold the coverage region (wgs / tmb / exon / target_bed /
+    # qc-coverage-region-<label>) and phenotype (normal / tumor) from the filename
+    # into `prefix`, so `sampleA.wgs_coverage_metrics_tumor.csv` ->
+    # `sampleA_wgs_tumor_dragencov_metrics`. Appends `_<region>[_<pheno>]` before
+    # nemo's `_2/_3` collision fallback fires. No-op on non-coverage files (regex
+    # never matches). The qc-coverage-region <label> is the user's
+    # `--qc-coverage-region-N` name, matched generically and the stem dropped to
+    # leave the label; wgs/tmb/exon/target_bed are fixed keywords (exon/target_bed
+    # are the cttso ctDNA regions), enumerated.
     refine_files = function(files) {
       if (nrow(files) == 0) {
         return(files)
@@ -103,7 +105,7 @@ DragenTool <- R6::R6Class(
       # region must be followed by a known coverage subtype so non-coverage files
       # never match.
       region_re <- paste0(
-        "(wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_",
+        "(wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_",
         "(?:contig_mean_cov|coverage_metrics|fine_hist|",
         "read_cov_report|cov_report)"
       )

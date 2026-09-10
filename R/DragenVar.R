@@ -99,6 +99,22 @@
 #' expect_equal(xrow$ndc, 0.972261)
 #' expect_equal(pv$filter[pv$chrom == "chrY"], "LowQual")
 #' expect_true(all(pv$filter[pv$chrom != "chrY"] == "PASS"))
+#' # gvcf (cttso): vc-shaped postfilter metrics; region -> targetreg column, pct auto-paired
+#' gv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_gvcf", lf, value = TRUE)))
+#' expect_equal(nrow(gv), 1L)
+#' expect_equal(gv$region, "targetreg")
+#' expect_equal(gv$total, 1234)
+#' expect_equal(gv$snps, 1168)
+#' expect_equal(gv$snps_pct, 94.65)
+#' expect_equal(gv$titv_ratio, 2.99)
+#' expect_equal(gv$chrx_snps, 11)
+#' # contamination (cttso, flat JSON): SNPsUsed dropped, NaN p-value -> NA
+#' ct <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_contamination", lf, value = TRUE)))
+#' expect_equal(nrow(ct), 1L)
+#' expect_equal(ct$score, 50)
+#' expect_equal(round(ct$level, 4), 0.0402)
+#' expect_true(is.na(ct$pvalue))
+#' expect_false("snpsused" %in% tolower(names(ct)))
 #' @export
 DragenVar <- R6::R6Class(
   "DragenVar",
@@ -106,10 +122,8 @@ DragenVar <- R6::R6Class(
   inherit = DragenTool,
   public = list(
     #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly (the
-    #' parser token is dropped). `tidy_ploidystats` fans one file into the
-    #' `ploidystats` + `ploidyratio` tables, whose names are the final outputs; every
-    #' other DragenVar table has `tidy_name == parser`, so its name is unchanged.
+    #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
+    #' dropped). Needed for the `ploidystats`/`ploidyratio` split.
     flat_tidy_names = TRUE,
     #' @description Create a new DragenVar object.
     #' @param path (`character(1)`)\cr
@@ -124,14 +138,25 @@ DragenVar <- R6::R6Class(
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_vc = function(x) {
       private$tidy_metrics(x, "vc", drop_constant = character(), normalise = function(d) {
-        # drop VARIANT CALLER SUMMARY (blank rg, duplicates prefilter)
+        # drop SUMMARY (blank rg, duplicates prefilter)
         d <- d[!grepl("SUMMARY", d$section), , drop = FALSE]
         d$section <- dplyr::case_when(
           grepl("PREFILTER", d$section) ~ "prefilter",
           grepl("POSTFILTER", d$section) ~ "postfilter",
           TRUE ~ d$section
         )
-        # region (genome vs target region) -> its own column
+        # region -> its own column
+        r <- private$region_split(d)
+        r$x$region <- r$region
+        r$x
+      })
+    },
+    #' @description Tidy `gvcf_metrics.csv` (gVCF postfilter). Same shape as
+    #' `vc_metrics`; region moved into a `region` column.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_gvcf = function(x) {
+      private$tidy_metrics(x, "gvcf", drop_constant = character(), normalise = function(d) {
+        d$section <- "postfilter"
         r <- private$region_split(d)
         r$x$region <- r$region
         r$x
@@ -143,8 +168,7 @@ DragenVar <- R6::R6Class(
       private$tidy_metrics(x, "cnv", normalise = function(d) {
         is_sex <- grepl("SEX GENOTYPER", d$section)
         if (any(is_sex)) {
-          # one SEX GENOTYPER row per file (the case sample); take the first if a
-          # panel-of-normals run ever emits more.
+          # SEX GENOTYPER preamble -> two CNV SUMMARY cols (first row = case sample)
           sx <- d[is_sex, , drop = FALSE][1, , drop = FALSE]
           add <- tibble::tibble(
             section = "CNV SUMMARY",
@@ -180,8 +204,7 @@ DragenVar <- R6::R6Class(
         x <- private$parse_metrics(x)
       }
       is_ratio <- grepl("/", x$variable)
-      # scalar col_map is on the file-matching "ploidystats" table; ratio col_map on
-      # the sentinel "ploidyratio".
+      # scalars -> ploidystats table; per-chrom ratios -> ploidyratio sentinel
       stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidystats")
       ratio <- private$tidy_metrics(
         x[is_ratio, , drop = FALSE],
@@ -192,8 +215,6 @@ DragenVar <- R6::R6Class(
           d
         }
       )
-      # flat_tidy_names drops the parser token -> output is dragenvar_<name>, so the
-      # sub-table names ARE the final output tables: dragenvar_ploidystats / _ploidyratio.
       stats$name <- "ploidystats"
       ratio$name <- "ploidyratio"
       dplyr::bind_rows(stats, ratio)
@@ -241,6 +262,24 @@ DragenVar <- R6::R6Class(
           dplyr::across(dplyr::any_of(num_cols), as.numeric),
           ResultIsValid = as.character(.data$ResultIsValid)
         )
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Parse `contamination.json` (cttso cross-sample contamination).
+    #' Flat JSON; the per-SNP `SNPsUsed` array is dropped, `NaN` p-value -> NA.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_contamination = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
+      j[["SNPsUsed"]] <- NULL
+      expected <- c("ContaminationScore", "ContaminationLevel", "CONTAMINATION_P_VALUE")
+      for (k in setdiff(expected, names(j))) {
+        j[[k]] <- NA_character_
+      }
+      if (identical(j[["CONTAMINATION_P_VALUE"]], "NaN")) {
+        j[["CONTAMINATION_P_VALUE"]] <- NA_character_
+      }
+      d <- tibble::as_tibble_row(j[expected]) |>
+        dplyr::mutate(dplyr::across(dplyr::everything(), as.numeric))
       attr(d, "file_version") <- "latest"
       d[]
     },

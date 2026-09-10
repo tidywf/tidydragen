@@ -22,10 +22,8 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: fanned-out sub-tables are named \verb{<tool>_<tidy_name>} directly (the
-parser token is dropped). \code{tidy_ploidystats} fans one file into the
-\code{ploidystats} + \code{ploidyratio} tables, whose names are the final outputs; every
-other DragenVar table has \code{tidy_name == parser}, so its name is unchanged.}
+\code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
+dropped). Needed for the \code{ploidystats}/\code{ploidyratio} split.}
 }
 \if{html}{\out{</div>}}
 }
@@ -34,11 +32,13 @@ other DragenVar table has \code{tidy_name == parser}, so its name is unchanged.}
 \itemize{
 \item \href{#method-DragenVar-new}{\code{DragenVar$new()}}
 \item \href{#method-DragenVar-tidy_vc}{\code{DragenVar$tidy_vc()}}
+\item \href{#method-DragenVar-tidy_gvcf}{\code{DragenVar$tidy_gvcf()}}
 \item \href{#method-DragenVar-tidy_cnv}{\code{DragenVar$tidy_cnv()}}
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
 \item \href{#method-DragenVar-tidy_ploidystats}{\code{DragenVar$tidy_ploidystats()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
 \item \href{#method-DragenVar-parse_microsat}{\code{DragenVar$parse_microsat()}}
+\item \href{#method-DragenVar-parse_contamination}{\code{DragenVar$parse_contamination()}}
 \item \href{#method-DragenVar-parse_ploidyvcf}{\code{DragenVar$parse_ploidyvcf()}}
 }
 }
@@ -85,6 +85,24 @@ Tidy \code{vc_metrics.csv}. \code{rg} (sample id) kept raw; region moved
 from metric names into a \code{region} column.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_vc(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-tidy_gvcf"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-tidy_gvcf}{}}}
+\subsection{Method \code{tidy_gvcf()}}{
+Tidy \code{gvcf_metrics.csv} (gVCF postfilter). Same shape as
+\code{vc_metrics}; region moved into a \code{region} column.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_gvcf(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -171,6 +189,24 @@ Tidy \code{allele_transition_noise_metrics.csv}
 Parse \code{microsat_output.json} (MSI).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_microsat(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-parse_contamination"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-parse_contamination}{}}}
+\subsection{Method \code{parse_contamination()}}{
+Parse \code{contamination.json} (cttso cross-sample contamination).
+Flat JSON; the per-SNP \code{SNPsUsed} array is dropped, \code{NaN} p-value -> NA.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_contamination(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -1,7 +1,7 @@
 tables:
   metricsmain:
     description: 'DRAGEN coverage summary metrics.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Aligned bases'
@@ -95,7 +95,7 @@ tables:
         description: 'average chr Y coverage / average autosomal coverage'
         versions: ['latest']
   metricsbins:
-    description: 'DRAGEN coverage-depth histogram: percent of region bases with coverage in each finite [cov_lo, cov_hi) bin.'
+    description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin).'
     pattern: "__no_file_match__metricsbins"
     ftype: 'dragen-metrics'
     columns:
@@ -105,7 +105,7 @@ tables:
         description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
         versions: ['latest']
   metricscumu:
-    description: 'DRAGEN cumulative coverage: percent of region bases with coverage at least cov_min.'
+    description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min).'
     pattern: "__no_file_match__metricscumu"
     ftype: 'dragen-metrics'
     columns:
@@ -116,7 +116,7 @@ tables:
         versions: ['latest']
   contigmean:
     description: 'DRAGEN per-contig mean coverage (chrom, aligned bases, mean coverage).'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
     ftype: 'csv-nohead'
     columns:
       - raw: 'chrom'
@@ -136,7 +136,7 @@ tables:
         versions: ['latest']
   finehist:
     description: 'DRAGEN fine coverage histogram (per-depth base counts).'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_fine_hist(?:_normal|_tumor)?\\.csv$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_fine_hist(?:_normal|_tumor)?\\.csv$"
     ftype: 'csv'
     columns:
       - raw: 'Depth'
@@ -151,7 +151,7 @@ tables:
         versions: ['latest']
   reportbedmain:
     description: 'DRAGEN coverage report BED, distribution stats per region interval.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     ftype: 'tsv'
     columns:
       - raw: '#chrom'
@@ -205,7 +205,7 @@ tables:
         description: 'maximum coverage over the interval'
         versions: ['latest']
   reportbedcumu:
-    description: 'DRAGEN coverage-report cumulative thresholds: percent of interval bases above each coverage threshold, long.'
+    description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold).'
     pattern: "__no_file_match__reportbedcumu"
     ftype: 'tsv'
     columns:
@@ -236,7 +236,7 @@ tables:
         versions: ['latest']
   readreportbed:
     description: 'DRAGEN per-gene read coverage report BED.'
-    pattern: "\\.(?:wgs|tmb|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"
+    pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"
     ftype: 'tsv'
     columns:
       - raw: '#chrom'
