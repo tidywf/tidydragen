@@ -1,0 +1,526 @@
+tables:
+  smallvariants:
+    description: 'TSO500 CombinedVariantOutput [Small Variants] section (reported/trimmed set). Other sections (TMB/MSI/CNV/DNA Fusions) are sourced from the SAR JSON instead.'
+    pattern: "_CombinedVariantOutput\\.tsv$"
+    ftype: 'tsv'
+    columns:
+      - raw: 'Gene'
+        tidy: 'gene'
+        type: 'char'
+        description: 'gene symbol'
+        versions: ['latest']
+      - raw: 'Chromosome'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'chromosome'
+        versions: ['latest']
+      - raw: 'Genomic Position'
+        tidy: 'pos'
+        type: 'int'
+        description: 'genomic position'
+        versions: ['latest']
+      - raw: 'Reference Call'
+        tidy: 'ref'
+        type: 'char'
+        description: 'reference allele'
+        versions: ['latest']
+      - raw: 'Alternative Call'
+        tidy: 'alt'
+        type: 'char'
+        description: 'alternative allele'
+        versions: ['latest']
+      - raw: 'Allele Frequency'
+        tidy: 'vaf'
+        type: 'float'
+        description: 'variant allele frequency'
+        versions: ['latest']
+      - raw: 'Depth'
+        tidy: 'dp'
+        type: 'float'
+        description: 'read depth at the position'
+        versions: ['latest']
+      - raw: 'P-Dot Notation'
+        tidy: 'pdot'
+        type: 'char'
+        description: 'protein-level (p.) HGVS notation'
+        versions: ['latest']
+      - raw: 'C-Dot Notation'
+        tidy: 'cdot'
+        type: 'char'
+        description: 'coding (c.) HGVS notation'
+        versions: ['latest']
+      - raw: 'Consequence(s)'
+        tidy: 'csq'
+        type: 'char'
+        description: 'variant consequence(s)'
+        versions: ['latest']
+      - raw: 'Affected Exon(s)'
+        tidy: 'exons'
+        type: 'char'
+        description: 'affected exon(s)'
+        versions: ['latest']
+  fusions:
+    description: 'TSO500 DNA fusion calls (DNAFusionFilter output).'
+    pattern: "_Fusions\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Sample'
+        tidy: 'sample'
+        type: 'char'
+        description: 'input sample ID'
+        versions: ['latest']
+      - raw: 'Name'
+        tidy: 'name'
+        type: 'char'
+        description: 'fusion name as reported by manta'
+        versions: ['latest']
+      - raw: 'Chr1'
+        tidy: 'chr1'
+        type: 'char'
+        description: 'chromosome of the first breakend'
+        versions: ['latest']
+      - raw: 'Pos1'
+        tidy: 'pos1'
+        type: 'float'
+        description: 'position of the first breakend'
+        versions: ['latest']
+      - raw: 'Chr2'
+        tidy: 'chr2'
+        type: 'char'
+        description: 'chromosome of the second breakend'
+        versions: ['latest']
+      - raw: 'Pos2'
+        tidy: 'pos2'
+        type: 'float'
+        description: 'position of the second breakend'
+        versions: ['latest']
+      - raw: 'Direction'
+        tidy: 'direction'
+        type: 'char'
+        description: 'direction of how the breakends are joined'
+        versions: ['latest']
+      - raw: 'Alt_Depth'
+        tidy: 'alt_depth'
+        type: 'float'
+        description: 'number of read-pairs supporting the fusion call'
+        versions: ['latest']
+      - raw: 'BP1_Depth'
+        tidy: 'bp1_depth'
+        type: 'float'
+        description: 'number of read-pairs aligned to the first breakend'
+        versions: ['latest']
+      - raw: 'BP2_Depth'
+        tidy: 'bp2_depth'
+        type: 'float'
+        description: 'number of read-pairs aligned to the second breakend'
+        versions: ['latest']
+      - raw: 'Total_Depth'
+        tidy: 'total_depth'
+        type: 'float'
+        description: 'max number of read-pairs aligned to a fusion breakend'
+        versions: ['latest']
+      - raw: 'VAF'
+        tidy: 'vaf'
+        type: 'float'
+        description: 'variant allele frequency'
+        versions: ['latest']
+      - raw: 'Gene1'
+        tidy: 'gene1'
+        type: 'char'
+        description: 'genes overlapping the first breakend'
+        versions: ['latest']
+      - raw: 'Gene2'
+        tidy: 'gene2'
+        type: 'char'
+        description: 'genes overlapping the second breakend'
+        versions: ['latest']
+      - raw: 'Contig'
+        tidy: 'contig'
+        type: 'char'
+        description: 'fusion contig'
+        versions: ['latest']
+      - raw: 'Filter'
+        tidy: 'filter'
+        type: 'char'
+        description: 'whether the fusion passed all fusion filters'
+        versions: ['latest']
+      - raw: 'Is_Cosmic_GenePair'
+        tidy: 'is_cosmic_genepair'
+        type: 'char'
+        description: 'whether the gene pair has been reported by Cosmic'
+        versions: ['latest']
+      - raw: 'Fusion Directionality Known'
+        tidy: 'fusion_directionality_known'
+        type: 'char'
+        description: 'fusion direction of the gene pair'
+        versions: ['latest']
+  tmbtrace:
+    description: 'TSO500 per-variant TMB trace (variants considered for the TMB calculation).'
+    pattern: "\\.tmb\\.trace\\.tsv$"
+    ftype: 'tsv'
+    columns:
+      - raw: 'Chromosome'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'chromosome'
+        versions: ['latest']
+      - raw: 'Position'
+        tidy: 'pos'
+        type: 'float'
+        description: 'genomic position'
+        versions: ['latest']
+      - raw: 'RefCall'
+        tidy: 'ref'
+        type: 'char'
+        description: 'reference allele'
+        versions: ['latest']
+      - raw: 'AltCall'
+        tidy: 'alt'
+        type: 'char'
+        description: 'alternative allele'
+        versions: ['latest']
+      - raw: 'VAF'
+        tidy: 'vaf'
+        type: 'float'
+        description: 'variant allele frequency'
+        versions: ['latest']
+      - raw: 'Depth'
+        tidy: 'dp'
+        type: 'float'
+        description: 'read depth'
+        versions: ['latest']
+      - raw: 'CytoBand'
+        tidy: 'cytoband'
+        type: 'char'
+        description: 'cytoband'
+        versions: ['latest']
+      - raw: 'GeneName'
+        tidy: 'gene'
+        type: 'char'
+        description: 'gene symbol'
+        versions: ['latest']
+      - raw: 'VariantType'
+        tidy: 'variant_type'
+        type: 'char'
+        description: 'variant type (SNV/indel)'
+        versions: ['latest']
+      - raw: 'CosmicIDs'
+        tidy: 'cosmic_ids'
+        type: 'char'
+        description: 'COSMIC IDs'
+        versions: ['latest']
+      - raw: 'MaxCosmicCount'
+        tidy: 'max_cosmic_count'
+        type: 'float'
+        description: 'max COSMIC sample count'
+        versions: ['latest']
+      - raw: 'ClinVarIDs'
+        tidy: 'clinvar_ids'
+        type: 'char'
+        description: 'ClinVar IDs'
+        versions: ['latest']
+      - raw: 'ClinVarSignificance'
+        tidy: 'clinvar_significance'
+        type: 'char'
+        description: 'ClinVar clinical significance'
+        versions: ['latest']
+      - raw: 'AlleleCountsGnomadExome'
+        tidy: 'ac_gnomad_exome'
+        type: 'float'
+        description: 'gnomAD exome allele count'
+        versions: ['latest']
+      - raw: 'AlleleCountsGnomadGenome'
+        tidy: 'ac_gnomad_genome'
+        type: 'float'
+        description: 'gnomAD genome allele count'
+        versions: ['latest']
+      - raw: 'AlleleCounts1000Genomes'
+        tidy: 'ac_1000g'
+        type: 'float'
+        description: '1000 Genomes allele count'
+        versions: ['latest']
+      - raw: 'MaxDatabaseAlleleCounts'
+        tidy: 'max_db_ac'
+        type: 'float'
+        description: 'max database allele count'
+        versions: ['latest']
+      - raw: 'GermlineFilterDatabase'
+        tidy: 'germline_filter_db'
+        type: 'char'
+        description: 'germline filter by database'
+        versions: ['latest']
+      - raw: 'GermlineFilterProxi'
+        tidy: 'germline_filter_proxi'
+        type: 'char'
+        description: 'germline filter by proximity'
+        versions: ['latest']
+      - raw: 'Nonsynonymous'
+        tidy: 'nonsynonymous'
+        type: 'char'
+        description: 'is nonsynonymous'
+        versions: ['latest']
+      - raw: 'withinValidTmbRegion'
+        tidy: 'within_valid_tmb_region'
+        type: 'char'
+        description: 'within the valid TMB region'
+        versions: ['latest']
+      - raw: 'IncludedInTMBNumerator'
+        tidy: 'included_in_tmb_numerator'
+        type: 'char'
+        description: 'counted in the TMB numerator'
+        versions: ['latest']
+      - raw: 'Status'
+        tidy: 'status'
+        type: 'char'
+        description: 'somatic/germline status'
+        versions: ['latest']
+      - raw: 'ProteinChange'
+        tidy: 'protein_change'
+        type: 'char'
+        description: 'protein change (p.)'
+        versions: ['latest']
+      - raw: 'CDSChange'
+        tidy: 'cds_change'
+        type: 'char'
+        description: 'coding change (c.)'
+        versions: ['latest']
+      - raw: 'Exons'
+        tidy: 'exons'
+        type: 'char'
+        description: 'affected exon(s)'
+        versions: ['latest']
+      - raw: 'Consequence'
+        tidy: 'consequence'
+        type: 'char'
+        description: 'variant consequence'
+        versions: ['latest']
+  tmbmsaf:
+    description: 'TSO500 per-variant maximum somatic allele frequency (TMB MSAF support metric). Same variant columns as tmbtrace plus a leading MaxSomaticAF.'
+    pattern: "\\.tmb\\.msaf\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'MaxSomaticAF'
+        tidy: 'max_somatic_af'
+        type: 'float'
+        description: 'maximum somatic allele frequency across the considered variants'
+        versions: ['latest']
+      - raw: 'Chromosome'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'chromosome'
+        versions: ['latest']
+      - raw: 'Position'
+        tidy: 'pos'
+        type: 'float'
+        description: 'genomic position'
+        versions: ['latest']
+      - raw: 'RefCall'
+        tidy: 'ref'
+        type: 'char'
+        description: 'reference allele'
+        versions: ['latest']
+      - raw: 'AltCall'
+        tidy: 'alt'
+        type: 'char'
+        description: 'alternative allele'
+        versions: ['latest']
+      - raw: 'VAF'
+        tidy: 'vaf'
+        type: 'float'
+        description: 'variant allele frequency'
+        versions: ['latest']
+      - raw: 'Depth'
+        tidy: 'dp'
+        type: 'float'
+        description: 'read depth'
+        versions: ['latest']
+      - raw: 'CytoBand'
+        tidy: 'cytoband'
+        type: 'char'
+        description: 'cytoband'
+        versions: ['latest']
+      - raw: 'GeneName'
+        tidy: 'gene'
+        type: 'char'
+        description: 'gene symbol'
+        versions: ['latest']
+      - raw: 'VariantType'
+        tidy: 'variant_type'
+        type: 'char'
+        description: 'variant type (SNV/indel)'
+        versions: ['latest']
+      - raw: 'CosmicIDs'
+        tidy: 'cosmic_ids'
+        type: 'char'
+        description: 'COSMIC IDs'
+        versions: ['latest']
+      - raw: 'MaxCosmicCount'
+        tidy: 'max_cosmic_count'
+        type: 'float'
+        description: 'max COSMIC sample count'
+        versions: ['latest']
+      - raw: 'ClinVarIDs'
+        tidy: 'clinvar_ids'
+        type: 'char'
+        description: 'ClinVar IDs'
+        versions: ['latest']
+      - raw: 'ClinVarSignificance'
+        tidy: 'clinvar_significance'
+        type: 'char'
+        description: 'ClinVar clinical significance'
+        versions: ['latest']
+      - raw: 'AlleleCountsGnomadExome'
+        tidy: 'ac_gnomad_exome'
+        type: 'float'
+        description: 'gnomAD exome allele count'
+        versions: ['latest']
+      - raw: 'AlleleCountsGnomadGenome'
+        tidy: 'ac_gnomad_genome'
+        type: 'float'
+        description: 'gnomAD genome allele count'
+        versions: ['latest']
+      - raw: 'AlleleCounts1000Genomes'
+        tidy: 'ac_1000g'
+        type: 'float'
+        description: '1000 Genomes allele count'
+        versions: ['latest']
+      - raw: 'MaxDatabaseAlleleCounts'
+        tidy: 'max_db_ac'
+        type: 'float'
+        description: 'max database allele count'
+        versions: ['latest']
+      - raw: 'GermlineFilterDatabase'
+        tidy: 'germline_filter_db'
+        type: 'char'
+        description: 'germline filter by database'
+        versions: ['latest']
+      - raw: 'GermlineFilterProxi'
+        tidy: 'germline_filter_proxi'
+        type: 'char'
+        description: 'germline filter by proximity'
+        versions: ['latest']
+      - raw: 'Nonsynonymous'
+        tidy: 'nonsynonymous'
+        type: 'char'
+        description: 'is nonsynonymous'
+        versions: ['latest']
+      - raw: 'withinValidTmbRegion'
+        tidy: 'within_valid_tmb_region'
+        type: 'char'
+        description: 'within the valid TMB region'
+        versions: ['latest']
+      - raw: 'IncludedInTMBNumerator'
+        tidy: 'included_in_tmb_numerator'
+        type: 'char'
+        description: 'counted in the TMB numerator'
+        versions: ['latest']
+      - raw: 'Status'
+        tidy: 'status'
+        type: 'char'
+        description: 'somatic/germline status'
+        versions: ['latest']
+      - raw: 'ProteinChange'
+        tidy: 'protein_change'
+        type: 'char'
+        description: 'protein change (p.)'
+        versions: ['latest']
+      - raw: 'CDSChange'
+        tidy: 'cds_change'
+        type: 'char'
+        description: 'coding change (c.)'
+        versions: ['latest']
+      - raw: 'Exons'
+        tidy: 'exons'
+        type: 'char'
+        description: 'affected exon(s)'
+        versions: ['latest']
+      - raw: 'Consequence'
+        tidy: 'consequence'
+        type: 'char'
+        description: 'variant consequence'
+        versions: ['latest']
+  exoncov:
+    description: 'TSO500 per-exon coverage report.'
+    pattern: "\\.exon_cov_report\\.tsv$"
+    ftype: 'tsv'
+    columns:
+      - raw: 'chr'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'chromosome'
+        versions: ['latest']
+      - raw: 'start'
+        tidy: 'start'
+        type: 'int'
+        description: 'interval start'
+        versions: ['latest']
+      - raw: 'end'
+        tidy: 'end'
+        type: 'int'
+        description: 'interval end'
+        versions: ['latest']
+      - raw: 'gene'
+        tidy: 'gene'
+        type: 'char'
+        description: 'gene symbol'
+        versions: ['latest']
+      - raw: 'mean_coverage'
+        tidy: 'cov_mean'
+        type: 'float'
+        description: 'mean coverage over the exon'
+        versions: ['latest']
+      - raw: 'median_coverage'
+        tidy: 'cov_median'
+        type: 'float'
+        description: 'median coverage over the exon'
+        versions: ['latest']
+      - raw: 'min_coverage'
+        tidy: 'cov_min'
+        type: 'float'
+        description: 'minimum coverage over the exon'
+        versions: ['latest']
+      - raw: 'max_coverage'
+        tidy: 'cov_max'
+        type: 'float'
+        description: 'maximum coverage over the exon'
+        versions: ['latest']
+  genecov:
+    description: 'TSO500 per-gene coverage report.'
+    pattern: "\\.gene_cov_report\\.tsv$"
+    ftype: 'tsv'
+    columns:
+      - raw: 'chr'
+        tidy: 'chrom'
+        type: 'char'
+        description: 'chromosome'
+        versions: ['latest']
+      - raw: 'start'
+        tidy: 'start'
+        type: 'int'
+        description: 'interval start'
+        versions: ['latest']
+      - raw: 'end'
+        tidy: 'end'
+        type: 'int'
+        description: 'interval end'
+        versions: ['latest']
+      - raw: 'gene'
+        tidy: 'gene'
+        type: 'char'
+        description: 'gene symbol'
+        versions: ['latest']
+      - raw: 'mean_coverage'
+        tidy: 'cov_mean'
+        type: 'float'
+        description: 'mean coverage over the gene'
+        versions: ['latest']
+      - raw: 'min_coverage'
+        tidy: 'cov_min'
+        type: 'float'
+        description: 'minimum coverage over the gene'
+        versions: ['latest']
+      - raw: 'max_coverage'
+        tidy: 'cov_max'
+        type: 'float'
+        description: 'maximum coverage over the gene'
+        versions: ['latest']
