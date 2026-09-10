@@ -30,8 +30,13 @@ Imports:
     tidyr
 Suggests:
     arrow,
+    fs,
+    here,
+    htmltools,
     knitr,
+    purrr,
     quarto,
+    reactable,
     rmarkdown,
     testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE,
