@@ -108,6 +108,13 @@
 #' expect_equal(gv$snps_pct, 94.65)
 #' expect_equal(gv$titv_ratio, 2.99)
 #' expect_equal(gv$chrx_snps, 11)
+#' # contamination (cttso, flat JSON): SNPsUsed dropped, NaN p-value -> NA
+#' ct <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_contamination", lf, value = TRUE)))
+#' expect_equal(nrow(ct), 1L)
+#' expect_equal(ct$score, 50)
+#' expect_equal(round(ct$level, 4), 0.0402)
+#' expect_true(is.na(ct$pvalue))
+#' expect_false("snpsused" %in% tolower(names(ct)))
 #' @export
 DragenVar <- R6::R6Class(
   "DragenVar",
@@ -255,6 +262,24 @@ DragenVar <- R6::R6Class(
           dplyr::across(dplyr::any_of(num_cols), as.numeric),
           ResultIsValid = as.character(.data$ResultIsValid)
         )
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Parse `contamination.json` (cttso cross-sample contamination).
+    #' Flat JSON; the per-SNP `SNPsUsed` array is dropped, `NaN` p-value -> NA.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_contamination = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
+      j[["SNPsUsed"]] <- NULL
+      expected <- c("ContaminationScore", "ContaminationLevel", "CONTAMINATION_P_VALUE")
+      for (k in setdiff(expected, names(j))) {
+        j[[k]] <- NA_character_
+      }
+      if (identical(j[["CONTAMINATION_P_VALUE"]], "NaN")) {
+        j[["CONTAMINATION_P_VALUE"]] <- NA_character_
+      }
+      d <- tibble::as_tibble_row(j[expected]) |>
+        dplyr::mutate(dplyr::across(dplyr::everything(), as.numeric))
       attr(d, "file_version") <- "latest"
       d[]
     },

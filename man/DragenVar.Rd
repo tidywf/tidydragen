@@ -38,6 +38,7 @@ dropped). Needed for the \code{ploidystats}/\code{ploidyratio} split.}
 \item \href{#method-DragenVar-tidy_ploidystats}{\code{DragenVar$tidy_ploidystats()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
 \item \href{#method-DragenVar-parse_microsat}{\code{DragenVar$parse_microsat()}}
+\item \href{#method-DragenVar-parse_contamination}{\code{DragenVar$parse_contamination()}}
 \item \href{#method-DragenVar-parse_ploidyvcf}{\code{DragenVar$parse_ploidyvcf()}}
 }
 }
@@ -188,6 +189,24 @@ Tidy \code{allele_transition_noise_metrics.csv}
 Parse \code{microsat_output.json} (MSI).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_microsat(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenVar-parse_contamination"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-parse_contamination}{}}}
+\subsection{Method \code{parse_contamination()}}{
+Parse \code{contamination.json} (cttso cross-sample contamination).
+Flat JSON; the per-SNP \code{SNPsUsed} array is dropped, \code{NaN} p-value -> NA.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_contamination(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

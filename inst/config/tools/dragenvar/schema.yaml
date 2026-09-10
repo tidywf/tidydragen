@@ -682,3 +682,23 @@ tables:
         type: 'float'
         description: 'percent QC region callability, region 2 (targeted)'
         versions: ['latest']
+  contamination:
+    description: 'DRAGEN cross-sample contamination summary (cttso). Flat JSON; the per-SNP SNPsUsed array is dropped.'
+    pattern: "\\.contamination\\.json$"
+    ftype: 'csv'
+    columns:
+      - raw: 'ContaminationScore'
+        tidy: 'score'
+        type: 'float'
+        description: 'contamination score'
+        versions: ['latest']
+      - raw: 'ContaminationLevel'
+        tidy: 'level'
+        type: 'float'
+        description: 'estimated fraction of contaminating reads'
+        versions: ['latest']
+      - raw: 'CONTAMINATION_P_VALUE'
+        tidy: 'pvalue'
+        type: 'float'
+        description: 'contamination p-value; NA when reported as NaN (not present in the SAR JSON)'
+        versions: ['latest']
