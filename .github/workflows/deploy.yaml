@@ -1,0 +1,56 @@
+name: conda-docker-docs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  version:
+    name: 📋 Get version
+    if: "startsWith(github.event.head_commit.message, 'Bump version:')"
+    uses: tidywf/actions/.github/workflows/version.yaml@main
+
+  condarise:
+    name: 🐍 Condarise
+    needs: [version]
+    uses: tidywf/actions/.github/workflows/condarise.yaml@main
+    permissions:
+      contents: write
+    with:
+      pkg_name: tidydragen
+      pkg_version: ${{ needs.version.outputs.pkg_version }}
+    secrets: inherit
+
+  tag:
+    name: 🔖 Tag
+    needs: [condarise, version]
+    uses: tidywf/actions/.github/workflows/tag.yaml@main
+    permissions:
+      contents: write
+    with:
+      pkg_version: ${{ needs.version.outputs.pkg_version }}
+    secrets: inherit
+
+  dockerise:
+    name: 🐳 Dockerise
+    needs: [tag, version]
+    uses: tidywf/actions/.github/workflows/dockerise.yaml@main
+    permissions:
+      packages: write
+    with:
+      pkg_version: ${{ needs.version.outputs.pkg_version }}
+
+  pkgdownise:
+    name: 🌐 Pkgdownise
+    needs: [tag, version]
+    uses: tidywf/actions/.github/workflows/pkgdownise.yaml@main
+    permissions:
+      contents: write
+    with:
+      pkg_name: tidydragen
+      pkg_version: ${{ needs.version.outputs.pkg_version }}
+      dvc: true
+      install_from_source: true
+    secrets: inherit
