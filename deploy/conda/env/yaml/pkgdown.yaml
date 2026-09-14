@@ -1,0 +1,15 @@
+name: pkgdown_env
+channels:
+  - tidywf/label/dev
+  - tidywf
+  - conda-forge
+dependencies:
+  - r-tidydragen ==0.0.0.9000 # bump
+  - r-pkgdown
+  - r-quarto
+  - quarto
+  - r-here
+  - r-r6toplant
+  - plantuml
+  - r-htmltools
+  - r-reactable

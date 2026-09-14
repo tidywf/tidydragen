@@ -20,6 +20,7 @@ Remotes:
     tidywf/nemo
 Imports:
     dplyr,
+    fs,
     glue,
     jsonlite,
     nemo,
@@ -31,8 +32,6 @@ Imports:
     tidyr
 Suggests:
     arrow,
-    fs,
-    here,
     htmltools,
     knitr,
     quarto,

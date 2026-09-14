@@ -1,0 +1,62 @@
+context:
+  name: r-tidydragen
+  version: 0.0.0.9000 # bump
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  path: ../../..
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+    - r-base
+    - r-dplyr
+    - r-fs
+    - r-glue
+    - r-jsonlite
+    - r-nemo
+    - r-purrr
+    - r-r6
+    - r-readr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+  run:
+    - r-base
+    - r-dplyr
+    - r-fs
+    - r-glue
+    - r-jsonlite
+    - r-nemo
+    - r-purrr
+    - r-r6
+    - r-readr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+
+tests:
+  - r:
+      libraries:
+        - tidydragen
+  - script:
+      - tidydragen.R --version
+
+about:
+  homepage: https://github.com/tidywf/tidydragen
+  summary: Illumina DRAGEN workflow tidying
+  description: Provides tools for tidying and exploring outputs from Illumina's DRAGEN bioinformatic pipelines.
+  license: MIT
+  license_file: LICENSE
+  repository: https://github.com/tidywf/tidydragen
+  documentation: https://tidywf.github.io/tidydragen/
+
+extra:
+  recipe-maintainers:
+    - pdiakumis

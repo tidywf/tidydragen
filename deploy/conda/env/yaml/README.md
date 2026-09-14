@@ -1,0 +1,2 @@
+- `condabuild.yaml`: for conda-build
+- `tidydragen.yaml`: for conda-lock
