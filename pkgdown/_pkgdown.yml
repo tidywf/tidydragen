@@ -1,0 +1,67 @@
+url: https://tidywf.github.io/tidydragen
+development:
+  mode: auto
+title: tidydragen
+authors:
+  Peter Diakumis:
+    href: https://github.com/pdiakumis
+home:
+  title: "Tidy Illumina DRAGEN Outputs"
+  description: >
+    Parse and tidy outputs from Illumina's DRAGEN bioinformatic pipelines.
+template:
+  bootstrap: 5
+  bootswatch: zephyr
+navbar:
+  structure:
+    left: [home, articles, news]
+    right: [reference, search, github]
+  components:
+    home:
+      text: Intro
+      href: index.html
+    articles:
+      text: Articles
+      menu:
+        - text: Quickstart
+          href: articles/quickstart.html
+        - text: Installation
+          href: articles/installation.html
+        - text: Structure
+          href: articles/structure.html
+        - text: Output Naming
+          href: articles/output_naming.html
+        - text: Schema Table
+          href: articles/schema_table.html
+        - text: UML
+          href: articles/uml.html
+        - text: CI/CD Workflow
+          href: articles/cicd.html
+        - text: PostgreSQL
+          href: articles/postgresql.html
+
+    news:
+      text: NEWS
+      href: articles/NEWS.html
+reference:
+  - title: "Tool Classes"
+    contents:
+      - DragenTool
+      - DragenMap
+      - DragenFqc
+      - DragenCov
+      - DragenVar
+      - DragenRna
+      - DragenTso
+  - title: "Workflows"
+    contents:
+      - Dragen
+  - title: "Other"
+    contents:
+      - DRAGEN_TOOLS
+      - dragen_cov_bin_split
+      - dragen_cov_metric_normalize
+      - fastqc_bin_expand
+      - fastqc_bin_open
+      - s3sync
+      - s3sync_cttso

@@ -4,7 +4,7 @@ air:
 	@air format
 
 readme:
-	@quarto render README.qmd
+	@quarto render README.qmd -t gfm
 
 pkgdown:
 	@R -e "pkgdown::build_site()" --quiet --no-restore --no-save
