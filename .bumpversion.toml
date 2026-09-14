@@ -39,3 +39,8 @@ filename = "deploy/conda/env/yaml/pkgdown.yaml"
 search = "r-tidydragen =={current_version}"
 replace = "r-tidydragen =={new_version}"
 
+[[tool.bumpversion.files]]
+filename = "docker-compose.yaml"
+search = "tidydragen:${{IMAGE_TAG:-{current_version}}}"
+replace = "tidydragen:${{IMAGE_TAG:-{new_version}}}"
+
