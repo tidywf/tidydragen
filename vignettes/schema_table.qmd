@@ -1,0 +1,22 @@
+---
+title: "Schema Table"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+    echo: false
+---
+
+```{r}
+#| label: setup
+#| message: false
+
+use("tidydragen", "DRAGEN_TOOLS")
+use("nemo", "nemo_schema_reactable")
+```
+
+```{r}
+#| label: reactable
+
+nemo_schema_reactable(names(DRAGEN_TOOLS), pkg = "tidydragen")
+```

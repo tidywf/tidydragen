@@ -1,0 +1,17 @@
+---
+title: "Structure"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+Each DRAGEN tool has a single `schema.yaml` under `inst/config/tools/<tool>/`.
+See <https://tidywf.github.io/nemo/articles/structure.html> for a walkthrough of
+the `Tool`/`Workflow`/`Config` class structure and schema contents.
+
+tidydragen adds one intermediate base, `DragenTool` (inheriting `nemo::Tool`),
+which all domain tools extend. It carries the DRAGEN-shared parsing logic, most
+notably the `dragen-metrics` filetype that handles the headerless
+`section,rg,variable,count[,pct]` shape common to DRAGEN `*_metrics.csv` files.
+See the [UML](uml.html) article for the class diagram.
