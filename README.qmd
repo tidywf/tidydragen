@@ -65,15 +65,15 @@ options(width = 100)
 ## tidydragen
 
 tidydragen is an R package for parsing and tidying output from Illumina's
-[DRAGEN] secondary-analysis pipelines. Three pipelines are in scope: DNA
-tumor-normal (somatic), DNA germline-only, and RNA tumor-only.
+[DRAGEN] secondary-analysis pipelines. The following pipelines are supported:
+DNA tumor-normal (somatic), DNA germline-only, RNA tumor-only, and TSO500 ctDNA.
 
 A DRAGEN run produces dozens of files per sample across mapping, coverage,
-variant calling, RNA quantification, and (for the ctTSO/TSO500 ctDNA app)
-combined-variant and coverage reports. Consuming them downstream is fragile:
-most metrics land in headerless `section,rg,variable,count[,pct]` CSVs, some
-files fan out into several logical tables, region/phenotype variants share
-basenames, and column layouts drift between DRAGEN versions.
+variant calling, RNA quantification, and (for the ctTSO500 app) combined-variant
+and coverage reports. Consuming them downstream is fragile: most metrics land in
+headerless `section,rg,variable,count[,pct]` CSVs, some files fan out into
+several logical tables, region/phenotype variants share basenames, and column
+layouts drift between DRAGEN versions.
 
 tidydragen addresses this with a schema-driven parsing layer built on the [nemo]
 base R6 classes, supplying DRAGEN-specific schemas and parsers that turn raw
@@ -109,8 +109,7 @@ glue(
 ### Single tool
 
 Each DRAGEN tool has its own R6 class. Most DRAGEN metrics files share a
-headerless `section,rg,variable,count[,pct]` layout --- here is a
-mapping-metrics file:
+headerless `section,rg,variable,count[,pct]` layout e.g.:
 
 ```{r}
 #| label: quickstart_raw
@@ -146,8 +145,9 @@ Now read back one tidied table:
 ```{r}
 #| label: quickstart_read
 
-metrics_file <- file.path(outdir_map, "sampleA_dragenmap_metrics.parquet")
-arrow::read_parquet(metrics_file) |> str()
+file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
+  arrow::read_parquet() |>
+  str()
 ```
 
 ### Full DRAGEN run
@@ -186,7 +186,7 @@ list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 ```
 
 Results can also be written to a PostgreSQL database with `format = "db"` and a
-DBI connection --- see the [PostgreSQL article][pg].
+DBI connection (see the [PostgreSQL article][pg]).
 
 [pg]: <https://tidywf.github.io/tidydragen/articles/postgresql>
 
