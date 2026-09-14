@@ -13,8 +13,10 @@
 #
 # Pass extra CLI flags after the service name — the image's ENTRYPOINT is
 # tidydragen.R, so args append to it, e.g. include/exclude:
+# --include/--exclude take nemo tool_parser names (<tool>_<table>, e.g.
+# dragenmap_metrics), not R6 class names:
 #   docker compose run --rm tidydragen tidy -d /data/in -o /data/out \
-#     -f parquet --include DragenMap
+#     -f parquet --include dragenmap_metrics
 #
 # Build locally instead of pulling (needs conda lockfiles in repo root — see
 # Dockerfile): docker compose build

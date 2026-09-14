@@ -154,10 +154,10 @@ vs `fcc` both read "QC coverage region"). So:
   → genome, cttso → "target region"), with no region in the filename → **strip
   it from names AND stash it as a `region` column**.
 
-### Mechanics: `normalize` hook
+### Mechanics: `normalise` hook
 
-`parse_metrics` stays generic. `tidy_metrics(x, table, normalize = NULL)` takes
-an optional `normalize` fn applied to the `variable` column before the col_map
+`parse_metrics` stays generic. `tidy_metrics(x, table, normalise = NULL)` takes
+an optional `normalise` fn applied to the `variable` column before the col_map
 lookup. `DragenCov`/vc pass a region-stripper (vc's also records the detected
 region); every other table passes `NULL`.
 
@@ -204,7 +204,7 @@ different subset) as zero-row tibbles. Output name = `<prefix>_<tool>_<table>`.
 ftype classes used in the schemas:
 
 - **M** = `dragen-metrics` (shared parse; custom `tidy_` only when a pivot/split
-  or `normalize` hook is needed).
+  or `normalise` hook is needed).
 - **N** = `csv-nohead` (extra-ftype + standard `tidy_file`).
 - **csv** / **tsv** = builtin, plain-header delimited (positional rename via
   `tidy_file`, no type conversion --- the custom `parse_` must emit typed
