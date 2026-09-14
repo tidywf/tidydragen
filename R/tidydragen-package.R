@@ -10,6 +10,8 @@ dummy1 <- function() {
   # Solves R CMD check: Namespaces in Imports field not imported from
   # most are in R6 classes and thus not detected by R CMD check
   dplyr::filter
+  fs::dir_create
+  purrr::map
   readr::read_csv
   jsonlite::read_json
   tibble::tibble
