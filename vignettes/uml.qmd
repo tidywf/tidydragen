@@ -1,0 +1,36 @@
+---
+title: "UML"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+    echo: false
+---
+
+```{r}
+#| label: pkgs
+#| include: false
+
+use("nemo", "nemo_uml")
+use("tidydragen", "DRAGEN_TOOLS")
+use("purrr", "map_chr")
+use("knitr", "asis_output")
+```
+
+```{r}
+#| label: uml
+
+x <- sort(c(
+  map_chr(DRAGEN_TOOLS, "classname"),
+  "Config",
+  "Tool",
+  "DragenTool",
+  "Dragen",
+  "Workflow"
+))
+# hand it over directly to knitr for rendering, cat somehow doesn't work any more
+asis_output(nemo_uml(
+  classes = x,
+  pkg = "tidydragen"
+))
+```

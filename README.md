@@ -22,15 +22,15 @@
 
 tidydragen is an R package for parsing and tidying output from Illumina's
 [DRAGEN](https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html "Illumina DRAGEN")
-secondary-analysis pipelines. Three pipelines are in scope: DNA tumor-normal
-(somatic), DNA germline-only, and RNA tumor-only.
+secondary-analysis pipelines. The following pipelines are supported: DNA
+tumor-normal (somatic), DNA germline-only, RNA tumor-only, and TSO500 ctDNA.
 
 A DRAGEN run produces dozens of files per sample across mapping, coverage,
-variant calling, RNA quantification, and (for the ctTSO/TSO500 ctDNA app)
-combined-variant and coverage reports. Consuming them downstream is fragile:
-most metrics land in headerless `section,rg,variable,count[,pct]` CSVs, some
-files fan out into several logical tables, region/phenotype variants share
-basenames, and column layouts drift between DRAGEN versions.
+variant calling, RNA quantification, and (for the ctTSO500 app) combined-variant
+and coverage reports. Consuming them downstream is fragile: most metrics land in
+headerless `section,rg,variable,count[,pct]` CSVs, some files fan out into
+several logical tables, region/phenotype variants share basenames, and column
+layouts drift between DRAGEN versions.
 
 tidydragen addresses this with a schema-driven parsing layer built on the
 [nemo](https://github.com/tidywf/nemo "nemo") base R6 classes, supplying
@@ -55,8 +55,7 @@ package versions.
 ### Single tool
 
 Each DRAGEN tool has its own R6 class. Most DRAGEN metrics files share a
-headerless `section,rg,variable,count[,pct]` layout --- here is a
-mapping-metrics file:
+headerless `section,rg,variable,count[,pct]` layout e.g.:
 
 ```r
 indir_map <- system.file("extdata/dragenmap", package = "tidydragen")
@@ -94,8 +93,9 @@ list.files(outdir_map, pattern = "\\.parquet$")
 Now read back one tidied table:
 
 ```r
-metrics_file <- file.path(outdir_map, "sampleA_dragenmap_metrics.parquet")
-arrow::read_parquet(metrics_file) |> str()
+file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
+  arrow::read_parquet() |>
+  str()
 #> tibble [2 × 10] (S3: tbl_df/tbl/data.frame)
 #>  $ input_id                              : chr [1:2] "run1" "run1"
 #>  $ section                               : chr [1:2] "TUMOR" "NORMAL"
@@ -200,8 +200,8 @@ list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 ```
 
 Results can also be written to a PostgreSQL database with `format = "db"` and a
-DBI connection --- see the [PostgreSQL
-article](https://tidywf.github.io/tidydragen/articles/postgresql).
+DBI connection (see the [PostgreSQL
+article](https://tidywf.github.io/tidydragen/articles/postgresql)).
 
 Three optional columns can be prepended to every written table to support
 downstream tracing and joining. All are opt-in and off by default, but highly

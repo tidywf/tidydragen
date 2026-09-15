@@ -1,0 +1,153 @@
+---
+title: "Quickstart"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+use("tidydragen")
+use("arrow", "read_parquet")
+use("fs", "dir_tree")
+options(width = 90)
+```
+
+tidydragen turns raw [Illumina
+DRAGEN](https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html)
+output directories into consistently structured, versioned, analysis-ready
+tables/files. This vignette walks through the core usage patterns.
+
+## Test data
+
+Example input files ship in `inst/extdata/`, one subdirectory per tool. Larger
+real-world DRAGEN results are tracked separately via [DVC](https://dvc.org/) and
+can be downloaded with either:
+
+- `dvc pull`: requires dvc installation and cloned tidydragen source repo.
+- `?nemo::dvc_download_all()`: no additional requirements, uses
+  `download.file()` internally.
+
+No credentials are required since the remote is a public Cloudflare R2 bucket.
+
+## Input
+
+Example DRAGEN results (one subdirectory per tool):
+
+```{r}
+#| label: input_tree
+#| code-fold: true
+#| code-summary: "View input files"
+
+indir <- system.file("extdata", package = "tidydragen")
+dir_tree(indir)
+```
+
+## Output - Single Tool
+
+Each tool has its own R6 class. Construct it with the tool's output directory,
+then call `run()` to parse, tidy, and write in one step:
+
+```{r}
+#| label: single_tool
+#| message: false
+
+outdir <- file.path(tempdir(), "qs_map")
+DragenMap$new(file.path(indir, "dragenmap"))$run(
+  output_dir = outdir,
+  format = "parquet",
+  input_id = "sampleA_id"
+)
+list.files(outdir, pattern = "\\.parquet$")
+```
+
+### File naming
+
+Output files follow the pattern `{prefix}_{tool}_{table}.parquet`, where
+`prefix` is derived from the input filenames (here `sampleA`). A single input
+file can fan out into several tables (e.g. the mapping outputs yield `metrics`,
+`time`, `fraglenhist`, and more). The `metadata.parquet` file is always written
+alongside the data files and records input/output paths and package versions.
+
+### Reading a table back
+
+```{r}
+#| label: read_back
+
+m <- read_parquet(file.path(outdir, "sampleA_dragenmap_metrics.parquet"))
+m |> str()
+```
+
+## Output - Full DRAGEN run
+
+`Dragen` processes all supported tools in one call. Point it at a directory
+containing DRAGEN results; tools whose files are absent simply contribute
+nothing, so the same call works across e.g. the germline, somatic tumor-normal,
+RNA and ctTSO500 pipelines:
+
+```{r}
+#| label: dragen_run
+#| message: false
+
+outdir_d <- file.path(tempdir(), "qs_dragen")
+d <- Dragen$new(indir)
+d$run(
+  output_dir = outdir_d,
+  format = "parquet"
+)
+list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
+```
+
+## ID columns
+
+Three optional columns can be prepended to every written table. All are off by
+default:
+
+| Argument                | Column added   | Contains                                   |
+| ----------------------- | -------------- | ------------------------------------------ |
+| `input_id = "x"`        | `input_id`     | sample or run identifier you supply        |
+| `output_id = "x"`       | `output_id`    | processing run identifier you supply       |
+| `prefix_include = TRUE` | `input_prefix` | filename prefix extracted from input files |
+
+These are useful when loading results from multiple samples into the same
+database table or combined data frame:
+
+```{r}
+#| label: id_cols
+#| message: false
+
+outdir_id <- file.path(tempdir(), "qs_map_id")
+DragenMap$new(file.path(indir, "dragenmap"))$run(
+  output_dir = outdir_id,
+  format = "parquet",
+  input_id = "sampleA",
+  output_id = "out1",
+  prefix_include = TRUE
+)
+read_parquet(file.path(outdir_id, "sampleA_dragenmap_metrics.parquet")) |>
+  str()
+```
+
+## Metadata
+
+Every `run()` writes a `metadata.parquet` alongside the data files. It records
+the input directory, output directory, IDs, and the versions of R packages used:
+
+```{r}
+#| label: metadata
+
+read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
+```
+
+## Other useful articles
+
+- [Schema table](schema_table.html): browse every table and column for all
+  supported DRAGEN tools
+- [Structure](structure.html): how schemas, versioning, and the Tool/Workflow
+  class hierarchy work
+- [Output naming](output_naming.html): how region/phenotype variants are folded
+  into the output prefix
+- [PostgreSQL](postgresql.html): writing results to a database
