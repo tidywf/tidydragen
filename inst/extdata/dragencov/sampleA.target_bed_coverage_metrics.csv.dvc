@@ -1,0 +1,5 @@
+outs:
+- md5: 0c8337b4768713c0a84a7029a4d3f818
+  size: 2398
+  hash: md5
+  path: sampleA.target_bed_coverage_metrics.csv

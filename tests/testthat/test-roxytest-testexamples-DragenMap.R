@@ -2,7 +2,7 @@
 
 # File R/DragenMap.R: @testexamples
 
-test_that("Function DragenMap() @ L71", {
+test_that("Function DragenMap() @ L69", {
   
   cls <- DragenMap; tool <- "dragenmap"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -22,15 +22,13 @@ test_that("Function DragenMap() @ L71", {
   expect_equal(names(tf)[names(tf) != "input_id"][1], "total_runtime")
   expect_equal(tf$total_runtime, 8189.85)
   expect_equal(tf$time_aligning_reads, 2240.12)
-  expect_equal(tf$time_sorting, 120)
-  expect_equal(tf$time_umi_read_collapsing_and_remapping, 90)
-  expect_equal(tf$time_estimating_beta_binomial_overdispersion_wgs, 5)
+  expect_equal(tf$time_variant_calling, 3725.68)
   # fraglenhist: per-#Sample: blocks split, sample id kept, headers dropped
   fl <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_fraglenhist", lf, value = TRUE)))
   expect_equal(names(fl)[names(fl) != "input_id"], c("sample", "fraglen", "count"))
   expect_setequal(unique(fl$sample), c("sampleA", "sampleA_tn"))
-  expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA"], 12345)
-  expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA_tn"], 999)
+  expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA"], 51)
+  expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA_tn"], 36)
   # trimmer metrics (cttso): plain dragen-metrics table, pct auto-paired
   tr <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_trimmer", lf, value = TRUE)))
   expect_true(all(c("reads_tot_input", "reads_trim_tot", "reads_trim_tot_pct", "polygkmers3r1_remaining") %in% names(tr)))

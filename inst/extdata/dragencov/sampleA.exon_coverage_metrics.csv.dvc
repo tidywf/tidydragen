@@ -1,0 +1,5 @@
+outs:
+- md5: 99f01f572d55a6f7c11891af78086a56
+  size: 2555
+  hash: md5
+  path: sampleA.exon_coverage_metrics.csv

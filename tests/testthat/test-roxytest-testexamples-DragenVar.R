@@ -2,7 +2,7 @@
 
 # File R/DragenVar.R: @testexamples
 
-test_that("Function DragenVar() @ L119", {
+test_that("Function DragenVar() @ L124", {
   
   cls <- DragenVar; tool <- "dragenvar"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -15,33 +15,38 @@ test_that("Function DragenVar() @ L119", {
   expect_equal(nrow(vcA), 2L)
   expect_setequal(vcA$section, c("prefilter", "postfilter"))
   expect_true(all(c("section", "rg", "region", "total", "total_pct", "chrx_snps") %in% names(vcA)))
-  expect_equal(vcA$mnps[vcA$section == "prefilter"], 318)
+  expect_equal(vcA$mnps[vcA$section == "prefilter"], 51104)
   # SUMMARY-only metrics are gone with the dropped section
   expect_false("child_sample" %in% names(vcA))
   expect_true(all(vcA$region == "genome"))
   post <- vcA[vcA$section == "postfilter", ]
-  expect_equal(post$total, 1145323)
+  expect_equal(post$total, 5031538)
   expect_equal(post$total_pct, 100)
-  expect_equal(post$chrx_snps, 20569)
+  expect_equal(post$chrx_snps, 130382)
   # sampleB: targeted vc — region stripped to same tidy col, region col = targetreg
   vcB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_vc", lf, value = TRUE)))
   expect_true(all(vcB$region == "targetreg"))
   expect_true(all(c("chrx_snps", "qc_region_callability_region1_pct") %in% names(vcB)))
-  expect_equal(vcB[vcB$section == "prefilter", ]$chrx_snps, 300)
+  # cttso targeted vc emits a single postfilter row
+  expect_equal(vcB$chrx_snps[vcB$section == "postfilter"], 11)
   # sv: count-only total + pct-paired PASS breakdown
   sv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_sv", lf, value = TRUE)))
   expect_equal(sv$total_pass, 169)
   expect_equal(sv$del, 50)
   expect_equal(sv$del_pct, 29.59)
   # cnv
+  # sampleA (somatic WGS): tumor purity + amplification pass rate; no SEX GENOTYPER preamble
   cnv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_cnv", lf, value = TRUE)))
+  expect_equal(nrow(cnv), 1L)
   expect_equal(cnv$purity_tumor, 0.54)
   expect_equal(cnv$n_amp_pass_pct, 86.54)
-  # SEX GENOTYPER preamble captured (not dropped) as two columns on the one cnv row
-  expect_equal(nrow(cnv), 1L)
-  expect_equal(cnv$sex_karyotype, "XY")
-  expect_equal(cnv$sex_genotyper_confidence, 0.95)
-  expect_equal(cnv$beta_binomial_overdispersion_m, 200)
+  expect_false("sex_karyotype" %in% names(cnv))
+  # sampleB (cttso): SEX GENOTYPER preamble captured (not dropped) as columns on the one cnv row
+  cnvB <- arrow::read_parquet(file.path(odir, grep("sampleB_dragenvar_cnv", lf, value = TRUE)))
+  expect_equal(nrow(cnvB), 1L)
+  expect_equal(cnvB$sex_karyotype, "XY")
+  expect_equal(cnvB$sex_genotyper_confidence, 0.475)
+  expect_false("purity_tumor" %in% names(cnvB))
   # tmb (4-col, no pct)
   tmb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_tmb", lf, value = TRUE)))
   expect_equal(tmb$tmb, 3.46)
@@ -87,16 +92,16 @@ test_that("Function DragenVar() @ L119", {
   expect_equal(msi$sites_unstable, 204)
   expect_equal(msi$pct_unstable, 1.38)
   expect_equal(msi$result_valid, "true")
-  expect_equal(msi$sum_jsd, 12.34)
+  # sum_jsd key absent in this DRAGEN version's JSON -> NA
+  expect_true(is.na(msi$sum_jsd))
   expect_false(any(c("command", "outputprefix") %in% tolower(names(msi))))
   # ploidyvcf (native gz VCF parse): one row per contig, FORMAT DC:NDC split out
   pv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_ploidyvcf", lf, value = TRUE)))
   expect_equal(names(pv)[names(pv) != "input_id"], c("chrom", "qual", "filter", "dc", "ndc"))
   xrow <- pv[pv$chrom == "chrX", ]
-  expect_equal(xrow$dc, 45.1178)
-  expect_equal(xrow$ndc, 0.972261)
-  expect_equal(pv$filter[pv$chrom == "chrY"], "LowQual")
-  expect_true(all(pv$filter[pv$chrom != "chrY"] == "PASS"))
+  expect_equal(xrow$dc, 45.991)
+  expect_equal(xrow$ndc, 0.990984)
+  expect_true(all(pv$filter == "PASS"))
   # gvcf (cttso): vc-shaped postfilter metrics; region -> targetreg column, pct auto-paired
   gv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenvar_gvcf", lf, value = TRUE)))
   expect_equal(nrow(gv), 1L)

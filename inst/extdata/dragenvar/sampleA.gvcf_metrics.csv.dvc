@@ -1,0 +1,5 @@
+outs:
+- md5: f22739ea944a00adda78c11046362cec
+  size: 1572
+  hash: md5
+  path: sampleA.gvcf_metrics.csv

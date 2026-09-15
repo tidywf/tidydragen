@@ -1,0 +1,5 @@
+outs:
+- md5: a3e69b4ea80cb463baf0b95be2926866
+  size: 1384
+  hash: md5
+  path: sampleA.trimmer_metrics.csv

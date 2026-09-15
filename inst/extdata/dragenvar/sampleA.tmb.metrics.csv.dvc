@@ -1,0 +1,5 @@
+outs:
+- md5: 24a9508bc7158ec354674f5127826f19
+  size: 279
+  hash: md5
+  path: sampleA.tmb.metrics.csv

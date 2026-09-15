@@ -1,0 +1,5 @@
+outs:
+- md5: 3445ff77ca327ad41a23b6077111e57a
+  size: 837
+  hash: md5
+  path: sampleB.cnv_metrics.csv

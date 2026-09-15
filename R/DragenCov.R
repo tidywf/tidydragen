@@ -42,8 +42,8 @@
 #' rc <- arrow::read_parquet(file.path(odir, grep("umccr_dragencov_reportbedcumu", lf, value = TRUE)))
 #' expect_true(all(c("chrom", "start", "end", "cov_min", "pct_above") %in% names(rc)))
 #' expect_true(is.integer(rc$cov_min))
-#' # threshold pct_above_20 for chr1:2555638-2565382 = 98.96
-#' expect_equal(rc$pct_above[rc$cov_min == 20 & rc$start == 2555638], 98.96)
+#' # threshold pct_above_20 for the region starting at 470290 = 99.11
+#' expect_equal(rc$pct_above[rc$cov_min == 20 & rc$start == 470290], 99.11)
 #' # read_cov_report BED (per-gene) stays a single table
 #' rr <- arrow::read_parquet(file.path(odir, grep("umccr_dragencov_readreportbed", lf, value = TRUE)))
 #' expect_true(all(c("gene_id", "read1_cvg", "read2_cvg") %in% names(rr)))

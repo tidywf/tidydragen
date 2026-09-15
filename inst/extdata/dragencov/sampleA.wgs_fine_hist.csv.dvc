@@ -1,0 +1,5 @@
+outs:
+- md5: 966877b8ce380848667aec8a8aa93665
+  size: 16500
+  hash: md5
+  path: sampleA.wgs_fine_hist.csv

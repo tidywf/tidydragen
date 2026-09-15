@@ -1,0 +1,5 @@
+outs:
+- md5: b961712fc28571d7af8c12408bc15d9f
+  size: 1119
+  hash: md5
+  path: sampleA.microsat_output.json

@@ -2,7 +2,7 @@
 
 # File R/DragenTso.R: @testexamples
 
-test_that("Function DragenTso() @ L78", {
+test_that("Function DragenTso() @ L79", {
   
   cls <- DragenTso; tool <- "dragentso"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -14,7 +14,7 @@ test_that("Function DragenTso() @ L78", {
   sv <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_smallvariants", lf, value = TRUE)))
   expect_equal(names(sv)[names(sv) != "input_id"],
     c("gene", "chrom", "pos", "ref", "alt", "vaf", "dp", "pdot", "cdot", "consequence", "exons"))
-  expect_equal(nrow(sv), 3L)
+  expect_equal(nrow(sv), 1287L)
   expect_equal(sv$gene[sv$pos == 2488153], "TNFRSF14")
   expect_true(is.na(sv$gene[sv$pos == 4367323]))
   expect_equal(sv$vaf[sv$pos == 2488153], 0.4768)
@@ -23,8 +23,8 @@ test_that("Function DragenTso() @ L78", {
   fu <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_fusions", lf, value = TRUE)))
   expect_true(all(c("sample", "name", "chr1", "pos1", "vaf", "is_cosmic_genepair",
     "fusion_directionality_known") %in% names(fu)))
-  expect_equal(fu$gene1[1], "BCR")
-  expect_equal(fu$vaf[1], 0.28)
+  expect_equal(fu$gene1[1], "EML4")
+  expect_equal(fu$vaf[1], 0.00682348716107)
   # tmbtrace: 27 v2 columns
   tt <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_tmbtrace", lf, value = TRUE)))
   expect_equal(tt$gene[1], "TNFRSF14")
@@ -44,7 +44,7 @@ test_that("Function DragenTso() @ L78", {
   expect_equal(gc$gene[1], "TNFRSF14")
   # SAR fan-out: sarinfo / sarqc / sarsnv / sarcnv / sarswds / sarsw
   si <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarinfo", lf, value = TRUE)))
-  expect_equal(si$sample_id, "L2600560")
+  expect_equal(si$sample_id, "sampleA")
   expect_equal(nrow(si), 1L)
   qc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarqc", lf, value = TRUE)))
   expect_equal(nrow(qc), 1L)
@@ -53,13 +53,14 @@ test_that("Function DragenTso() @ L78", {
   expect_equal(qc$msi_pct_unstable_sites, 0)
   expect_true("pct_target_04x_mean" %in% names(qc))
   sn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarsnv", lf, value = TRUE)))
-  expect_equal(nrow(sn), 3L)
+  expect_equal(nrow(sn), 10L)
   expect_equal(sn$hgnc[sn$pos == 2488153], "TNFRSF14")
   expect_equal(sn$consequence[sn$pos == 2488153], "missense_variant")
   expect_true(all(c("chrom", "pos", "transcript", "hgvsc") %in% names(sn)))
+  # this sample reports no CNVs -> sarcnv is an empty (0-row) table with the schema cols
   cn <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarcnv", lf, value = TRUE)))
-  expect_equal(cn$gene, "MET")
-  expect_equal(cn$cn_type, "AMPLIFICATION")
+  expect_equal(nrow(cn), 0L)
+  expect_true(all(c("gene", "cn_type") %in% names(cn)))
   ds <- arrow::read_parquet(file.path(odir, grep("sampleA_dragentso_sarswds", lf, value = TRUE)))
   expect_equal(nrow(ds), 7L)
   expect_true("RefSeq" %in% ds$name)

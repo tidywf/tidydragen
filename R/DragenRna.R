@@ -13,12 +13,12 @@
 #' (lf <- list.files(odir, pattern = "dragenrna_.*parquet", full.names = FALSE))
 #' @testexamples
 #' fus <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenrna_fusion", lf, value = TRUE)))
-#' expect_equal(fus$fusions_all_unfiltered, 3078)
-#' expect_equal(fus$fusions_unique_passing, 2)
+#' expect_equal(fus$fusions_all_unfiltered, 7008)
+#' expect_equal(fus$fusions_unique_passing, 20)
 #' qnt <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenrna_quant", lf, value = TRUE)))
 #' expect_equal(qnt$library_orientation, "ISR")
 #' expect_equal(qnt$genes_tot, 62700)
-#' expect_equal(qnt$genes_cov_gt1x_pct, 33.34)
+#' expect_equal(qnt$genes_cov_gt1x_pct, 36.94)
 #' @export
 DragenRna <- R6::R6Class(
   "DragenRna",
