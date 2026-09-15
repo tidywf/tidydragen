@@ -56,6 +56,43 @@ s3sync <- function(src, dest, pats = NULL, dryrun = FALSE) {
   nemo::s3sync(src = src, dest = dest, pats = pats, dryrun = dryrun)
 }
 
+#' AWS S3 Sync Helper (BCLConvert `Reports/`)
+#'
+#' Sync only the parse-relevant CSVs from a DRAGEN BCLConvert `Reports/`
+#' directory (plus `RunInfo.xml` for run metadata). Excludes the binaries
+#' (`IndexMetricsOut.bin`), `SampleSheet.csv`, and `report.html`. The two tile-level CSVs
+#' (`Demultiplex_Tile_Stats.csv`, `Quality_Tile_Metrics.csv`) are large
+#' (tens of MB) but still parse-relevant; override `pats` to drop them.
+#'
+#' @inheritParams nemo::s3sync
+#'
+#' @examples
+#' \dontrun{
+#' d1 <- "s3://pipeline-prod-cache-503977275616-ap-southeast-2/byob-icav2/production/primary"
+#' src <- file.path(d1, "260618_A01052_0309_BHTYNGDSXF/20260619ec753acc/Reports")
+#' dest <- sub(d1, here::here("nogit", "bclconvert"), src)
+#' s3sync_bcl(src, dest, dryrun = TRUE)
+#' }
+#' @export
+s3sync_bcl <- function(src, dest, pats = NULL, dryrun = FALSE) {
+  pats_default <- tibble::tribble(
+    ~inex , ~pat                         ,
+    "ex"  , "*"                          ,
+    "in"  , "Adapter_Cycle_Metrics.csv"  ,
+    "in"  , "Adapter_Metrics.csv"        ,
+    "in"  , "Demultiplex_Stats.csv"      ,
+    "in"  , "Demultiplex_Tile_Stats.csv" ,
+    "in"  , "Index_Hopping_Counts.csv"   ,
+    "in"  , "Quality_Metrics.csv"        ,
+    "in"  , "Quality_Tile_Metrics.csv"   ,
+    "in"  , "Top_Unknown_Barcodes.csv"   ,
+    "in"  , "fastq_list.csv"             ,
+    "in"  , "RunInfo.xml"
+  )
+  pats <- pats %||% pats_default
+  nemo::s3sync(src = src, dest = dest, pats = pats, dryrun = dryrun)
+}
+
 #' AWS S3 Sync Helper (ctTSO / dragen-tso500-ctdna)
 #'
 #' Sync only the small, parse-relevant files from a DRAGEN TSO500 ctDNA run.

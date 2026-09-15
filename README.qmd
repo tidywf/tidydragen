@@ -147,7 +147,7 @@ Now read back one tidied table:
 
 file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
   arrow::read_parquet() |>
-  str()
+  str(list.len = 10)
 ```
 
 ### Full DRAGEN run
