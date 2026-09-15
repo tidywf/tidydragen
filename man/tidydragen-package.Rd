@@ -6,6 +6,8 @@
 \alias{tidydragen-package}
 \title{tidydragen: Tidy DRAGEN Outputs}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Tidies outputs from Illumina DRAGEN workflows. Writes to various formats for downstream ingestion into data warehouses and databases.
 }
 \seealso{

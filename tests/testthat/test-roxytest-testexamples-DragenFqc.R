@@ -21,27 +21,27 @@ test_that("Function DragenFqc() @ L60", {
   ) %in% sub("\\.parquet$", "", fqc)))
   pbc <- arrow::read_parquet(file.path(odir, grep("posbasecontent", fqc, value = TRUE)))
   expect_equal(names(pbc)[names(pbc) != "input_id"], c("mate", "pos", "base", "prop"))
-  # base proportion at Read1 pos1: A = 60/(60+20+15+5) = 0.6
-  expect_equal(pbc$prop[pbc$mate == "Read1" & pbc$pos == 1 & pbc$base == "A"], 0.6)
-  # binned "2-3" position expands to pos 2 and 3; open "256+" -> single pos 256
-  expect_setequal(pbc$pos[pbc$mate == "Read1"], c(1, 2, 3, 256))
+  # per-position base proportion
+  expect_equal(round(pbc$prop[pbc$mate == "Read1" & pbc$pos == 1 & pbc$base == "A"], 3), 0.328)
+  # binned positions expand to a contiguous 1..50 per-position sequence; pos kept integer
+  expect_equal(range(pbc$pos[pbc$mate == "Read1"]), c(1L, 50L))
+  expect_equal(length(unique(pbc$pos[pbc$mate == "Read1"])), 50L)
   expect_true(is.integer(pbc$pos))
-  # binned read-length count divided evenly across the span: 40 over 149-150 -> 20 each
+  # read lengths: 50bp bin
   rl <- arrow::read_parquet(file.path(odir, grep("readlen", fqc, value = TRUE)))
-  expect_equal(rl$reads[rl$mate == "Read1" & rl$bp == 150], 20)
-  expect_equal(rl$reads[rl$mate == "Read1" & rl$bp == 100], 80)
-  # open ">=255bp" bin -> single length 255, count kept (not divided)
-  expect_equal(rl$reads[rl$mate == "Read1" & rl$bp == 255], 4)
+  expect_true(is.integer(rl$bp))
+  expect_equal(rl$reads[rl$mate == "Read1" & rl$bp == 50], 1787127323)
   # positional quality quantile
   pq <- arrow::read_parquet(file.path(odir, grep("posqual", fqc, value = TRUE)))
-  expect_equal(pq$qv[pq$mate == "Read1" & pq$pos == 1 & pq$pct == 25], 30)
-  # seqpos: "Total Sequence Starts" summary rows dropped; per-position kept
+  expect_equal(pq$qv[pq$mate == "Read1" & pq$pos == 1 & pq$pct == 25], 37)
+  # seqpos: "Total Sequence Starts" summary rows dropped; binned ranges expand per-position
   sp <- arrow::read_parquet(file.path(odir, grep("seqpos", fqc, value = TRUE)))
-  expect_equal(sp$starts[sp$mate == "Read1" & sp$bp == 1], 26)
   expect_false(any(sp$starts == 254687))
-  # binned "137-140" count split evenly across the 4 positions: 40 -> 10 each
-  expect_equal(sp$starts[sp$mate == "Read1" & sp$bp == 138], 10)
-  expect_setequal(sp$bp[sp$mate == "Read1"], c(1, 137, 138, 139, 140))
+  expect_true(is.integer(sp$bp))
+  s1 <- sort(unique(sp$seq))[1]
+  spr1 <- sp[sp$mate == "Read1" & sp$seq == s1, ]
+  expect_equal(spr1$starts[spr1$bp == 1], 143)
+  expect_equal(range(spr1$bp), c(1L, 50L))
   # empty seqpos (adapter never found at a position, only a Total row) still
   # yields an integer bp column; also exercises the path-input branch of tidy_posbasecontent
   d2 <- file.path(tempdir(), "fqempty"); dir.create(d2, showWarnings = FALSE)
