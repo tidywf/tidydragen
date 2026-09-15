@@ -4,7 +4,7 @@ channels:
   - tidywf
   - conda-forge
 dependencies:
-  - r-tidydragen ==0.0.0.9000 # bump
+  - r-tidydragen ==0.0.0.9001 # bump
   - r-pkgdown
   - r-quarto
   - quarto

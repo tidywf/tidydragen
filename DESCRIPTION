@@ -1,6 +1,6 @@
 Package: tidydragen
 Title: Tidy DRAGEN Outputs
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Description: Tidies outputs from Illumina DRAGEN workflows. Writes to
     various formats for downstream ingestion into data warehouses
     and databases.
