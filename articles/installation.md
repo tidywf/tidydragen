@@ -1,0 +1,87 @@
+# Installation
+
+### R
+
+Using {remotes} directly from GitHub:
+
+``` r
+
+install.packages("remotes")
+remotes::install_github("tidywf/tidydragen") # latest main commit
+remotes::install_github("tidywf/tidydragen@v0.0.0.9001") # specific version
+```
+
+### Conda
+
+[![conda-version](https://anaconda.org/tidywf/r-tidydragen/badges/version.svg "Conda package version")![conda-latest](https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg "Conda package latest release date")](https://anaconda.org/tidywf/r-tidydragen)
+
+The conda package is available from the tidywf channel at
+<https://anaconda.org/tidywf/r-tidydragen>.
+
+``` bash
+conda create -n tidydragen_env -c tidywf -c conda-forge r-tidydragen==0.0.0.9001
+conda activate tidydragen_env
+```
+
+### Docker
+
+[![ghcr-latest](https://ghcr-badge.egpl.dev/tidywf/tidydragen/latest_tag?color=%2344cc11&ignore=latest&label=docker-version-latest&trim=.png "GHCR latest tag")![ghcr-size](https://ghcr-badge.egpl.dev/tidywf/tidydragen/size?tag=0.0.0.9001 "GHCR image size")](https://github.com/tidywf/tidydragen/pkgs/container/tidydragen)
+
+The Docker image is available from the GitHub Container Registry at
+<https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>.
+
+``` bash
+docker pull --platform linux/amd64 ghcr.io/tidywf/tidydragen:0.0.0.9001
+```
+
+## Docker Compose
+
+The repo ships a `docker-compose.yaml` that wraps the CLI: it mounts a
+local input directory (`./in`, read-only) and output directory
+(`./out`), then tidies the input to parquet. Place a pipeline output
+directory under `./in` and run:
+
+``` bash
+mkdir -p in out
+docker compose run --rm tidydragen
+```
+
+Override defaults with environment variables (or a `.env` file):
+`IMAGE_TAG` (image tag, defaults to the pinned package version),
+`IN_DIR`, `OUT_DIR`, and `FORMAT` (`parquet` \| `tsv` \| `csv` \|
+`rds`). The image’s `ENTRYPOINT` is `tidydragen.R`, so any flags after
+the service name append to it:
+
+``` bash
+IN_DIR=/path/to/samples docker compose run --rm tidydragen tidy -d /data/in -o /data/out -f tsv
+```
+
+### Pixi
+
+If you use [Pixi](https://pixi.sh/), you can create a new isolated
+environment with the deployed conda package:
+
+``` bash
+pixi init -c tidywf -c conda-forge ./tidy_env
+cd ./tidy_env
+pixi add r-tidydragen==0.0.0.9001
+```
+
+Then you can create a task to run the `tidydragen.R` CLI script:
+
+``` bash
+pixi task add tidydragen "tidydragen.R"
+pixi run tidydragen --help
+```
+
+Or activate the environment and use tidydragen directly in an R
+environment:
+
+``` bash
+pixi shell
+R
+```
+
+``` text
+library(tidydragen)
+```

@@ -1,0 +1,51 @@
+# PostgreSQL
+
+Besides parquet/TSV/CSV/RDS, tidydragen can write tidy tables straight
+into a relational database by passing `format = "db"` and a live DBI
+connection. This example uses PostgreSQL via
+[RPostgres](https://rpostgres.r-dbi.org/), but any DBI-compatible
+backend works.
+
+## Writing a run to the database
+
+``` r
+
+dbconn <- DBI::dbConnect(
+  drv = RPostgres::Postgres(),
+  dbname = "tidydragen",
+  user = "me"
+)
+
+indir <- system.file("extdata", package = "tidydragen")
+d <- Dragen$new(indir)
+d$run(
+  format = "db",
+  input_id = "run1",
+  output_id = "out1",
+  prefix_include = TRUE,
+  dbconn = dbconn
+)
+
+DBI::dbDisconnect(dbconn)
+```
+
+Each tidy table becomes a database table named `<tool>_<table>` (e.g.
+`dragenmap_metrics`, `dragenvar_vc`). The optional [ID
+columns](https://tidywf.github.io/tidydragen/articles/quickstart.html#id-columns)
+— `input_id`, `output_id`, `input_prefix` — let you stack many
+samples/runs into the same table and still trace each row back to its
+source.
+
+## Schema generation
+
+The database schema is derived from the tool `schema.yaml` files. To
+capture a canonical schema for a fixed set of inputs, write the tables
+once and dump the schema:
+
+``` shell
+pg_dump --schema-only tidydragen > schema.sql
+```
+
+New tool/column versions are merged into the schema over time; diff
+successive dumps to review changes before applying them to a shared
+database.
