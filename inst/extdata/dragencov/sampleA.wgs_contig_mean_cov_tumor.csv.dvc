@@ -1,0 +1,5 @@
+outs:
+- md5: 9f51ee2b5909d37e54073ce7beaec24b
+  size: 819
+  hash: md5
+  path: sampleA.wgs_contig_mean_cov_tumor.csv

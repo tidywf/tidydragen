@@ -1,0 +1,5 @@
+outs:
+- md5: bbfaffd2025e41dced249b34b0be5f76
+  size: 1458
+  hash: md5
+  path: sampleA.qc-coverage-region-umccr_read_cov_report.bed

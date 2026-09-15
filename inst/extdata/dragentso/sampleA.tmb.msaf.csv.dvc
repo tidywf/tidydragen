@@ -1,0 +1,5 @@
+outs:
+- md5: 9a8ace1f2b5af8a0181fec30ce1e44d0
+  size: 730
+  hash: md5
+  path: sampleA.tmb.msaf.csv

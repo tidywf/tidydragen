@@ -1,0 +1,5 @@
+outs:
+- md5: fedd17c1e388734d86c0500bbfb06e0f
+  size: 1299
+  hash: md5
+  path: sampleA.ploidy_estimation_metrics.csv

@@ -1,0 +1,5 @@
+outs:
+- md5: 0185fd5d24abe1060279bfb95b50502c
+  size: 631
+  hash: md5
+  path: sampleA.exon_cov_report.tsv

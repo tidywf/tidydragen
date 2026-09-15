@@ -1,0 +1,5 @@
+outs:
+- md5: 5fcb30547a0b0068bf49866bf3eaf915
+  size: 1304
+  hash: md5
+  path: sampleA.ploidy.vcf.gz

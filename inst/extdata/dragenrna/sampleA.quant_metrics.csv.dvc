@@ -1,0 +1,5 @@
+outs:
+- md5: 566735241a0d08bb0f4182b801193149
+  size: 1461
+  hash: md5
+  path: sampleA.quant_metrics.csv

@@ -1,0 +1,5 @@
+outs:
+- md5: f1d452e24fa2b7c97f30b43e278e2fb6
+  size: 349
+  hash: md5
+  path: sampleA.sv_metrics.csv

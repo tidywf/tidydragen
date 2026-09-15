@@ -1,0 +1,5 @@
+outs:
+- md5: 2eefd83c863b23d95de4321680e56d04
+  size: 199
+  hash: md5
+  path: sampleA.fusion_metrics.csv
