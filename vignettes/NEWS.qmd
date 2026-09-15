@@ -58,11 +58,24 @@ region/chrom `normalise` hook declare explicit `tidy_<table>()` one-liners.
 Fail-loud policies (`on_unmapped`, `on_coerce_fail`, `on_unexpected_col`) catch
 schema drift instead of silently dropping data.
 
-### ctTSO app-layer support (`r pr(3)`)
+### ctTSO app-layer support
+
+- `r pr(3)`
 
 `DragenTso` parses the TSO500 ctDNA outputs beyond the shared DRAGEN metrics:
 CombinedVariantOutput small variants, Fusions, TMB trace/msaf, exon/gene
 coverage, and a 6-way fan-out of the `SampleAnalysisResults.json`.
+
+### Test data
+
+- `r pr(8)`
+
+Test fixtures rebuilt from real DRAGEN pipeline outputs (trimmed per file), with
+real sample IDs scrubbed to `sampleA`/`sampleB`, and tracked with
+[DVC](https://dvc.org) on a Cloudflare R2 remote. The default remote is
+public-read, so a fresh clone or CI run fetches fixtures with `dvc pull` and no
+credentials. The `@testexamples` assertions were updated to the real-data
+values; the roxytest suite passes.
 
 ### Infrastructure
 

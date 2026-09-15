@@ -26,12 +26,41 @@ Condensed phase log (detail lives in git history):
   JSON (`contamination`); the new `DragenTso` tool (6 file-based app-layer
   tables
   - the 6-way SAR JSON fan-out).
-- **Phase 6 Tier 3 --- deferred (parked by user 2026-09-10).** `cnv.vcf`,
-  `hard-filtered.vcf.gz`, `SmallVariants_Annotated.json.gz`,
-  `TMB_Annotated.json.gz`. The 2 VCFs need native VCF parsing (bcftools was
-  rejected in Phase 5) or the bcftools dep; the 2 annotation JSONs have no
-  dracarys port source. `events.csv` and `MetricsOutput.tsv` are permanently
-  skipped (provenance / inconsistent, not warehouse metrics).
+- **Phase 6 Tier 3 --- resolved.** `cnv.vcf` + `hard-filtered.vcf.gz` → moved to
+  a **separate VCF-handling tool/pipeline** (out of the metrics scope; see the
+  BCLConvert/InterOp/VCF new-scope section). `SmallVariants_Annotated.json.gz` +
+  `TMB_Annotated.json.gz` → **dropped, out of scope** (VCF pipeline covers the
+  variant data). `events.csv` and `MetricsOutput.tsv` remain permanently skipped
+  (provenance / inconsistent, not warehouse metrics).
+
+## TODO: new scope --- BCLConvert + InterOp + VCF
+
+Beyond the 6 DRAGEN pipelines, new output sources need tools:
+
+- **BCLConvert** --- DRAGEN BCL Convert demux outputs (`Demultiplex_Stats.csv`,
+  `Quality_Metrics.csv`, `Adapter_Metrics.csv`, `Top_Unknown_Barcodes.csv`,
+  `fastq_list.csv`, `Reports/`). Per-lane/per-index, not the DRAGEN metrics
+  format; new `DragenBcl` Tool with plain csv ftype tables. **In scope for
+  tidydragen** --- it's a DRAGEN component (dragen-bclconvert), so it belongs
+  here with the other Dragen tools.
+
+- **InterOp** --- parse the **`interop` tool's summary outputs** (the CSVs
+  `interop_summary`/`interop_index-summary` etc. emit from the run-level QC
+  binaries), NOT the raw `InterOp/*.bin` files. Plain-header CSV/tabular ftype ---
+  no binary decode in tidydragen; the `interop` toolchain runs upstream.
+
+- **VCF (separate tool/pipeline)** --- absorbs the ex-Tier-3 `cnv.vcf` +
+  `hard-filtered.vcf.gz` plus DRAGEN VCFs generally. Own tool/pipeline, NOT the
+  metrics parsers; needs native VCF parsing (bcftools rejected in Phase 5) or
+  the bcftools dep --- resolve that first. The annotated JSONs
+  (`SmallVariants_Annotated`/`TMB_Annotated`) are dropped; this pipeline covers
+  the variant data instead.
+
+BCLConvert + InterOp are run-scoped (prefix = run/flowcell id, not sample).
+BCLConvert is a DRAGEN component → **stays in tidydragen** as `DragenBcl`.
+InterOp is DRAGEN-adjacent (Illumina run QC, not DRAGEN); leaning toward
+tidydragen too --- if the `interop` summary CSVs are straightforward, not worth
+a separate package. User to inspect the outputs before deciding.
 
 ## Decisions (locked)
 
@@ -304,24 +333,52 @@ so the copies collide → a private `refine_files` override on `DragenTso` keeps
 the `/Results/` copy (falls back to row 1 for single-copy basenames). The SAR
 JSON is `Logs_Intermediates`-only, so its match is a dedup no-op.
 
-### Tier 3 --- deferred (parked)
+### Tier 3 --- resolved (moved out / dropped)
 
-`cnv.vcf` / `hard-filtered.vcf.gz` (dracarys parses these via bcftools
-shell-out, which tidydragen rejected in Phase 5 --- needs native VCF parsing or
-the bcftools dep) and `SmallVariants_Annotated.json.gz` /
-`TMB_Annotated.json.gz` (gzipped annotation JSON, no dracarys port source;
-reconcile vs CVO/SAR before adding).
+`cnv.vcf` / `hard-filtered.vcf.gz` → **separate VCF-handling tool/pipeline**
+(see new-scope section); not the metrics parsers.
+`SmallVariants_Annotated.json.gz` / `TMB_Annotated.json.gz` → **dropped, out of
+scope** (the VCF pipeline covers the variant data; no dracarys port source
+anyway).
 
 ## Testing
 
 roxytest only --- `@examples` + `@testexamples` blocks, `make roxydoc`
 regenerates `tests/`. Per-tool example runs `obj$run(format="parquet")` and
-asserts table names + row counts. Fixtures under `inst/extdata/<tool>/`
-(untracked by design), trimmed from real `nogit/` runs; respect the 200 KB
-pre-commit large-file cap (truncate histograms/beds/traces). The DRAGEN and
-TSO500 docs MCP servers (`mcp__dragen__*`, `mcp__dragen-tso-500-*`) ground
-schema authoring against official metric definitions --- prefer
+asserts table names + row counts. Fixtures under `inst/extdata/<tool>/`, trimmed
+from real `nogit/` runs, **DVC-tracked on Cloudflare R2** (see below); respect
+the 200 KB pre-commit large-file cap (truncate histograms/beds/traces). The
+DRAGEN and TSO500 docs MCP servers (`mcp__dragen__*`, `mcp__dragen-tso-500-*`)
+ground schema authoring against official metric definitions --- prefer
 `searchDocumentation`/`getPage` over `askQuestion`.
+
+### Test-data rebuild + DVC tracking + edge cases
+
+- **Fixtures rebuilt from real runs (done).** All 40 `inst/extdata/<tool>/`
+  fixtures regenerated from real `nogit/` (+2 external `~/s3`) DRAGEN outputs,
+  trimmed per file (metrics/JSON WHOLE; histograms/beds/traces/contig truncated;
+  SAR `smallVariants`→10; fastqc ≤50bp to stay under the 200 KB cap). Real
+  sample IDs scrubbed from filenames AND contents → `sampleA`/`sampleB`
+  (tumor→`sampleA`, normal→`sampleA_tn`). Reproducible via
+  `inst/scripts/build_fixtures.sh` (idempotent, seed 42; will not clobber the
+  hand-trimmed fastqc). All 212 roxytests pass; `@testexamples` rewritten to the
+  real-data values.
+- **DVC tracking (done).** `dvc init`; per-file `*.dvc` for all 40 fixtures.
+  House pattern (matches `nemo`/`tidywigits`): default remote
+  `cloudflare_r2_tidydragen` = public-read `r2.dev` URL in tracked `.dvc/config`
+  (so CI/fresh-clone `dvc pull` needs no creds); write remote
+  `cloudflare_r2_tidydragen_push` = `s3://tidywf-data/tidydragen/r-pkg/dvc` in
+  gitignored `.dvc/config.local`. Push:
+  `AWS_PROFILE=umccr-cloudflare-r2 dvc push -r cloudflare_r2_tidydragen_push`.
+- **Edge cases covered (deliberate sourcing).** vcA ← accreditation germline
+  (MNPs); `sampleB.cnv` ← cttso (`SEX GENOTYPER` preamble); `sampleB.ploidy` ←
+  edge-case run ("median coverage" naming vs the percentile naming). Also
+  exercised: region+pheno coverage variants, per-chrom `hethom`, `"NaN"`→NA
+  JSON, empty `sarcnv` (0-row table), absent-key → NA (`sum_jsd`).
+- **Still TODO.** Run `inst/scripts/{tool,fastqc}_audit.R` over the full
+  `nogit/` corpus to confirm zero unmapped-metric / coerce-fail drift; confirm a
+  fixture/test still exercises each `on_*` fail-loud path and ragged 4/5-field
+  rows (not obviously covered by the current green suite).
 
 ## Implementation notes
 
