@@ -4,7 +4,21 @@ channels:
   - tidywf
   - conda-forge
 dependencies:
-  - r-tidydragen
+  # tidydragen is installed from source in the bump job (R CMD INSTALL .),
+  # so list its runtime deps directly rather than the (not-yet-published)
+  # r-tidydragen conda package. Keep in sync with deploy/conda/recipe/recipe.yaml.
+  - r-base
+  - r-dplyr
+  - r-fs
+  - r-glue
+  - r-jsonlite
+  - r-nemo
+  - r-purrr
+  - r-r6
+  - r-readr
+  - r-rlang
+  - r-tibble
+  - r-tidyr
   - r-quarto
   - quarto
   - bump-my-version
