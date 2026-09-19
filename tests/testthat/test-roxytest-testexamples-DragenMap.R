@@ -2,7 +2,7 @@
 
 # File R/DragenMap.R: @testexamples
 
-test_that("Function DragenMap() @ L63", {
+test_that("Function DragenMap() @ L73", {
   
   cls <- DragenMap; tool <- "dragenmap"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -57,5 +57,15 @@ test_that("Function DragenMap() @ L63", {
   expect_equal(gb$windows[gb$gc_window == 0], 132617)
   expect_equal(gb$pct[gb$gc_window == 40], 3.595)
   expect_equal(gb$cov_norm[gb$gc_window == 0], 0.0120)
+  # replaymain: run provenance (version, hash-table build, config dump)
+  rp <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_replaymain\\.parquet$", lf, value = TRUE)))
+  expect_equal(rp$dragen_version, "13.021.779.4.4.4")
+  rc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_replayconfig\\.parquet$", lf, value = TRUE)))
+  expect_equal(rc$value[rc$name == "Aligner.align-direction"], "4")
+  # cttso emits one replay.json + time_metrics.csv PER DRAGEN invocation stage
+  # (DragenCaller, Tmb); same basename, genuinely different content -> lands
+  # as 2 rows via nemo's generic same-basename disambiguation, not a dedup
+  expect_equal(length(grep("sampleB.*_dragenmap_replaymain\\.parquet$", lf, value = TRUE)), 2L)
+  expect_equal(length(grep("sampleB.*_dragenmap_time\\.parquet$", lf, value = TRUE)), 2L)
 })
 

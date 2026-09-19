@@ -5,7 +5,7 @@
 \title{DragenMap Object}
 \description{
 Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
-metrics, and the fragment-length histogram.
+metrics, the fragment-length histogram, and run provenance (\code{replay.json}).
 }
 \examples{
 cls <- DragenMap; tool <- "dragenmap"
@@ -36,6 +36,8 @@ dropped). Needed for the \code{umimain}/\code{umihist} and \code{gcmain}/\code{g
 \item \href{#method-DragenMap-tidy_gcmain}{\code{DragenMap$tidy_gcmain()}}
 \item \href{#method-DragenMap-tidy_time}{\code{DragenMap$tidy_time()}}
 \item \href{#method-DragenMap-parse_fraglenhist}{\code{DragenMap$parse_fraglenhist()}}
+\item \href{#method-DragenMap-parse_replaymain}{\code{DragenMap$parse_replaymain()}}
+\item \href{#method-DragenMap-tidy_replaymain}{\code{DragenMap$tidy_replaymain()}}
 }
 }
 \if{html}{\out{
@@ -158,6 +160,44 @@ Parse \code{fragment_length_hist.csv} into a long tibble.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenMap-parse_replaymain"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-parse_replaymain}{}}}
+\subsection{Method \code{parse_replaymain()}}{
+Parse a \code{replay.json} file; returns the whole
+parsed JSON wrapped in a one-row tibble list-column. \code{tidy_replaymain()}
+fans it out.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_replaymain(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DragenMap-tidy_replaymain"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-tidy_replaymain}{}}}
+\subsection{Method \code{tidy_replaymain()}}{
+Fan a \code{replay.json} file into \code{replaymain} (run
+provenance, 1 row) and \code{replayconfig} (the full \code{dragen_config} dump,
+long).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_replaymain(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{(\code{character(1)} or \code{tibble()})\cr Path to file or parsed tibble.}
 }
 \if{html}{\out{</div>}}
 }

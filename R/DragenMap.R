@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
-#' metrics, and the fragment-length histogram.
+#' metrics, the fragment-length histogram, and run provenance (`replay.json`).
 #'
 #' @examples
 #' cls <- DragenMap; tool <- "dragenmap"
@@ -59,6 +59,16 @@
 #' expect_equal(gb$windows[gb$gc_window == 0], 132617)
 #' expect_equal(gb$pct[gb$gc_window == 40], 3.595)
 #' expect_equal(gb$cov_norm[gb$gc_window == 0], 0.0120)
+#' # replaymain: run provenance (version, hash-table build, config dump)
+#' rp <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_replaymain\\.parquet$", lf, value = TRUE)))
+#' expect_equal(rp$dragen_version, "13.021.779.4.4.4")
+#' rc <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_replayconfig\\.parquet$", lf, value = TRUE)))
+#' expect_equal(rc$value[rc$name == "Aligner.align-direction"], "4")
+#' # cttso emits one replay.json + time_metrics.csv PER DRAGEN invocation stage
+#' # (DragenCaller, Tmb); same basename, genuinely different content -> lands
+#' # as 2 rows via nemo's generic same-basename disambiguation, not a dedup
+#' expect_equal(length(grep("sampleB.*_dragenmap_replaymain\\.parquet$", lf, value = TRUE)), 2L)
+#' expect_equal(length(grep("sampleB.*_dragenmap_time\\.parquet$", lf, value = TRUE)), 2L)
 #' @export
 DragenMap <- R6::R6Class(
   "DragenMap",
@@ -190,6 +200,53 @@ DragenMap <- R6::R6Class(
       d <- dplyr::bind_rows(blocks, .id = "sample")
       attr(d, "file_version") <- "latest"
       d[]
+    },
+    #' @description Parse a `replay.json` file; returns the whole
+    #' parsed JSON wrapped in a one-row tibble list-column. `tidy_replaymain()`
+    #' fans it out.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_replaymain = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
+      d <- tibble::tibble(data = list(j))
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Fan a `replay.json` file into `replaymain` (run
+    #' provenance, 1 row) and `replayconfig` (the full `dragen_config` dump,
+    #' long).
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_replaymain = function(x) {
+      if (!tibble::is_tibble(x)) {
+        x <- self$parse_replaymain(x)
+      }
+      j <- x$data[[1]]
+      sys <- j[["system"]] %||% list()
+      htb <- j[["hash_table_build"]] %||% list()
+      replaymain <- tibble::tibble(
+        dragen_version = sys[["dragen_version"]] %||% NA_character_,
+        nodename = sys[["nodename"]] %||% NA_character_,
+        kernel_release = sys[["kernel_release"]] %||% NA_character_,
+        ht_sw_version = htb[["sw_version"]] %||% NA_character_,
+        hash_table_version = htb[["hash_table_version"]] %||% NA_character_,
+        ht_command_line = htb[["command_line_options"]] %||% NA_character_,
+        command_line = j[["command_line"]] %||% NA_character_
+      )
+      attr(replaymain, "file_version") <- "latest"
+      cfg <- j[["dragen_config"]] %||% list()
+      if (length(cfg) > 0) {
+        replayconfig <- purrr::map(cfg, \(e) {
+          tibble::tibble(
+            name = e[["name"]] %||% NA_character_,
+            value = e[["value"]] %||% NA_character_
+          )
+        }) |>
+          purrr::list_rbind()
+      } else {
+        replayconfig <- nemo::empty_tbl(cnames = c("name", "value"))
+      }
+      attr(replayconfig, "file_version") <- "latest"
+      list(replaymain = replaymain, replayconfig = replayconfig) |>
+        nemo::nemo_enframe()
     }
   )
 )
