@@ -26,27 +26,26 @@ child1 <- system.file(
 Initial development release. `tidydragen` is a [nemo][nemo] child package that
 parses and tidies outputs from Illumina DRAGEN pipelines into wide-format tidy
 tibbles ready for a data warehouse, writing to parquet, TSV, CSV, RDS, or a
-database. The following pipelines are supported for starters: DNA tumor-normal
-(somatic), DNA germline-only, RNA tumor-only, and ctTSO500 (the DRAGEN TSO500
-ctDNA app layer).
+database. Pipelines supported so far: DNA tumor-normal (somatic), DNA
+germline-only, RNA tumor-only, BCLConvert, and ctTSO500 (the DRAGEN TSO500 ctDNA
+app layer).
 
 ### Tools
 
-Six domain tools, each with its own `inst/config/tools/<tool>/schema.yaml`, all
-inheriting an intermediate `DragenTool` base (itself `inherit = nemo::Tool`) and
-orchestrated by the `Dragen` workflow class (exported `DRAGEN_TOOLS`), which
+The following Tools, each with its own `inst/config/tools/<tool>/schema.yaml`,
+all inheriting an intermediate `DragenTool` base (itself `inherit = nemo::Tool`)
+and orchestrated by the `Dragen` workflow class (exported `DRAGEN_TOOLS`), which
 tolerates absent files so each pipeline can expose a different subset.
 
-- `DragenMap`: mapping/time metrics, fragment-length histogram, and the cttso
-  trimmer / UMI / GC-bias metrics.
-- `DragenFqc`: the 8 flat per-section FastQC tables.
-- `DragenCov`: coverage metrics/bins/cumulative, contig mean, fine histogram,
-  and cov-report-bed tables across every region
-  (`wgs`/`tmb`/`exon`/`target_bed`/ `qc-coverage-region-*`) and phenotype.
-- `DragenVar`: variant/SV/CNV/ploidy/TMB/HRD/gVCF metrics plus microsatellite
-  (JSON), native ploidy-VCF parse, and contamination (JSON).
-- `DragenRna`: fusion and quant metrics.
-- `DragenTso`: the ctTSO app-layer (`r pr(3)`).
+| Tool        | Outputs                                                                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `DragenMap` | Mapping/time metrics, fragment-length histogram, and the cttso trimmer / UMI / GC-bias metrics.                                                                                      |
+| `DragenFqc` | The 8 flat per-section FastQC tables.                                                                                                                                                |
+| `DragenCov` | Coverage metrics/bins/cumulative, contig mean, fine histogram, and cov-report-bed tables across every region (`wgs`/`tmb`/`exon`/`target_bed`/`qc-coverage-region-*`) and phenotype. |
+| `DragenVar` | Variant/SV/CNV/ploidy/TMB/HRD/gVCF metrics plus microsatellite (JSON), native ploidy-VCF parse, and contamination (JSON).                                                            |
+| `DragenRna` | Fusion and quant metrics.                                                                                                                                                            |
+| `DragenTso` | The ctTSO app-layer.                                                                                                                                                                 |
+| `DragenBcl` | The BCLConvert `Reports/` demultiplexing outputs.                                                                                                                                    |
 
 ### The DRAGEN metrics parser
 
@@ -65,6 +64,34 @@ schema drift instead of silently dropping data.
 `DragenTso` parses the TSO500 ctDNA outputs beyond the shared DRAGEN metrics:
 CombinedVariantOutput small variants, Fusions, TMB trace/msaf, exon/gene
 coverage, and a 6-way fan-out of the `SampleAnalysisResults.json`.
+
+### BCLConvert support
+
+`DragenBcl` parses a BCLConvert `Reports/` directory into 10 tables --- nine
+per-lane / per-index CSVs plus `runinfo` from `RunInfo.xml`:
+
+| Output table           | Source file                  |
+| ---------------------- | ---------------------------- |
+| `adaptercyclemetrics`  | `Adapter_Cycle_Metrics.csv`  |
+| `adaptermetrics`       | `Adapter_Metrics.csv`        |
+| `demultiplexstats`     | `Demultiplex_Stats.csv`      |
+| `demultiplextilestats` | `Demultiplex_Tile_Stats.csv` |
+| `indexhoppingcounts`   | `Index_Hopping_Counts.csv`   |
+| `qualitymetrics`       | `Quality_Metrics.csv`        |
+| `qualitytilemetrics`   | `Quality_Tile_Metrics.csv`   |
+| `topunknownbarcodes`   | `Top_Unknown_Barcodes.csv`   |
+| `fastqlist`            | `fastq_list.csv`             |
+| `runinfo`              | `RunInfo.xml`                |
+
+`runinfo` is one-row run metadata (canonical run id, flow cell, instrument, and
+read lengths) parsed with `xml2`. The combined `Index` column is split into
+`index`/`index2` throughout, and the FASTQ list's `Read1File`/`Read2File` are
+pivoted long into `read`/`filepath`.
+
+Unlike the sample-scoped tools these outputs are **run-scoped** with no sample
+id in the file name, so outputs are named `dragenbcl_<table>` (no prefix); a run
+spanning several `Reports/` directories disambiguates collisions as
+`dragenbcl_<table>_2`, each traceable to its source file via the metadata table.
 
 ### Test data
 

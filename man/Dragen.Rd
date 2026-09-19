@@ -5,7 +5,7 @@
 \title{Dragen Object}
 \description{
 Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFqc}, \link{DragenCov},
-\link{DragenVar}, \link{DragenRna}, \link{DragenTso}) over a shared results directory. A DRAGEN run
+\link{DragenVar}, \link{DragenRna}, \link{DragenTso}, \link{DragenBcl}) over a shared results directory. A DRAGEN run
 exposes a different subset of files depending on the pipeline (germline,
 somatic tumor-normal, RNA); tools whose files are absent contribute nothing,
 so a single \code{Dragen$run()} works across all pipelines.

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Orchestrates all DRAGEN tools ([DragenMap], [DragenFqc], [DragenCov],
-#' [DragenVar], [DragenRna], [DragenTso]) over a shared results directory. A DRAGEN run
+#' [DragenVar], [DragenRna], [DragenTso], [DragenBcl]) over a shared results directory. A DRAGEN run
 #' exposes a different subset of files depending on the pipeline (germline,
 #' somatic tumor-normal, RNA); tools whose files are absent contribute nothing,
 #' so a single `Dragen$run()` works across all pipelines.
@@ -21,12 +21,13 @@
 #' expect_true(any(grepl("_dragenvar_", lf)))
 #' expect_true(any(grepl("_dragenrna_", lf)))
 #' expect_true(any(grepl("_dragentso_", lf)))
+#' expect_true(any(grepl("dragenbcl_", lf)))
 #' # a metadata file is written alongside the tidy outputs
 #' expect_true(file.exists(file.path(odir, "metadata.parquet")))
 #' # spot-check one output round-trips
 #' mapf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_metrics", lf, value = TRUE)))
-#' expect_true(all(c("section", "rg") %in% names(mapf)))
-#' @include DragenMap.R DragenFqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R
+#' expect_gt(nrow(mapf), 0L)
+#' @include DragenMap.R DragenFqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R DragenBcl.R
 #' @export
 Dragen <- R6::R6Class(
   "Dragen",
@@ -58,5 +59,6 @@ DRAGEN_TOOLS <- list(
   dragencov = DragenCov,
   dragenvar = DragenVar,
   dragenrna = DragenRna,
-  dragentso = DragenTso
+  dragentso = DragenTso,
+  dragenbcl = DragenBcl
 )

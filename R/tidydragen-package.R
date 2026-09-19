@@ -16,4 +16,5 @@ dummy1 <- function() {
   jsonlite::read_json
   tibble::tibble
   tidyr::pivot_wider
+  xml2::read_xml
 }
