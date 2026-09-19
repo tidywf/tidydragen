@@ -39,7 +39,7 @@ tolerates absent files so each pipeline can expose a different subset.
 
 | Tool        | Outputs                                                                                                                                                                              |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `DragenMap` | Mapping/time metrics, fragment-length histogram, and the cttso trimmer / UMI / GC-bias metrics.                                                                                      |
+| `DragenMap` | Mapping/time metrics, fragment-length histogram, cttso trimmer / UMI / GC-bias metrics, and run provenance (`replay.json`: DRAGEN version, hash-table build version, config dump).   |
 | `DragenFqc` | The 8 flat per-section FastQC tables.                                                                                                                                                |
 | `DragenCov` | Coverage metrics/bins/cumulative, contig mean, fine histogram, and cov-report-bed tables across every region (`wgs`/`tmb`/`exon`/`target_bed`/`qc-coverage-region-*`) and phenotype. |
 | `DragenVar` | Variant/SV/CNV/ploidy/TMB/HRD/gVCF metrics plus microsatellite (JSON), native ploidy-VCF parse, and contamination (JSON).                                                            |

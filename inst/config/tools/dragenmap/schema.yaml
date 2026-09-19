@@ -1099,3 +1099,58 @@ tables:
         type: 'float'
         description: 'normalized coverage at this GC value'
         versions: ['latest']
+  replaymain:
+    description: 'DRAGEN run provenance main elements.'
+    pattern: "-replay\\.json$"
+    ftype: 'json'
+    columns:
+      - raw: 'system.dragen_version'
+        tidy: 'dragen_version'
+        type: 'char'
+        description: 'DRAGEN runtime version that produced this run'
+        versions: ['latest']
+      - raw: 'system.nodename'
+        tidy: 'nodename'
+        type: 'char'
+        description: 'hostname of the node the run executed on'
+        versions: ['latest']
+      - raw: 'system.kernel_release'
+        tidy: 'kernel_release'
+        type: 'char'
+        description: 'kernel release of the run node'
+        versions: ['latest']
+      - raw: 'hash_table_build.sw_version'
+        tidy: 'ht_sw_version'
+        type: 'char'
+        description: 'DRAGEN version that built the reference hash table (not the run version)'
+        versions: ['latest']
+      - raw: 'hash_table_build.hash_table_version'
+        tidy: 'hash_table_version'
+        type: 'char'
+        description: 'hash table format version'
+        versions: ['latest']
+      - raw: 'hash_table_build.command_line_options'
+        tidy: 'ht_command_line'
+        type: 'char'
+        description: 'command line used to build the reference hash table'
+        versions: ['latest']
+      - raw: 'command_line'
+        tidy: 'command_line'
+        type: 'char'
+        description: 'command line used to invoke this run (often just --config-file=dragen_config.toml; the real arguments are in replayconfig)'
+        versions: ['latest']
+  replayconfig:
+    description: 'DRAGEN run provenance dragen_config dump.'
+    pattern: '__no_file_match__replayconfig'
+    ftype: 'json'
+    columns:
+      - raw: 'name'
+        tidy: 'name'
+        type: 'char'
+        description: 'config option name'
+        versions: ['latest']
+      - raw: 'value'
+        tidy: 'value'
+        type: 'char'
+        description: 'config option value'
+        versions: ['latest']
