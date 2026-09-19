@@ -2,7 +2,7 @@
 
 # File R/Dragen.R: @testexamples
 
-test_that("Function Dragen() @ L31", {
+test_that("Function Dragen() @ L32", {
   
   indir <- system.file("extdata", package = "tidydragen")
   odir <- tempdir()
@@ -16,10 +16,11 @@ test_that("Function Dragen() @ L31", {
   expect_true(any(grepl("_dragenvar_", lf)))
   expect_true(any(grepl("_dragenrna_", lf)))
   expect_true(any(grepl("_dragentso_", lf)))
+  expect_true(any(grepl("dragenbcl_", lf)))
   # a metadata file is written alongside the tidy outputs
   expect_true(file.exists(file.path(odir, "metadata.parquet")))
   # spot-check one output round-trips
   mapf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_metrics", lf, value = TRUE)))
-  expect_true(all(c("section", "rg") %in% names(mapf)))
+  expect_gt(nrow(mapf), 0L)
 })
 

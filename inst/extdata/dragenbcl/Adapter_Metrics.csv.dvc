@@ -1,0 +1,5 @@
+outs:
+- md5: b6b244c19205224e26b8537f0401e6ee
+  size: 3318
+  hash: md5
+  path: Adapter_Metrics.csv

@@ -1,0 +1,534 @@
+tables:
+  adaptercyclemetrics:
+    description: 'BCLConvert per-cycle adapter-trimming metrics (Adapter_Cycle_Metrics.csv).'
+    pattern: "^Adapter_Cycle_Metrics\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'Sample_ID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7) from the sample sheet'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5) from the sample sheet'
+        versions: ['latest']
+      - raw: 'ReadNumber'
+        tidy: 'read'
+        type: 'int'
+        description: 'read number'
+        versions: ['latest']
+      - raw: 'Cycle'
+        tidy: 'cycle'
+        type: 'int'
+        description: 'cycle number'
+        versions: ['latest']
+      - raw: 'NumClustersWithAdapterAtCycle'
+        tidy: 'cluster_n'
+        type: 'float'
+        description: 'number of clusters where the adapter was detected to begin precisely at this cycle'
+        versions: ['latest']
+      - raw: '% At Cycle'
+        tidy: 'cluster_pct'
+        type: 'float'
+        description: 'fraction of all clusters where the adapter was detected to begin precisely at this cycle (0-1)'
+        versions: ['latest']
+  adaptermetrics:
+    description: 'BCLConvert adapter-trimming metrics per sample/read (Adapter_Metrics.csv).'
+    pattern: "^Adapter_Metrics\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'Sample_ID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7) from the sample sheet'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5) from the sample sheet'
+        versions: ['latest']
+      - raw: 'ReadNumber'
+        tidy: 'read'
+        type: 'int'
+        description: 'read number'
+        versions: ['latest']
+      - raw: 'AdapterBases'
+        tidy: 'adapter_bases'
+        type: 'float'
+        description: 'total number of bases trimmed as adapter from the read'
+        versions: ['latest']
+      - raw: 'SampleBases'
+        tidy: 'sample_bases'
+        type: 'float'
+        description: 'total number of bases not trimmed from the read'
+        versions: ['latest']
+      - raw: '% Adapter Bases'
+        tidy: 'adapter_bases_pct'
+        type: 'float'
+        description: 'fraction of bases trimmed as adapter from the read (0-1)'
+        versions: ['latest']
+  demultiplexstats:
+    description: 'BCLConvert demultiplexing stats per sample/lane (Demultiplex_Stats.csv). The combined Index column is split into index/index2.'
+    pattern: "^Demultiplex_Stats\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'SampleID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7); split from the combined Index column'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5); split from the combined Index column'
+        versions: ['latest']
+      - raw: '# Reads'
+        tidy: 'reads_n'
+        type: 'float'
+        description: 'total number of pass-filter reads mapping to this sample for the lane'
+        versions: ['latest']
+      - raw: '# Perfect Index Reads'
+        tidy: 'perfect_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matching the indexes exactly'
+        versions: ['latest']
+      - raw: '# One Mismatch Index Reads'
+        tidy: 'one_mismatch_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matched with exactly one base mismatched'
+        versions: ['latest']
+      - raw: '# Two Mismatch Index Reads'
+        tidy: 'two_mismatch_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matched with exactly two bases mismatched'
+        versions: ['latest']
+      - raw: '% Reads'
+        tidy: 'reads_pct'
+        type: 'float'
+        description: 'fraction of pass-filter reads mapping to this sample for the lane (0-1)'
+        versions: ['latest']
+      - raw: '% Perfect Index Reads'
+        tidy: 'perfect_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with barcodes matching the indexes exactly (0-1)'
+        versions: ['latest']
+      - raw: '% One Mismatch Index Reads'
+        tidy: 'one_mismatch_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with one base mismatched (0-1)'
+        versions: ['latest']
+      - raw: '% Two Mismatch Index Reads'
+        tidy: 'two_mismatch_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with two bases mismatched (0-1)'
+        versions: ['latest']
+  demultiplextilestats:
+    description: 'BCLConvert per-tile demultiplexing stats (Demultiplex_Tile_Stats.csv). Same as demultiplexstats plus a tile column; Index split into index/index2.'
+    pattern: "^Demultiplex_Tile_Stats\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'SampleID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7); split from the combined Index column'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5); split from the combined Index column'
+        versions: ['latest']
+      - raw: 'Tile'
+        tidy: 'tile'
+        type: 'int'
+        description: 'tile number'
+        versions: ['latest']
+      - raw: '# Reads'
+        tidy: 'reads_n'
+        type: 'float'
+        description: 'total number of pass-filter reads mapping to this sample for the tile'
+        versions: ['latest']
+      - raw: '# Perfect Index Reads'
+        tidy: 'perfect_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matching the indexes exactly'
+        versions: ['latest']
+      - raw: '# One Mismatch Index Reads'
+        tidy: 'one_mismatch_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matched with exactly one base mismatched'
+        versions: ['latest']
+      - raw: '# Two Mismatch Index Reads'
+        tidy: 'two_mismatch_idx_reads_n'
+        type: 'float'
+        description: 'number of mapped reads with barcodes matched with exactly two bases mismatched'
+        versions: ['latest']
+      - raw: '% Reads'
+        tidy: 'reads_pct'
+        type: 'float'
+        description: 'fraction of pass-filter reads mapping to this sample for the tile (0-1)'
+        versions: ['latest']
+      - raw: '% Perfect Index Reads'
+        tidy: 'perfect_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with barcodes matching the indexes exactly (0-1)'
+        versions: ['latest']
+      - raw: '% One Mismatch Index Reads'
+        tidy: 'one_mismatch_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with one base mismatched (0-1)'
+        versions: ['latest']
+      - raw: '% Two Mismatch Index Reads'
+        tidy: 'two_mismatch_idx_reads_pct'
+        type: 'float'
+        description: 'fraction of mapped reads with two bases mismatched (0-1)'
+        versions: ['latest']
+  indexhoppingcounts:
+    description: 'BCLConvert index-hopping read counts for unique dual indexes (Index_Hopping_Counts.csv).'
+    pattern: "^Index_Hopping_Counts\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'SampleID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet, if the index combination corresponds to a sample'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7) from the sample sheet'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5) from the sample sheet'
+        versions: ['latest']
+      - raw: '# Reads'
+        tidy: 'reads_n'
+        type: 'float'
+        description: 'total number of pass-filter reads mapping to the index and index2 combination'
+        versions: ['latest']
+      - raw: '% of Hopped Reads'
+        tidy: 'hopped_reads_pct'
+        type: 'float'
+        description: 'fraction of hopped pass-filter reads mapping to the index and index2 combination (0-1); empty for provided sample combinations'
+        versions: ['latest']
+      - raw: '% of All Reads'
+        tidy: 'all_reads_pct'
+        type: 'float'
+        description: 'fraction of all pass-filter reads mapping to the index and index2 combination (0-1)'
+        versions: ['latest']
+  qualitymetrics:
+    description: 'BCLConvert quality-score metrics per sample/read (Quality_Metrics.csv).'
+    pattern: "^Quality_Metrics\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'SampleID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7) from the sample sheet'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5) from the sample sheet'
+        versions: ['latest']
+      - raw: 'ReadNumber'
+        tidy: 'read'
+        type: 'int'
+        description: 'read number'
+        versions: ['latest']
+      - raw: 'Yield'
+        tidy: 'yield'
+        type: 'float'
+        description: 'total number of bases mapping to the sample in this read'
+        versions: ['latest']
+      - raw: 'YieldQ30'
+        tidy: 'yield_q30'
+        type: 'float'
+        description: 'total number of bases with quality score >= 30 mapping to the sample in this read'
+        versions: ['latest']
+      - raw: 'QualityScoreSum'
+        tidy: 'qscore_sum'
+        type: 'float'
+        description: 'sum of quality scores of bases mapping to the sample in this read'
+        versions: ['latest']
+      - raw: 'Mean Quality Score (PF)'
+        tidy: 'qscore_mean_pf'
+        type: 'float'
+        description: 'mean quality score of bases mapping to the sample in this read'
+        versions: ['latest']
+      - raw: '% Q30'
+        tidy: 'q30_pct'
+        type: 'float'
+        description: 'fraction of bases with quality score >= 30 mapping to the sample in this read (0-1)'
+        versions: ['latest']
+  qualitytilemetrics:
+    description: 'BCLConvert per-tile quality-score metrics (Quality_Tile_Metrics.csv). Same as qualitymetrics plus a tile column.'
+    pattern: "^Quality_Tile_Metrics\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'SampleID'
+        tidy: 'sampleid'
+        type: 'char'
+        description: 'sample ID from the sample sheet'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'index (i7) from the sample sheet'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'index2 (i5) from the sample sheet'
+        versions: ['latest']
+      - raw: 'ReadNumber'
+        tidy: 'read'
+        type: 'int'
+        description: 'read number'
+        versions: ['latest']
+      - raw: 'Tile'
+        tidy: 'tile'
+        type: 'int'
+        description: 'tile number'
+        versions: ['latest']
+      - raw: 'Yield'
+        tidy: 'yield'
+        type: 'float'
+        description: 'total number of bases mapping to the sample in this read/tile'
+        versions: ['latest']
+      - raw: 'YieldQ30'
+        tidy: 'yield_q30'
+        type: 'float'
+        description: 'total number of bases with quality score >= 30 mapping to the sample in this read/tile'
+        versions: ['latest']
+      - raw: 'QualityScoreSum'
+        tidy: 'qscore_sum'
+        type: 'float'
+        description: 'sum of quality scores of bases mapping to the sample in this read/tile'
+        versions: ['latest']
+      - raw: 'Mean Quality Score (PF)'
+        tidy: 'qscore_mean_pf'
+        type: 'float'
+        description: 'mean quality score of bases mapping to the sample in this read/tile'
+        versions: ['latest']
+      - raw: '% Q30'
+        tidy: 'q30_pct'
+        type: 'float'
+        description: 'fraction of bases with quality score >= 30 mapping to the sample in this read/tile (0-1)'
+        versions: ['latest']
+  topunknownbarcodes:
+    description: 'BCLConvert most-common barcode sequences not listed in the sample sheet (Top_Unknown_Barcodes.csv).'
+    pattern: "^Top_Unknown_Barcodes\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'index'
+        tidy: 'index'
+        type: 'char'
+        description: 'first index value of this unlisted sequence'
+        versions: ['latest']
+      - raw: 'index2'
+        tidy: 'index2'
+        type: 'char'
+        description: 'second index value of this unlisted sequence'
+        versions: ['latest']
+      - raw: '# Reads'
+        tidy: 'reads_n'
+        type: 'float'
+        description: 'total number of pass-filter reads mapping to the index and index2 combination'
+        versions: ['latest']
+      - raw: '% of Unknown Barcodes'
+        tidy: 'unknown_barcodes_pct'
+        type: 'float'
+        description: 'fraction of unknown pass-filter reads mapping to the index and index2 combination (0-1)'
+        versions: ['latest']
+      - raw: '% of All Reads'
+        tidy: 'all_reads_pct'
+        type: 'float'
+        description: 'fraction of all pass-filter reads mapping to the index and index2 combination (0-1)'
+        versions: ['latest']
+  runinfo:
+    description: 'Illumina run metadata from RunInfo.xml (copied into Reports/ by BCLConvert). One row per run; read lengths pivoted wide (data reads -> read1/read2, index reads -> index1/index2).'
+    pattern: "^RunInfo\\.xml$"
+    # Nominal only: parse_runinfo() intercepts (custom parse_<table> wins in nemo
+    # dispatch), so this ftype is never consulted by the parser. Named honestly for
+    # the file format (as microsat/contamination/sarinfo = 'json', ploidyvcf = 'vcf').
+    ftype: 'xml'
+    columns:
+      - raw: 'run_id'
+        tidy: 'run_id'
+        type: 'char'
+        description: 'run id (Run/@Id), e.g. 260618_A01052_0309_BHTYNGDSXF'
+        versions: ['latest']
+      - raw: 'run_number'
+        tidy: 'run_number'
+        type: 'int'
+        description: 'run number (Run/@Number)'
+        versions: ['latest']
+      - raw: 'flowcell'
+        tidy: 'flowcell'
+        type: 'char'
+        description: 'flow cell id'
+        versions: ['latest']
+      - raw: 'instrument'
+        tidy: 'instrument'
+        type: 'char'
+        description: 'instrument id'
+        versions: ['latest']
+      - raw: 'date'
+        tidy: 'date'
+        type: 'char'
+        description: 'run date as written in RunInfo.xml (locale-dependent string, e.g. "6/18/2026 12:24:46 PM"); left uncast'
+        versions: ['latest']
+      - raw: 'read1_cycles'
+        tidy: 'read1_cycles'
+        type: 'int'
+        description: 'cycles in the first non-index (data) read'
+        versions: ['latest']
+      - raw: 'read2_cycles'
+        tidy: 'read2_cycles'
+        type: 'int'
+        description: 'cycles in the second non-index (data) read; NA for single-end'
+        versions: ['latest']
+      - raw: 'index1_cycles'
+        tidy: 'index1_cycles'
+        type: 'int'
+        description: 'cycles in the first index read; NA if absent'
+        versions: ['latest']
+      - raw: 'index2_cycles'
+        tidy: 'index2_cycles'
+        type: 'int'
+        description: 'cycles in the second index read; NA for single-index'
+        versions: ['latest']
+      - raw: 'lane_count'
+        tidy: 'lane_count'
+        type: 'int'
+        description: 'number of lanes (FlowcellLayout/@LaneCount)'
+        versions: ['latest']
+      - raw: 'surface_count'
+        tidy: 'surface_count'
+        type: 'int'
+        description: 'number of surfaces (FlowcellLayout/@SurfaceCount)'
+        versions: ['latest']
+      - raw: 'swath_count'
+        tidy: 'swath_count'
+        type: 'int'
+        description: 'number of swaths (FlowcellLayout/@SwathCount)'
+        versions: ['latest']
+      - raw: 'tile_count'
+        tidy: 'tile_count'
+        type: 'int'
+        description: 'number of tiles per swath (FlowcellLayout/@TileCount)'
+        versions: ['latest']
+      - raw: 'flowcell_side'
+        tidy: 'flowcell_side'
+        type: 'int'
+        description: 'flow cell side (FlowcellLayout/@FlowcellSide); NA if absent'
+        versions: ['latest']
+      - raw: 'tile_naming_convention'
+        tidy: 'tile_naming_convention'
+        type: 'char'
+        description: 'tile naming convention (TileSet/@TileNamingConvention); NA if absent'
+        versions: ['latest']
+  fastqlist:
+    description: 'BCLConvert FASTQ list (fastq_list.csv). Read1File/Read2File are pivoted long into read/filepath.'
+    pattern: "^fastq_list\\.csv$"
+    ftype: 'csv'
+    columns:
+      - raw: 'RGID'
+        tidy: 'rgid'
+        type: 'char'
+        description: 'read group ID (index.index2.lane)'
+        versions: ['latest']
+      - raw: 'RGSM'
+        tidy: 'rgsm'
+        type: 'char'
+        description: 'sample ID'
+        versions: ['latest']
+      - raw: 'RGLB'
+        tidy: 'rglb'
+        type: 'char'
+        description: 'library'
+        versions: ['latest']
+      - raw: 'Lane'
+        tidy: 'lane'
+        type: 'int'
+        description: 'flow cell lane'
+        versions: ['latest']
+      - raw: 'ReadNumber'
+        tidy: 'read'
+        type: 'int'
+        description: 'read number (1 or 2); derived from Read1File/Read2File on pivot'
+        versions: ['latest']
+      - raw: 'ReadFile'
+        tidy: 'filepath'
+        type: 'char'
+        description: 'path to the FASTQ file; the Read1File/Read2File value on pivot'
+        versions: ['latest']

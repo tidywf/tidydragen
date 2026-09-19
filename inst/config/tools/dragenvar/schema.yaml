@@ -490,7 +490,7 @@ tables:
   microsat:
     description: 'DRAGEN microsatellite instability (MSI) summary.'
     pattern: "\\.microsat_output\\.json$"
-    ftype: 'csv'
+    ftype: 'json'
     columns:
       - raw: 'TotalMicrosatelliteSitesAssessed'
         tidy: 'sites_assessed'
@@ -530,7 +530,7 @@ tables:
   ploidyvcf:
     description: 'DRAGEN per-contig coverage summary.'
     pattern: "\\.ploidy\\.vcf\\.gz$"
-    ftype: 'csv'
+    ftype: 'vcf'
     columns:
       - raw: 'chrom'
         tidy: 'chrom'
@@ -685,7 +685,7 @@ tables:
   contamination:
     description: 'DRAGEN cross-sample contamination summary (cttso).'
     pattern: "\\.contamination\\.json$"
-    ftype: 'csv'
+    ftype: 'json'
     columns:
       - raw: 'ContaminationScore'
         tidy: 'score'

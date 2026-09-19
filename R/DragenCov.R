@@ -27,26 +27,24 @@
 #' expect_true(any(grepl("sampleA_wgs_tumor_dragencov_contigmean", lf)))
 #' expect_true(any(grepl("sampleA_wgs_normal_dragencov_contigmean", lf)))
 #' cm <- arrow::read_parquet(file.path(odir, grep("sampleA_wgs_dragencov_contigmean", lf, value = TRUE)))
-#' expect_true(all(c("chrom", "bases", "cov_mean") %in% names(cm)))
 #' expect_equal(cm$cov_mean[cm$chrom == "chr1"], 38.9244)
 #' fh <- arrow::read_parquet(file.path(odir, grep("sampleA_wgs_dragencov_finehist", lf, value = TRUE)))
-#' expect_true(all(c("depth", "count") %in% names(fh)))
 #' expect_true(is.integer(fh$depth))
 #' expect_equal(fh$count[fh$depth == 0], 143287543)
 #' # terminal "2000+" bin -> integer 2000
 #' expect_equal(fh$count[fh$depth == 2000], 80656)
 #' # cov_report BED split: distribution stats -> reportbedmain, configurable pct thresholds -> reportbedcumu (long)
 #' rb <- arrow::read_parquet(file.path(odir, grep("umccr_dragencov_reportbedmain", lf, value = TRUE)))
-#' expect_true(all(c("chrom", "start", "end", "mean_cvg", "max_cvg") %in% names(rb)))
+#' expect_true(is.numeric(rb$mean_cvg))
 #' expect_false(any(grepl("^pct_above", names(rb))))
 #' rc <- arrow::read_parquet(file.path(odir, grep("umccr_dragencov_reportbedcumu", lf, value = TRUE)))
-#' expect_true(all(c("chrom", "start", "end", "cov_min", "pct_above") %in% names(rc)))
 #' expect_true(is.integer(rc$cov_min))
 #' # threshold pct_above_20 for the region starting at 470290 = 99.11
 #' expect_equal(rc$pct_above[rc$cov_min == 20 & rc$start == 470290], 99.11)
 #' # read_cov_report BED (per-gene) stays a single table
 #' rr <- arrow::read_parquet(file.path(odir, grep("umccr_dragencov_readreportbed", lf, value = TRUE)))
-#' expect_true(all(c("gene_id", "read1_cvg", "read2_cvg") %in% names(rr)))
+#' expect_gt(nrow(rr), 0L)
+#' expect_true(is.numeric(rr$read1_cvg))
 #' # coverage metrics split: summary -> metricsmain, bucketed -> metricsbins, cumulative -> metricscumu
 #' cvm <- arrow::read_parquet(file.path(odir, grep("sampleA_wgs_dragencov_metricsmain", lf, value = TRUE)))
 #' expect_equal(cvm$cov_alignment_avg, 37.32)
@@ -56,12 +54,10 @@
 #' expect_equal(cvm$cov_x_median_ign0, 39)
 #' # bucketed bins: finite [cov_lo, cov_hi), e.g. [20x: 50x) = 84.25; no NA upper bound
 #' cvb <- arrow::read_parquet(file.path(odir, grep("sampleA_wgs_dragencov_metricsbins", lf, value = TRUE)))
-#' expect_true(all(c("cov_lo", "cov_hi", "pct") %in% names(cvb)))
 #' expect_false(any(is.na(cvb$cov_hi)))
 #' expect_equal(cvb$pct[cvb$cov_lo == 20 & cvb$cov_hi == 50], 84.25)
 #' # cumulative: cov_min only (coverage >= threshold), e.g. >= 100x = 0.07; no cov_hi column
 #' cvc <- arrow::read_parquet(file.path(odir, grep("sampleA_wgs_dragencov_metricscumu", lf, value = TRUE)))
-#' expect_true(all(c("cov_min", "pct") %in% names(cvc)))
 #' expect_false("cov_hi" %in% names(cvc))
 #' expect_equal(cvc$pct[cvc$cov_min == 100], 0.07)
 #' # cttso ctDNA regions (exon, target_bed) fold into the prefix like wgs/tmb

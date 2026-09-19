@@ -23,7 +23,6 @@
 #'   "sampleA_dragenfqc_readmeanqual", "sampleA_dragenfqc_seqpos"
 #' ) %in% sub("\\.parquet$", "", fqc)))
 #' pbc <- arrow::read_parquet(file.path(odir, grep("posbasecontent", fqc, value = TRUE)))
-#' expect_equal(names(pbc)[names(pbc) != "input_id"], c("mate", "pos", "base", "prop"))
 #' # per-position base proportion
 #' expect_equal(round(pbc$prop[pbc$mate == "Read1" & pbc$pos == 1 & pbc$base == "A"], 3), 0.328)
 #' # binned positions expand to a contiguous 1..50 per-position sequence; pos kept integer

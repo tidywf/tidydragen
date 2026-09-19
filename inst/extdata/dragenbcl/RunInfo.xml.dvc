@@ -1,0 +1,5 @@
+outs:
+- md5: 7a8329359da9de3a5fd8b58097e743ec
+  size: 828
+  hash: md5
+  path: RunInfo.xml

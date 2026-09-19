@@ -527,7 +527,7 @@ tables:
   sarinfo:
     description: 'TSO500 SampleAnalysisResults sample information.'
     pattern: "_SampleAnalysisResults\\.json$"
-    ftype: 'csv'
+    ftype: 'json'
     columns:
       - raw: 'sampleId'
         tidy: 'sample_id'

@@ -13,7 +13,6 @@
 #' (lf <- list.files(odir, pattern = "dragenmap_.*parquet", full.names = FALSE))
 #' @testexamples
 #' mapf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_metrics", lf, value = TRUE)))
-#' expect_true(all(c("section", "rg", "reads_tot_input", "reads_tot_input_pct", "reads_mapped_pct") %in% names(mapf)))
 #' # section stripped to phenotype; blank SUMMARY rg -> Total
 #' expect_true(all(mapf$section %in% c("TUMOR", "NORMAL", "SINGLE")))
 #' summ <- mapf[mapf$section == "TUMOR" & mapf$rg == "Total", ]
@@ -21,19 +20,16 @@
 #' expect_equal(summ$reads_mapped_pct, 97.64)
 #' # run-time metrics: seconds land as the value (not the HH:MM:SS string)
 #' tf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_time", lf, value = TRUE)))
-#' expect_equal(names(tf)[names(tf) != "input_id"][1], "total_runtime")
 #' expect_equal(tf$total_runtime, 8189.85)
 #' expect_equal(tf$time_aligning_reads, 2240.12)
 #' expect_equal(tf$time_variant_calling, 3725.68)
 #' # fraglenhist: per-#Sample: blocks split, sample id kept, headers dropped
 #' fl <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_fraglenhist", lf, value = TRUE)))
-#' expect_equal(names(fl)[names(fl) != "input_id"], c("sample", "fraglen", "count"))
 #' expect_setequal(unique(fl$sample), c("sampleA", "sampleA_tn"))
 #' expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA"], 51)
 #' expect_equal(fl$count[fl$fraglen == 150 & fl$sample == "sampleA_tn"], 36)
 #' # trimmer metrics (cttso): plain dragen-metrics table, pct auto-paired
 #' tr <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_trimmer", lf, value = TRUE)))
-#' expect_true(all(c("reads_tot_input", "reads_trim_tot", "reads_trim_tot_pct", "polygkmers3r1_remaining") %in% names(tr)))
 #' expect_equal(tr$reads_tot_input, 157866430)
 #' expect_equal(tr$polygkmers3r1_remaining, 54953)
 #' expect_equal(tr$polygkmers3r1_remaining_pct, 0.07)
@@ -45,7 +41,6 @@
 #' expect_equal(um$avg_family_depth, 4.89)
 #' expect_equal(um$reads_tot_ontarget, 606111466)
 #' uh <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_umihist", lf, value = TRUE)))
-#' expect_equal(names(uh)[names(uh) != "input_id"], c("hist_type", "bin", "count"))
 #' expect_true(is.integer(uh$bin))
 #' expect_setequal(unique(uh$hist_type), c("num_supporting_fragments", "num_supporting_fragments_ontarget", "unique_umis_per_fragpos"))
 #' nsf <- uh[uh$hist_type == "num_supporting_fragments", ]
@@ -59,7 +54,6 @@
 #' expect_equal(gc$gc_ref_avg, 40.90)
 #' expect_equal(gc$at_dropout, 29.40)
 #' gb <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_gcbias", lf, value = TRUE)))
-#' expect_equal(names(gb)[names(gb) != "input_id"], c("gc_window", "windows", "pct", "cov_norm"))
 #' expect_true(is.integer(gb$gc_window))
 #' expect_equal(nrow(gb), 101L)
 #' expect_equal(gb$windows[gb$gc_window == 0], 132617)

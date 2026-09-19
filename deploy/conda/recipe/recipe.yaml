@@ -27,6 +27,7 @@ requirements:
     - r-rlang
     - r-tibble
     - r-tidyr
+    - r-xml2
   run:
     - r-base
     - r-dplyr
@@ -40,6 +41,7 @@ requirements:
     - r-rlang
     - r-tibble
     - r-tidyr
+    - r-xml2
 
 tests:
   - r:
