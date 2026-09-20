@@ -5,12 +5,13 @@
 \alias{DRAGEN_TOOLS}
 \title{DRAGEN Tools Supported}
 \format{
-An object of class \code{list} of length 7.
+An object of class \code{list} of length 8.
 }
 \usage{
 DRAGEN_TOOLS
 }
 \description{
-List of all supported DRAGEN tools.
+List of all tools the \link{Dragen} workflow runs: the DRAGEN pipeline tools plus
+\link{Interop}.
 }
 \keyword{datasets}
