@@ -215,7 +215,7 @@ tables:
         description: 'intensity at cycle 1, sd'
         versions: ['latest']
   imagingtable:
-    description: 'InterOp per-lane x tile x cycle imaging metrics (imaging_table.csv, gzipped or not). Run-scoped like DragenBcl: no run id in the filename, so refine_files() blanks the prefix -> output is plain interop_imagingtable[.ext]. Grouped raw columns (e.g. "P90<RED;GREEN>", "Corrected<A;C;G;T>") pack N consecutive un-labelled data columns after a single header token, in the bracket''s listed order; parse_imagingtable() bypasses the unreliable header entirely (skip=3) and assigns columns positionally.'
+    description: 'InterOp per-lane x tile x cycle imaging metrics (imaging_table.csv, gzipped or not).'
     pattern: "imaging_table\\.csv(\\.gz)?$"
     ftype: 'csv'
     columns:

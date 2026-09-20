@@ -22,7 +22,7 @@ tables:
       - raw: 'prop'
         tidy: 'prop'
         type: 'float'
-        description: 'proportion of this base at this position/mate (base bases / total bases at the position); binned counts are divided evenly across the positions they span before the proportion is taken'
+        description: 'proportion of this base at this position/mate (base bases / total bases at position); binned positions split counts evenly across their span first'
         versions: ['latest']
   posbasemeanqual:
     description: 'DRAGEN FASTQC positional base mean quality: mean base-call quality per read position, base and mate.'

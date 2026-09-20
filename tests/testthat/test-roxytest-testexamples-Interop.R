@@ -18,13 +18,13 @@ test_that("Function Interop() @ L74", {
   obj_it$run(output_dir = odir, format = "parquet", input_id = "run1")
   (lf <- list.files(odir, pattern = "interop_.*parquet", full.names = FALSE))
   # summarymain: overall level table (Read1/Read2(I)/Read3(I)/Read4/Non-indexed/Total)
-  sm <- arrow::read_parquet(file.path(odir, grep("runA_interop_summarymain\\.parquet$", lf, value = TRUE)))
+  sm <- nemo::read_parquet_grep(odir, lf, "runA_interop_summarymain\\.parquet$")
   expect_setequal(sm$level, c("Read 1", "Read 2 (I)", "Read 3 (I)", "Read 4", "Non-indexed", "Total"))
   expect_equal(sm$yield[sm$level == "Total"], 4196.52)
   # index reads have no PhiX alignment -> error_rate NA (raw "nan")
   expect_true(is.na(sm$error_rate[sm$level == "Read 2 (I)"]))
   # summaryreadlane: per-read x lane x surface detail, "mean +/- sd" / "a / b" cells split
-  rl <- arrow::read_parquet(file.path(odir, grep("runA_interop_summaryreadlane\\.parquet$", lf, value = TRUE)))
+  rl <- nemo::read_parquet_grep(odir, lf, "runA_interop_summaryreadlane\\.parquet$")
   expect_equal(nrow(rl), 48L)
   r1l1 <- rl[rl$read == "Read 1" & rl$lane == 1 & is.na(rl$surface), ]
   expect_equal(r1l1$density, 2961)
@@ -35,11 +35,11 @@ test_that("Function Interop() @ L74", {
   r2l1 <- rl[rl$read == "Read 2 (I)" & rl$lane == 1 & is.na(rl$surface), ]
   expect_true(is.na(r2l1$legacy_phasing_rate))
   # indexsummarymain: per-lane totals
-  ix <- arrow::read_parquet(file.path(odir, grep("runA_interop_indexsummarymain\\.parquet$", lf, value = TRUE)))
+  ix <- nemo::read_parquet_grep(odir, lf, "runA_interop_indexsummarymain\\.parquet$")
   expect_equal(nrow(ix), 4L)
   expect_equal(ix$pct_identified[ix$lane == 1], 97.0617)
   # indexsummarydetail: per-index rows
-  ixd <- arrow::read_parquet(file.path(odir, grep("runA_interop_indexsummarydetail\\.parquet$", lf, value = TRUE)))
+  ixd <- nemo::read_parquet_grep(odir, lf, "runA_interop_indexsummarydetail\\.parquet$")
   expect_equal(ixd$sample_id[ixd$lane == 1 & ixd$index_number == 1], "s2600353")
   expect_equal(ixd$index2[ixd$lane == 1 & ixd$index_number == 1], "CTAATAACCG")
   # imagingtable: run-scoped (no run id in filename) -> plain interop_imagingtable
