@@ -19,7 +19,7 @@ test_that("Function DragenFqc() @ L59", {
     "sampleA_dragenfqc_readgcqual", "sampleA_dragenfqc_readlen",
     "sampleA_dragenfqc_readmeanqual", "sampleA_dragenfqc_seqpos"
   ) %in% sub("\\.parquet$", "", fqc)))
-  pbc <- arrow::read_parquet(file.path(odir, grep("posbasecontent", fqc, value = TRUE)))
+  pbc <- nemo::read_parquet_grep(odir, fqc, "posbasecontent")
   # per-position base proportion
   expect_equal(round(pbc$prop[pbc$mate == "Read1" & pbc$pos == 1 & pbc$base == "A"], 3), 0.328)
   # binned positions expand to a contiguous 1..50 per-position sequence; pos kept integer
@@ -27,14 +27,14 @@ test_that("Function DragenFqc() @ L59", {
   expect_equal(length(unique(pbc$pos[pbc$mate == "Read1"])), 50L)
   expect_true(is.integer(pbc$pos))
   # read lengths: 50bp bin
-  rl <- arrow::read_parquet(file.path(odir, grep("readlen", fqc, value = TRUE)))
+  rl <- nemo::read_parquet_grep(odir, fqc, "readlen")
   expect_true(is.integer(rl$bp))
   expect_equal(rl$reads[rl$mate == "Read1" & rl$bp == 50], 1787127323)
   # positional quality quantile
-  pq <- arrow::read_parquet(file.path(odir, grep("posqual", fqc, value = TRUE)))
+  pq <- nemo::read_parquet_grep(odir, fqc, "posqual")
   expect_equal(pq$qv[pq$mate == "Read1" & pq$pos == 1 & pq$pct == 25], 37)
   # seqpos: "Total Sequence Starts" summary rows dropped; binned ranges expand per-position
-  sp <- arrow::read_parquet(file.path(odir, grep("seqpos", fqc, value = TRUE)))
+  sp <- nemo::read_parquet_grep(odir, fqc, "seqpos")
   expect_false(any(sp$starts == 254687))
   expect_true(is.integer(sp$bp))
   s1 <- sort(unique(sp$seq))[1]

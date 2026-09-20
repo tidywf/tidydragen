@@ -31,6 +31,15 @@ tool$on_coerce_fail    # "error": values that fail type coercion abort
 
 # flip a policy to be lenient (drop/keep-NA with a warning instead)
 tool$on_unmapped <- "warn"
+
+# Exercise the fail-loud paths end to end (not just the field above), via a
+# deliberately-corrupted copy of a real DragenRna fixture (smallest schema).
+rna_dir <- system.file("extdata/dragenrna", package = "tidydragen")
+bad_dir <- tempfile()
+dir.create(bad_dir)
+file.copy(list.files(rna_dir, full.names = TRUE), bad_dir)
+qf <- file.path(bad_dir, "sampleA.quant_metrics.csv")
+lines <- readLines(qf)
 }
 \section{Super class}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{DragenTool}

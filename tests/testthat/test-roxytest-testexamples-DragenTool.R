@@ -2,7 +2,7 @@
 
 # File R/DragenTool.R: @testexamples
 
-test_that("Function DragenTool() @ L39", {
+test_that("Function DragenTool() @ L82", {
   
   # Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
   # are private; here we just inspect the inherited surface + policy fields.
@@ -14,10 +14,53 @@ test_that("Function DragenTool() @ L39", {
   
   # flip a policy to be lenient (drop/keep-NA with a warning instead)
   tool$on_unmapped <- "warn"
+  
+  # Exercise the fail-loud paths end to end (not just the field above), via a
+  # deliberately-corrupted copy of a real DragenRna fixture (smallest schema).
+  rna_dir <- system.file("extdata/dragenrna", package = "tidydragen")
+  bad_dir <- tempfile()
+  dir.create(bad_dir)
+  file.copy(list.files(rna_dir, full.names = TRUE), bad_dir)
+  qf <- file.path(bad_dir, "sampleA.quant_metrics.csv")
+  lines <- readLines(qf)
   expect_true(inherits(tool, "Tool"))
   expect_gt(nrow(tool$list_files()), 0)
   expect_equal(tool$on_coerce_fail, "error")
   expect_equal(tool$on_unexpected_col, "error")
   expect_equal(tool$on_unmapped, "warn")
+  
+  # on_unmapped: a metric name absent from the schema
+  writeLines(c(lines, "RNA QUANTIFICATION STATISTICS,,Bogus New Metric,42"), qf)
+  bad <- DragenRna$new(bad_dir)
+  expect_error(bad$run(output_dir = tempfile(), format = "parquet"), "unmapped metric")
+  bad$on_unmapped <- "warn"
+  od2 <- tempfile()
+  expect_warning(bad$run(output_dir = od2, format = "parquet"), "unmapped metric")
+  lf2 <- list.files(od2, pattern = "dragenrna_.*parquet")
+  qnt2 <- nemo::read_parquet_grep(od2, lf2, "quant")
+  expect_false("Bogus New Metric" %in% names(qnt2))
+  
+  # on_coerce_fail: a numeric metric's value replaced with non-numeric text
+  writeLines(sub("Total Genes,62700", "Total Genes,notanumber", lines), qf)
+  bad2 <- DragenRna$new(bad_dir)
+  expect_error(bad2$run(output_dir = tempfile(), format = "parquet"), "coercion")
+  bad2$on_coerce_fail <- "warn"
+  od3 <- tempfile()
+  expect_warning(bad2$run(output_dir = od3, format = "parquet"), "coercion")
+  lf3 <- list.files(od3, pattern = "dragenrna_.*parquet")
+  qnt3 <- nemo::read_parquet_grep(od3, lf3, "quant")
+  expect_true(is.na(qnt3$genes_tot))
+  
+  # on_unexpected_col: a normally-constant `rg` that now varies
+  writeLines(c(lines, "RNA QUANTIFICATION STATISTICS,RG1,Total Genes,100"), qf)
+  bad3 <- DragenRna$new(bad_dir)
+  expect_error(bad3$run(output_dir = tempfile(), format = "parquet"), "varying")
+  bad3$on_unexpected_col <- "warn"
+  od4 <- tempfile()
+  expect_warning(bad3$run(output_dir = od4, format = "parquet"), "varying")
+  lf4 <- list.files(od4, pattern = "dragenrna_.*parquet")
+  qnt4 <- nemo::read_parquet_grep(od4, lf4, "quant")
+  expect_true("rg" %in% names(qnt4))
+  expect_equal(nrow(qnt4), 2L)
 })
 

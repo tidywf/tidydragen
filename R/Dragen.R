@@ -28,7 +28,7 @@
 #' # a metadata file is written alongside the tidy outputs
 #' expect_true(file.exists(file.path(odir, "metadata.parquet")))
 #' # spot-check one output round-trips
-#' mapf <- arrow::read_parquet(file.path(odir, grep("sampleA_dragenmap_metrics", lf, value = TRUE)))
+#' mapf <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenmap_metrics")
 #' expect_gt(nrow(mapf), 0L)
 #' @include DragenMap.R DragenFqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R DragenBcl.R Interop.R
 #' @export

@@ -2,7 +2,7 @@
 
 # File R/DragenBcl.R: @testexamples
 
-test_that("Function DragenBcl() @ L25", {
+test_that("Function DragenBcl() @ L61", {
   
   cls <- DragenBcl; tool <- "dragenbcl"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -10,14 +10,50 @@ test_that("Function DragenBcl() @ L25", {
   obj <- cls$new(indir)
   obj$run(output_dir = odir, format = "parquet", input_id = "run1", output_id = "out1")
   (lf <- list.files(odir, pattern = "dragenbcl_.*parquet", full.names = FALSE))
-  dm <- arrow::read_parquet(file.path(odir, "dragenbcl_demultiplexstats.parquet"))
-  fq <- arrow::read_parquet(file.path(odir, "dragenbcl_fastqlist.parquet"))
-  ri <- arrow::read_parquet(file.path(odir, "dragenbcl_runinfo.parquet"))
+  dm <- nemo::read_parquet_grep(odir, lf, "dragenbcl_demultiplexstats.parquet")
+  fq <- nemo::read_parquet_grep(odir, lf, "dragenbcl_fastqlist.parquet")
+  ri <- nemo::read_parquet_grep(odir, lf, "dragenbcl_runinfo.parquet")
   expect_setequal(unique(dm$lane), 1:4)
   expect_setequal(unique(fq$read), 1:2)
   expect_setequal(unique(fq$lane), 1:4)
   expect_equal(nrow(ri), 1L)
   expect_equal(ri$read1_cycles, 151L)
   expect_equal(ri$input_id, "run1")
+  # adapter-trimming metrics (per sample/read)
+  am <- nemo::read_parquet_grep(odir, lf, "dragenbcl_adaptermetrics.parquet")
+  s1r1 <- am[am$sampleid == "s2600353" & am$read == 1, ]
+  expect_equal(s1r1$adapter_bases, 302203130)
+  expect_equal(s1r1$adapter_bases_pct, 0.005)
+  # per-cycle adapter-trimming metrics
+  ac <- nemo::read_parquet_grep(odir, lf, "dragenbcl_adaptercyclemetrics.parquet")
+  c0 <- ac[ac$sampleid == "s2600353" & ac$read == 1 & ac$cycle == 0, ]
+  expect_equal(c0$cluster_n, 248)
+  expect_equal(c0$cluster_pct, 0.000001)
+  # quality-score metrics (per sample/read), and the per-tile variant
+  qm <- nemo::read_parquet_grep(odir, lf, "dragenbcl_qualitymetrics.parquet")
+  q1 <- qm[qm$sampleid == "s2600353" & qm$read == 1, ]
+  expect_equal(q1$yield, 63339252977)
+  expect_equal(q1$q30_pct, 0.94)
+  qt <- nemo::read_parquet_grep(odir, lf, "dragenbcl_qualitytilemetrics.parquet")
+  qt1 <- qt[qt$sampleid == "s2600353" & qt$read == 1 & qt$tile == 1101, ]
+  expect_equal(qt1$yield, 66609114)
+  # per-tile demultiplexing stats: combined Index split into index/index2
+  dts <- nemo::read_parquet_grep(odir, lf, "dragenbcl_demultiplextilestats.parquet")
+  dt1 <- dts[dts$sampleid == "s2600353" & dts$tile == 1101, ]
+  expect_equal(dt1$index, "TACGTGAAGG")
+  expect_equal(dt1$index2, "CTAATAACCG")
+  expect_equal(dt1$reads_n, 465798)
+  expect_equal(dt1$perfect_idx_reads_n, 460268)
+  # index-hopping counts: unresolved (non-sample) index combos -> NA sampleid
+  ih <- nemo::read_parquet_grep(odir, lf, "dragenbcl_indexhoppingcounts.parquet")
+  ih1 <- ih[!is.na(ih$sampleid) & ih$sampleid == "s2600353", ]
+  expect_equal(ih1$reads_n, 442931839)
+  expect_equal(ih1$all_reads_pct, 0.131517)
+  expect_true(any(is.na(ih$sampleid)))
+  # most-common unlisted barcodes, sorted by descending count
+  tb <- nemo::read_parquet_grep(odir, lf, "dragenbcl_topunknownbarcodes.parquet")
+  expect_equal(tb$index[1], "GGGGGGGGGG")
+  expect_equal(tb$reads_n[1], 11599128)
+  expect_equal(tb$unknown_barcodes_pct[1], 0.117211)
 })
 

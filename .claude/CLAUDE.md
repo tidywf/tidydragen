@@ -8,9 +8,12 @@ with code in this repository.
 `tidydragen` is a nemo 'child' R package that parses and tidies outputs from
 Illumina DRAGEN pipelines, producing wide-format tidy tibbles suitable for
 ingestion into data warehouses. It can write to parquet, TSV, CSV, RDS, or
-database formats. Four pipelines are in scope: DNA tumor-normal (somatic), DNA
-germline-only, RNA tumor-only, and ctTSO500 (`cttso`, the DRAGEN TSO500 ctDNA
-app layer --- see `DragenTso`).
+database formats. Four analysis pipelines are in scope: DNA tumor-normal
+(somatic), DNA germline-only, RNA tumor-only, and ctTSO500 (`cttso`, the DRAGEN
+TSO500 ctDNA app layer --- see `DragenTso`); plus the run-level **BCLConvert**
+demultiplexing outputs (`Reports/` --- see `DragenBcl`) and **Illumina InterOp**
+run-QC summaries (see `Interop` --- not a DRAGEN output, but housed here for
+convenience).
 
 The parent `../.claude/CLAUDE.md` has the ecosystem map + a routing table; read
 `docs/r-pkg/schema.md` (schema.yaml/ftype/Config) and
@@ -20,25 +23,40 @@ conventions.
 
 ## Architecture
 
-`DragenTool` (`R/DragenTool.R`, R6, `inherit = nemo::Tool`) is an intermediate
-base carrying the DRAGEN-shared logic. **All domain tools inherit
-`DragenTool`**, not `nemo::Tool` directly. Each tool has its own
-`inst/config/tools/<tool>/schema.yaml`.
+`DragenTool` (`R/DragenTool.R`, R6, `inherit = Tool`) is an intermediate base
+carrying the DRAGEN-shared logic. **All DRAGEN domain tools inherit
+`DragenTool`**, not `nemo::Tool` directly. `Interop` (below) is the one
+exception --- it isn't a DRAGEN output, so it inherits `Tool` directly instead.
+Each tool has its own `inst/config/tools/<tool>/schema.yaml`.
 
-| Tool        | Source                                                                                                                                                          | Output tables                                                                                                                                                         |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DragenMap` | `*.mapping_metrics.csv`, `*.time_metrics.csv`, `*.fragment_length_hist.csv`, `*.trimmer/umi/gc_metrics.csv` (cttso)                                             | `metrics`, `time`, `fraglenhist`, `trimmer`, `umimain`/`umihist`, `gcmain`/`gcbias`                                                                                   |
-| `DragenFqc` | `*.fastqc_metrics.csv`                                                                                                                                          | 8 flat per-section tables (`dragenfqc_posbasecontent` … `_seqpos`)                                                                                                    |
-| `DragenCov` | coverage `*.csv`/`*.bed` (region {wgs/tmb/exon/target_bed/qc-coverage-region-*} + pheno variants)                                                               | `metricsmain`/`metricsbins`/`metricscumu`, `contigmean`, `finehist`, `reportbedmain`/`reportbedcumu`, `readreportbed`                                                 |
-| `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json` | `vc`, `sv`, `cnv`, `ploidystats`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON) |
-| `DragenRna` | `*.fusion_metrics.csv`, `*.quant_metrics.csv`                                                                                                                   | `fusion`, `quant`                                                                                                                                                     |
-| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`             | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sar{info,qc,snv,cnv,swds,sw}`                                                 |
+| Tool        | Source                                                                                                                                                                                                      | Output tables                                                                                                                                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DragenMap` | `*.mapping_metrics.csv`, `*.time_metrics.csv`, `*.fragment_length_hist.csv`, `*.trimmer/umi/gc_metrics.csv` (cttso), `*-replay.json`                                                                        | `metrics`, `time`, `fraglenhist`, `trimmer`, `umimain`/`umihist`, `gcmain`/`gcbias`, `replaymain`/`replayconfig`                                                                                                 |
+| `DragenFqc` | `*.fastqc_metrics.csv`                                                                                                                                                                                      | 8 flat per-section tables (`dragenfqc_posbasecontent` … `_seqpos`)                                                                                                                                               |
+| `DragenCov` | coverage `*.csv`/`*.bed` (region {wgs/tmb/exon/target_bed/qc-coverage-region-*} + pheno variants)                                                                                                           | `metricsmain`/`metricsbins`/`metricscumu`, `contigmean`, `finehist`, `reportbedmain`/`reportbedcumu`, `readreportbed`                                                                                            |
+| `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json`                                             | `vc`, `sv`, `cnv`, `ploidystats`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON)                                            |
+| `DragenRna` | `*.fusion_metrics.csv`, `*.quant_metrics.csv`                                                                                                                                                               | `fusion`, `quant`                                                                                                                                                                                                |
+| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sar{info,qc,snv,cnv,swds,sw}`                                                                                            |
+| `DragenBcl` | BCLConvert `Reports/`: `Adapter[_Cycle]_Metrics.csv`, `Demultiplex[_Tile]_Stats.csv`, `Index_Hopping_Counts.csv`, `Quality[_Tile]_Metrics.csv`, `Top_Unknown_Barcodes.csv`, `fastq_list.csv`, `RunInfo.xml` | `adaptercyclemetrics`, `adaptermetrics`, `demultiplexstats`, `demultiplextilestats`, `indexhoppingcounts`, `qualitymetrics`, `qualitytilemetrics`, `topunknownbarcodes`, `fastqlist`, `runinfo` (XML via `xml2`) |
+| `Interop`   | Illumina InterOp run-QC summaries (NOT a DRAGEN output --- see below): `<run>_summary.csv`, `<run>-index_summary.csv`                                                                                       | `summary`/`summaryreadlane`, `indexsummary`/`indexsummarydetail`                                                                                                                                                 |
 
 Output name = `<prefix>_<tool>_<table>`; `prefix` is the sample id (+
-region/pheno for coverage). The `Dragen` `Workflow` (`R/Dragen.R`, exported
-`DRAGEN_TOOLS`) registers all 6 tools and tolerates absent files (each missing
-tool → 0 tables). Current status, decisions, and phase log live in
-**`.claude/dev-plan.md`** --- read it first on resume.
+region/pheno for coverage). **`DragenBcl` is run-scoped** --- no sample id in
+the basename, so its `refine_files()` blanks `prefix` → outputs are
+`dragenbcl_<table>` (a run over several `Reports/` dirs disambiguates as
+`_2`/`_3`, appended to the end by a nemo `Tool$run()` accommodation for blank
+prefixes; run id lands in the `input_id` column, traceable via
+`metadata_dragenbcl`). **`Interop` is Illumina run-level QC, not a DRAGEN tool** ---
+the `interop` toolchain's `summary`/ `index-summary` apps decode the run's
+`InterOp/*.bin` binaries upstream; tidydragen only parses their CSV output. It
+inherits `Tool` directly (none of `DragenTool`'s shared logic applies) and its
+run id lives in the filename already, so no `refine_files()` override is needed
+either. It's registered in `DRAGEN_TOOLS`/orchestrated by the `Dragen` workflow
+anyway, purely because InterOp summaries are typically co-located with
+BCLConvert/DRAGEN outputs under the same run dir. The `Dragen` `Workflow`
+(`R/Dragen.R`, exported `DRAGEN_TOOLS`) registers all 8 tools and tolerates
+absent files (each missing tool → 0 tables). Current status, decisions, and
+phase log live in **`.claude/dev-plan.md`** --- read it first on resume.
 
 ## The DRAGEN metrics parser (the core mechanic)
 
@@ -86,6 +104,25 @@ column to its schema `type`).
   region as a `region` column via `region_split()`.
 - **`csv-nohead` ftype** is registered on `DragenTool` (`trim_ws=TRUE`) for
   headerless coverage CSVs.
+- **Run-scoped tools (`DragenBcl`):** files carry no sample id, so
+  `refine_files()` blanks `prefix` → `dragenbcl_<table>` outputs. Relies on a
+  nemo `Tool$run()` accommodation that, for a blank/`_N` prefix, appends the
+  collision disambiguator to the end (no leading `_`). Reusable for InterOp. See
+  `dragenbcl-run-scoped-no-prefix` in memory.
+- **Same-basename, genuinely-different files (cttso `replaymain`/`time`) → no
+  dedup needed.** cttso runs one DRAGEN invocation per stage (`DragenCaller`,
+  `Tmb`, ...), each writing its own `<S>-replay.json` and `<S>.time_metrics.csv` ---
+  same basename, different content (not the byte-identical
+  `Results/`-vs-`Logs_Intermediates/` case `DragenTso$refine_files` dedupes).
+  nemo's generic same-basename collision handling (`Tool.R` `compute_files()`)
+  already assigns them distinct prefixes (`<S>` / `<S>_2`) with no override;
+  match rows by content (e.g. `grepl("Tmb", command_line)`), not by which
+  physical file got the `_2` suffix --- that ordering isn't a guaranteed API.
+- **`ftype` is nominal for a custom-parsed table.** When a `parse_<table>()`
+  method exists, nemo dispatch calls it first and never consults `ftype` (and
+  `Config` doesn't validate the value), so the schema `ftype` is documentation
+  only --- name it for the real format: `runinfo` = `xml`,
+  `microsat`/`contamination`/`sarinfo` = `json`, `ploidyvcf` = `vcf`.
 - **Ragged metrics rows → base `read.csv(fill=TRUE)`, NOT readr** --- readr
   infers the column count from the first (4-field) row and silently merges `pct`
   into `count`.
