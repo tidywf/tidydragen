@@ -1,0 +1,5 @@
+outs:
+- md5: 4e67d685a5d4a4d62088ed367879e3fe
+  size: 10823
+  hash: md5
+  path: runA_summary.csv

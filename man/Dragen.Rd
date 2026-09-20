@@ -5,17 +5,19 @@
 \title{Dragen Object}
 \description{
 Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFqc}, \link{DragenCov},
-\link{DragenVar}, \link{DragenRna}, \link{DragenTso}, \link{DragenBcl}) over a shared results directory. A DRAGEN run
-exposes a different subset of files depending on the pipeline (germline,
-somatic tumor-normal, RNA); tools whose files are absent contribute nothing,
-so a single \code{Dragen$run()} works across all pipelines.
+\link{DragenVar}, \link{DragenRna}, \link{DragenTso}, \link{DragenBcl}) plus \link{Interop} for
+convenience
+A DRAGEN run exposes a different subset of
+files depending on the pipeline; tools whose files are absent contribute
+nothing, so a single \code{Dragen$run()} works
+across all pipelines.
 }
 \examples{
 indir <- system.file("extdata", package = "tidydragen")
 odir <- tempdir()
 d <- Dragen$new(indir)
 d$run(output_dir = odir, format = "parquet", input_id = "run1")
-(lf <- list.files(odir, pattern = "dragen.*parquet", full.names = FALSE))
+(lf <- list.files(odir, pattern = "\\\\.parquet$", full.names = FALSE))
 }
 \section{Super class}{
 \code{\link[nemo:Workflow]{nemo::Workflow}} -> \code{Dragen}
