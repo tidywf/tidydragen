@@ -255,12 +255,11 @@ DragenTool <- R6::R6Class(
           "{glue::glue_collapse(unmapped, sep = '; ')}"
         )
         if (identical(mode, "error")) {
-          stop(
+          nemo::nemo_stop(
             glue(
               "{detail}. Refusing to drop data. Add these to the schema, or set ",
               "the tool's `on_unmapped = \"warn\"` field to drop them with a warning."
-            ),
-            call. = FALSE
+            )
           )
         }
         warning(glue("{detail} (dropped)"), call. = FALSE)
@@ -302,12 +301,11 @@ DragenTool <- R6::R6Class(
           "{glue::glue_collapse(coerce_fails, sep = '; ')}"
         )
         if (identical(mode, "error")) {
-          stop(
+          nemo::nemo_stop(
             glue(
               "{detail}. Fix the schema `type` (likely should be char), or set the ",
               "tool's `on_coerce_fail = \"warn\"` field to keep the NA."
-            ),
-            call. = FALSE
+            )
           )
         }
         warning(glue("{detail}"), call. = FALSE)
@@ -341,13 +339,12 @@ DragenTool <- R6::R6Class(
           "varying: {glue::glue_collapse(unexpected, sep = '; ')}"
         )
         if (identical(mode, "error")) {
-          stop(
+          nemo::nemo_stop(
             glue(
               "{detail}. This would add an unexpected column to the output. Add the ",
               "column to the schema handling, or set the tool's `on_unexpected_col = ",
               "\"warn\"` field (or pass `drop_constant` explicitly) to keep it with a warning."
-            ),
-            call. = FALSE
+            )
           )
         }
         warning(glue("{detail} (kept)"), call. = FALSE)

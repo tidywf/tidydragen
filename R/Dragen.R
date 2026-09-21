@@ -3,11 +3,9 @@
 #' @description
 #' Orchestrates all DRAGEN tools ([DragenMap], [DragenFqc], [DragenCov],
 #' [DragenVar], [DragenRna], [DragenTso], [DragenBcl]) plus [Interop] for
-#' convenience
-#' A DRAGEN run exposes a different subset of
-#' files depending on the pipeline; tools whose files are absent contribute
-#' nothing, so a single `Dragen$run()` works
-#' across all pipelines.
+#' convenience. A DRAGEN run exposes a different subset of files depending on
+#' the pipeline; tools whose files are absent contribute nothing, so a single
+#' `Dragen$run()` works across all pipelines.
 #'
 #' @examples
 #' indir <- system.file("extdata", package = "tidydragen")

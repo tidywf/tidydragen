@@ -4,17 +4,14 @@
 #' Parses and tidies Illumina InterOp run-QC summary outputs: `<run>_summary.csv`
 #' (per-read/lane/surface run metrics), `<run>-index_summary.csv`
 #' (per-lane/index demux QC), and `imaging_table.csv`/`imaging_table.csv.gz`
-#' (per-lane/tile/cycle imaging metrics; gzipped or not, both accepted).
-#' InterOp is Illumina run-level QC, not a DRAGEN output, so unlike
-#' the other tools, this one inherits `nemo::Tool` directly rather than the
-#' DRAGEN-shared `DragenTool` base.
-#' Housed in tidydragen for convenience (co-located with BCLConvert, which
-#' InterOp summaries typically ship alongside).
-#' Unlike the sample-scoped DRAGEN tools, the run id for `summary.csv`/
-#' `index_summary.csv` lives in the filename itself, so the usual prefix
-#' extraction just works with no `refine_files()` override needed there.
-#' `imaging_table.csv[.gz]`, however, carries no run id in its filename at all
-#' so we handle that accordingly.
+#' (per-lane/tile/cycle imaging metrics; gzipped or not, both accepted). InterOp
+#' is Illumina run-level QC, not a DRAGEN output, so unlike the other tools this
+#' one inherits `nemo::Tool` directly rather than the DRAGEN-shared `DragenTool`
+#' base; it's housed here for convenience (typically co-located with
+#' BCLConvert). The run id for `summary.csv`/`index_summary.csv` lives in the
+#' filename itself, so the usual prefix extraction just works with no
+#' `refine_files()` override needed there; `imaging_table.csv[.gz]` carries no
+#' run id in its filename at all, so that one is handled explicitly.
 #'
 #' @examples
 #' cls <- Interop; tool <- "interop"
@@ -258,10 +255,9 @@ Interop <- R6::R6Class(
     }
   ),
   private = list(
-    # Run-scoped like DragenBcl: imaging_table.csv[.gz] carries no run id in
-    # its filename (always literally "imaging_table.csv" or ".csv.gz"), so
-    # blank its prefix -> nemo names the output plain "interop_imagingtable"
-    # instead of
+    # Run-scoped like DragenBcl: imaging_table.csv[.gz] carries no run id in its
+    # filename (always literally "imaging_table.csv" or ".csv.gz"), so blank its
+    # prefix -> nemo names the output plain "interop_imagingtable" instead of
     # collapsing the whole basename into the prefix (nemo's default when the
     # pattern consumes it entirely). summarymain/indexsummarymain keep their
     # filename-derived run-id prefix untouched.
