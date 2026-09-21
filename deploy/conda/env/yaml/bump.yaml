@@ -5,6 +5,7 @@ channels:
   - conda-forge
 dependencies:
   - r-tidydragen
+  - r-xml2 # remove after bump
   - r-quarto
   - quarto
   - bump-my-version
