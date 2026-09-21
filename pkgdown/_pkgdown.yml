@@ -53,6 +53,8 @@ reference:
       - DragenVar
       - DragenRna
       - DragenTso
+      - DragenBcl
+      - Interop
   - title: "Workflows"
     contents:
       - Dragen
@@ -65,3 +67,4 @@ reference:
       - fastqc_bin_open
       - s3sync
       - s3sync_cttso
+      - s3sync_bcl

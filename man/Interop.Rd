@@ -7,17 +7,14 @@
 Parses and tidies Illumina InterOp run-QC summary outputs: \verb{<run>_summary.csv}
 (per-read/lane/surface run metrics), \verb{<run>-index_summary.csv}
 (per-lane/index demux QC), and \code{imaging_table.csv}/\code{imaging_table.csv.gz}
-(per-lane/tile/cycle imaging metrics; gzipped or not, both accepted).
-InterOp is Illumina run-level QC, not a DRAGEN output, so unlike
-the other tools, this one inherits \code{nemo::Tool} directly rather than the
-DRAGEN-shared \code{DragenTool} base.
-Housed in tidydragen for convenience (co-located with BCLConvert, which
-InterOp summaries typically ship alongside).
-Unlike the sample-scoped DRAGEN tools, the run id for \code{summary.csv}/
-\code{index_summary.csv} lives in the filename itself, so the usual prefix
-extraction just works with no \code{refine_files()} override needed there.
-\code{imaging_table.csv[.gz]}, however, carries no run id in its filename at all
-so we handle that accordingly.
+(per-lane/tile/cycle imaging metrics; gzipped or not, both accepted). InterOp
+is Illumina run-level QC, not a DRAGEN output, so unlike the other tools this
+one inherits \code{nemo::Tool} directly rather than the DRAGEN-shared \code{DragenTool}
+base; it's housed here for convenience (typically co-located with
+BCLConvert). The run id for \code{summary.csv}/\code{index_summary.csv} lives in the
+filename itself, so the usual prefix extraction just works with no
+\code{refine_files()} override needed there; \code{imaging_table.csv[.gz]} carries no
+run id in its filename at all, so that one is handled explicitly.
 }
 \examples{
 cls <- Interop; tool <- "interop"

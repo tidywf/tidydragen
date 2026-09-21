@@ -2,7 +2,7 @@
 
 # File R/Interop.R: @testexamples
 
-test_that("Function Interop() @ L74", {
+test_that("Function Interop() @ L71", {
   
   cls <- Interop; tool <- "interop"
   # summaries/ kept separate from imaging_tables/ so scanning for one never

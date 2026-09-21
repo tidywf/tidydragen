@@ -2,7 +2,7 @@
 
 # File R/Dragen.R: @testexamples
 
-test_that("Function Dragen() @ L35", {
+test_that("Function Dragen() @ L33", {
   
   indir <- system.file("extdata", package = "tidydragen")
   odir <- tempdir()

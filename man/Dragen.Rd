@@ -6,11 +6,9 @@
 \description{
 Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFqc}, \link{DragenCov},
 \link{DragenVar}, \link{DragenRna}, \link{DragenTso}, \link{DragenBcl}) plus \link{Interop} for
-convenience
-A DRAGEN run exposes a different subset of
-files depending on the pipeline; tools whose files are absent contribute
-nothing, so a single \code{Dragen$run()} works
-across all pipelines.
+convenience. A DRAGEN run exposes a different subset of files depending on
+the pipeline; tools whose files are absent contribute nothing, so a single
+\code{Dragen$run()} works across all pipelines.
 }
 \examples{
 indir <- system.file("extdata", package = "tidydragen")
