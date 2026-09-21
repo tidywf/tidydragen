@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9001/vignettes/NEWS.qmd" class="external-link"><code>vignettes/NEWS.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9002/vignettes/NEWS.qmd" class="external-link"><code>vignettes/NEWS.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -94,24 +94,54 @@ runs; the helpers below close over it. They build links to compares, PRs,
 issues, and users: pr(48), iss(11), vdiff("0.1.0", "0.0.3"), user("reisingerf").
 --><section class="level2"><h2 id="v0-0-0-9000-dev">v0.0.0.9000 (dev)<a class="anchor" aria-label="anchor" href="#v0-0-0-9000-dev"></a>
 </h2>
-<p>Initial development release. <code>tidydragen</code> is a <a href="https://github.com/tidywf/nemo" class="external-link">nemo</a> child package that parses and tidies outputs from Illumina DRAGEN pipelines into wide-format tidy tibbles ready for a data warehouse, writing to parquet, TSV, CSV, RDS, or a database. The following pipelines are supported for starters: DNA tumor-normal (somatic), DNA germline-only, RNA tumor-only, and ctTSO500 (the DRAGEN TSO500 ctDNA app layer).</p>
+<p>Initial development release. <code>tidydragen</code> is a <a href="https://github.com/tidywf/nemo" class="external-link">nemo</a> child package that parses and tidies outputs from Illumina DRAGEN pipelines into wide-format tidy tibbles ready for a data warehouse, writing to parquet, TSV, CSV, RDS, or a database. Pipelines supported so far: DNA tumor-normal (somatic), DNA germline-only, RNA tumor-only, BCLConvert, ctTSO500 (the DRAGEN TSO500 ctDNA app layer), and Illumina InterOp run QC.</p>
 <section class="level3"><h3 id="tools">Tools<a class="anchor" aria-label="anchor" href="#tools"></a>
 </h3>
-<p>Six domain tools, each with its own <code>inst/config/tools/&lt;tool&gt;/schema.yaml</code>, all inheriting an intermediate <code>DragenTool</code> base (itself <code>inherit = nemo::Tool</code>) and orchestrated by the <code>Dragen</code> workflow class (exported <code>DRAGEN_TOOLS</code>), which tolerates absent files so each pipeline can expose a different subset.</p>
-<ul>
-<li>
-<code>DragenMap</code>: mapping/time metrics, fragment-length histogram, and the cttso trimmer / UMI / GC-bias metrics.</li>
-<li>
-<code>DragenFqc</code>: the 8 flat per-section FastQC tables.</li>
-<li>
-<code>DragenCov</code>: coverage metrics/bins/cumulative, contig mean, fine histogram, and cov-report-bed tables across every region (<code>wgs</code>/<code>tmb</code>/<code>exon</code>/<code>target_bed</code>/ <code>qc-coverage-region-*</code>) and phenotype.</li>
-<li>
-<code>DragenVar</code>: variant/SV/CNV/ploidy/TMB/HRD/gVCF metrics plus microsatellite (JSON), native ploidy-VCF parse, and contamination (JSON).</li>
-<li>
-<code>DragenRna</code>: fusion and quant metrics.</li>
-<li>
-<code>DragenTso</code>: the ctTSO app-layer (<a href="https://github.com/tidywf/tidydragen/pull/3" class="external-link">pr3</a>).</li>
-</ul></section><section class="level3"><h3 id="the-dragen-metrics-parser">The DRAGEN metrics parser<a class="anchor" aria-label="anchor" href="#the-dragen-metrics-parser"></a>
+<p>The following Tools, each with its own <code>inst/config/tools/&lt;tool&gt;/schema.yaml</code> and orchestrated by the <code>Dragen</code> workflow class (exported <code>DRAGEN_TOOLS</code>), which tolerates absent files so each pipeline can expose a different subset. All the DRAGEN tools inherit an intermediate <code>DragenTool</code> base (itself <code>inherit = nemo::Tool</code>); <code>Interop</code> isn’t a DRAGEN output, so it inherits <code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> directly and is included purely because InterOp summaries are typically co-located with BCLConvert/DRAGEN outputs under the same run dir.</p>
+<table class="table caption-top">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 94%">
+</colgroup>
+<thead><tr class="header">
+<th>Tool</th>
+<th>Outputs</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>DragenMap</code></td>
+<td>Mapping/time metrics, fragment-length histogram, cttso trimmer / UMI / GC-bias metrics, and run provenance (<code>replay.json</code>: DRAGEN version, hash-table build version, config dump).</td>
+</tr>
+<tr class="even">
+<td><code>DragenFqc</code></td>
+<td>The 8 flat per-section FastQC tables.</td>
+</tr>
+<tr class="odd">
+<td><code>DragenCov</code></td>
+<td>Coverage metrics/bins/cumulative, contig mean, fine histogram, and cov-report-bed tables across every region (<code>wgs</code>/<code>tmb</code>/<code>exon</code>/<code>target_bed</code>/<code>qc-coverage-region-*</code>) and phenotype.</td>
+</tr>
+<tr class="even">
+<td><code>DragenVar</code></td>
+<td>Variant/SV/CNV/ploidy/TMB/HRD/gVCF metrics plus microsatellite (JSON), native ploidy-VCF parse, and contamination (JSON).</td>
+</tr>
+<tr class="odd">
+<td><code>DragenRna</code></td>
+<td>Fusion and quant metrics.</td>
+</tr>
+<tr class="even">
+<td><code>DragenTso</code></td>
+<td>The ctTSO app-layer.</td>
+</tr>
+<tr class="odd">
+<td><code>DragenBcl</code></td>
+<td>The BCLConvert <code>Reports/</code> demultiplexing outputs.</td>
+</tr>
+<tr class="even">
+<td><code>Interop</code></td>
+<td>Illumina InterOp run-QC summaries and per-tile imaging metrics (not a DRAGEN output).</td>
+</tr>
+</tbody>
+</table></section><section class="level3"><h3 id="the-dragen-metrics-parser">The DRAGEN metrics parser<a class="anchor" aria-label="anchor" href="#the-dragen-metrics-parser"></a>
 </h3>
 <p>Most <code>*_metrics.csv</code> files share a headerless <code>section,rg,variable,count[,pct]</code> shape. <code>DragenTool</code> registers a <code>dragen-metrics</code> ftype: a plain metrics table is parsed and pivoted wide (one column per mapped metric plus a paired <code>&lt;metric&gt;_pct</code>) with no per-table code; only tables needing a custom split or a region/chrom <code>normalise</code> hook declare explicit <code>tidy_&lt;table&gt;()</code> one-liners. Fail-loud policies (<code>on_unmapped</code>, <code>on_coerce_fail</code>, <code>on_unexpected_col</code>) catch schema drift instead of silently dropping data.</p>
 </section><section class="level3"><h3 id="cttso-app-layer-support">ctTSO app-layer support<a class="anchor" aria-label="anchor" href="#cttso-app-layer-support"></a>
@@ -120,6 +150,63 @@ issues, and users: pr(48), iss(11), vdiff("0.1.0", "0.0.3"), user("reisingerf").
 <li><a href="https://github.com/tidywf/tidydragen/pull/3" class="external-link">pr3</a></li>
 </ul>
 <p><code>DragenTso</code> parses the TSO500 ctDNA outputs beyond the shared DRAGEN metrics: CombinedVariantOutput small variants, Fusions, TMB trace/msaf, exon/gene coverage, and a 6-way fan-out of the <code>SampleAnalysisResults.json</code>.</p>
+</section><section class="level3"><h3 id="bclconvert-support">BCLConvert support<a class="anchor" aria-label="anchor" href="#bclconvert-support"></a>
+</h3>
+<p><code>DragenBcl</code> parses a BCLConvert <code>Reports/</code> directory into 10 tables — nine per-lane / per-index CSVs plus <code>runinfo</code> from <code>RunInfo.xml</code>:</p>
+<table class="table caption-top">
+<thead><tr class="header">
+<th>Output table</th>
+<th>Source file</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>adaptercyclemetrics</code></td>
+<td><code>Adapter_Cycle_Metrics.csv</code></td>
+</tr>
+<tr class="even">
+<td><code>adaptermetrics</code></td>
+<td><code>Adapter_Metrics.csv</code></td>
+</tr>
+<tr class="odd">
+<td><code>demultiplexstats</code></td>
+<td><code>Demultiplex_Stats.csv</code></td>
+</tr>
+<tr class="even">
+<td><code>demultiplextilestats</code></td>
+<td><code>Demultiplex_Tile_Stats.csv</code></td>
+</tr>
+<tr class="odd">
+<td><code>indexhoppingcounts</code></td>
+<td><code>Index_Hopping_Counts.csv</code></td>
+</tr>
+<tr class="even">
+<td><code>qualitymetrics</code></td>
+<td><code>Quality_Metrics.csv</code></td>
+</tr>
+<tr class="odd">
+<td><code>qualitytilemetrics</code></td>
+<td><code>Quality_Tile_Metrics.csv</code></td>
+</tr>
+<tr class="even">
+<td><code>topunknownbarcodes</code></td>
+<td><code>Top_Unknown_Barcodes.csv</code></td>
+</tr>
+<tr class="odd">
+<td><code>fastqlist</code></td>
+<td><code>fastq_list.csv</code></td>
+</tr>
+<tr class="even">
+<td><code>runinfo</code></td>
+<td><code>RunInfo.xml</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>runinfo</code> is one-row run metadata (canonical run id, flow cell, instrument, and read lengths) parsed with <code>xml2</code>. The combined <code>Index</code> column is split into <code>index</code>/<code>index2</code> throughout, and the FASTQ list’s <code>Read1File</code>/<code>Read2File</code> are pivoted long into <code>read</code>/<code>filepath</code>.</p>
+<p>Unlike the sample-scoped tools these outputs are <strong>run-scoped</strong> with no sample id in the file name, so outputs are named <code>dragenbcl_&lt;table&gt;</code> (no prefix); a run spanning several <code>Reports/</code> directories disambiguates collisions as <code>dragenbcl_&lt;table&gt;_2</code>, each traceable to its source file via the metadata table.</p>
+</section><section class="level3"><h3 id="interop-support">InterOp support<a class="anchor" aria-label="anchor" href="#interop-support"></a>
+</h3>
+<p><code>Interop</code> parses three groups of Illumina InterOp run-QC outputs (tidydragen never decodes the underlying <code>InterOp/*.bin</code> binaries itself). The two summary CSVs the <code>interop</code> toolchain’s <code>summary</code>/<code>index-summary</code> apps emit: <code>&lt;run&gt;_summary.csv</code> fans into <code>summarymain</code> (overall metrics by read) and <code>summaryreadlane</code> (per-read/lane/surface detail), and <code>&lt;run&gt;-index_summary.csv</code> fans into <code>indexsummarymain</code> (per-lane totals) and <code>indexsummarydetail</code> (per-index demux rows) — many source cells here are <code>"mean +/- sd"</code> or <code>"a / b"</code> pairs, split into paired tidy columns. And <code>imaging_table.csv</code> / <code>imaging_table.csv.gz</code> (per-lane/tile/cycle imaging metrics, gzipped or not, both accepted): its header is unreliable for grouped columns (e.g. <code>"Corrected&lt;A;C;G;T&gt;"</code> prints one label but is followed by 4 data columns), so it’s parsed positionally into a single flat <code>imagingtable</code> table instead of trusting the header.</p>
+<p>Unlike the DRAGEN tools, <code>Interop</code> isn’t a DRAGEN output, so it inherits <code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> directly rather than the shared <code>DragenTool</code> base; it’s included in the <code>Dragen</code> workflow anyway since InterOp summaries are typically co-located with BCLConvert/DRAGEN outputs under the same run directory. <code>imaging_table</code> carries no run id in its filename at all (unlike the two summary CSVs), so — like <code>DragenBcl</code> — its output is named plain <code>interop_imagingtable</code> rather than prefixed with a run id.</p>
 </section><section class="level3"><h3 id="test-data">Test data<a class="anchor" aria-label="anchor" href="#test-data"></a>
 </h3>
 <ul>

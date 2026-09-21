@@ -1,7 +1,8 @@
 # DragenMap Object
 
 Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics,
-run-time metrics, and the fragment-length histogram.
+run-time metrics, the fragment-length histogram, and run provenance
+(`replay.json`).
 
 ## Super classes
 
@@ -33,6 +34,10 @@ run-time metrics, and the fragment-length histogram.
 - [`DragenMap$tidy_time()`](#method-DragenMap-tidy_time)
 
 - [`DragenMap$parse_fraglenhist()`](#method-DragenMap-parse_fraglenhist)
+
+- [`DragenMap$parse_replaymain()`](#method-DragenMap-parse_replaymain)
+
+- [`DragenMap$tidy_replaymain()`](#method-DragenMap-tidy_replaymain)
 
 Inherited methods
 
@@ -157,6 +162,42 @@ Parse `fragment_length_hist.csv` into a long tibble.
   (`character(1)`)  
   Path to file.
 
+------------------------------------------------------------------------
+
+### Method `parse_replaymain()`
+
+Parse a `replay.json` file; returns the whole parsed JSON wrapped in a
+one-row tibble list-column. `tidy_replaymain()` fans it out.
+
+#### Usage
+
+    DragenMap$parse_replaymain(x)
+
+#### Arguments
+
+- `x`:
+
+  (`character(1)`)  
+  Path to file.
+
+------------------------------------------------------------------------
+
+### Method `tidy_replaymain()`
+
+Fan a `replay.json` file into `replaymain` (run provenance, 1 row) and
+`replayconfig` (the full `dragen_config` dump, long).
+
+#### Usage
+
+    DragenMap$tidy_replaymain(x)
+
+#### Arguments
+
+- `x`:
+
+  (`character(1)` or `tibble()`)  
+  Path to file or parsed tibble.
+
 ## Examples
 
 ``` r
@@ -166,12 +207,20 @@ odir <- tempdir()
 obj <- cls$new(indir)
 obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 (lf <- list.files(odir, pattern = "dragenmap_.*parquet", full.names = FALSE))
-#> [1] "sampleA_dragenmap_fraglenhist.parquet"
-#> [2] "sampleA_dragenmap_gcbias.parquet"     
-#> [3] "sampleA_dragenmap_gcmain.parquet"     
-#> [4] "sampleA_dragenmap_metrics.parquet"    
-#> [5] "sampleA_dragenmap_time.parquet"       
-#> [6] "sampleA_dragenmap_trimmer.parquet"    
-#> [7] "sampleA_dragenmap_umihist.parquet"    
-#> [8] "sampleA_dragenmap_umimain.parquet"    
+#>  [1] "sampleA_dragenmap_fraglenhist.parquet"   
+#>  [2] "sampleA_dragenmap_gcbias.parquet"        
+#>  [3] "sampleA_dragenmap_gcmain.parquet"        
+#>  [4] "sampleA_dragenmap_metrics.parquet"       
+#>  [5] "sampleA_dragenmap_replayconfig.parquet"  
+#>  [6] "sampleA_dragenmap_replaymain.parquet"    
+#>  [7] "sampleA_dragenmap_time.parquet"          
+#>  [8] "sampleA_dragenmap_trimmer.parquet"       
+#>  [9] "sampleA_dragenmap_umihist.parquet"       
+#> [10] "sampleA_dragenmap_umimain.parquet"       
+#> [11] "sampleB_2_dragenmap_replayconfig.parquet"
+#> [12] "sampleB_2_dragenmap_replaymain.parquet"  
+#> [13] "sampleB_2_dragenmap_time.parquet"        
+#> [14] "sampleB_dragenmap_replayconfig.parquet"  
+#> [15] "sampleB_dragenmap_replaymain.parquet"    
+#> [16] "sampleB_dragenmap_time.parquet"          
 ```

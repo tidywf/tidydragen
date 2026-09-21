@@ -17,6 +17,7 @@
 <url><loc>https://tidywf.github.io/tidydragen/index.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DRAGEN_TOOLS.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/Dragen.html</loc></url>
+<url><loc>https://tidywf.github.io/tidydragen/reference/DragenBcl.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenCov.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenFqc.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenMap.html</loc></url>
@@ -24,12 +25,14 @@
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenTool.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenTso.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenVar.html</loc></url>
+<url><loc>https://tidywf.github.io/tidydragen/reference/Interop.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/dragen_cov_bin_split.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/dragen_cov_metric_normalize.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/fastqc_bin_expand.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/fastqc_bin_open.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/index.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/s3sync.html</loc></url>
+<url><loc>https://tidywf.github.io/tidydragen/reference/s3sync_bcl.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/s3sync_cttso.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/tidydragen-package.html</loc></url>
 </urlset>

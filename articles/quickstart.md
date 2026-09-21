@@ -32,6 +32,27 @@ View input files
 indir <- system.file("extdata", package = "tidydragen")
 dir_tree(indir)
 #> /home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata
+#> ├── dragenbcl
+#> │   ├── Adapter_Cycle_Metrics.csv
+#> │   ├── Adapter_Cycle_Metrics.csv.dvc
+#> │   ├── Adapter_Metrics.csv
+#> │   ├── Adapter_Metrics.csv.dvc
+#> │   ├── Demultiplex_Stats.csv
+#> │   ├── Demultiplex_Stats.csv.dvc
+#> │   ├── Demultiplex_Tile_Stats.csv
+#> │   ├── Demultiplex_Tile_Stats.csv.dvc
+#> │   ├── Index_Hopping_Counts.csv
+#> │   ├── Index_Hopping_Counts.csv.dvc
+#> │   ├── Quality_Metrics.csv
+#> │   ├── Quality_Metrics.csv.dvc
+#> │   ├── Quality_Tile_Metrics.csv
+#> │   ├── Quality_Tile_Metrics.csv.dvc
+#> │   ├── RunInfo.xml
+#> │   ├── RunInfo.xml.dvc
+#> │   ├── Top_Unknown_Barcodes.csv
+#> │   ├── Top_Unknown_Barcodes.csv.dvc
+#> │   ├── fastq_list.csv
+#> │   └── fastq_list.csv.dvc
 #> ├── dragencov
 #> │   ├── sampleA.exon_coverage_metrics.csv
 #> │   ├── sampleA.exon_coverage_metrics.csv.dvc
@@ -55,6 +76,18 @@ dir_tree(indir)
 #> │   ├── sampleA.fastqc_metrics.csv
 #> │   └── sampleA.fastqc_metrics.csv.dvc
 #> ├── dragenmap
+#> │   ├── cttso-dragencaller
+#> │   │   ├── sampleB-replay.json
+#> │   │   ├── sampleB-replay.json.dvc
+#> │   │   ├── sampleB.time_metrics.csv
+#> │   │   └── sampleB.time_metrics.csv.dvc
+#> │   ├── cttso-tmb
+#> │   │   ├── sampleB-replay.json
+#> │   │   ├── sampleB-replay.json.dvc
+#> │   │   ├── sampleB.time_metrics.csv
+#> │   │   └── sampleB.time_metrics.csv.dvc
+#> │   ├── sampleA-replay.json
+#> │   ├── sampleA-replay.json.dvc
 #> │   ├── sampleA.fragment_length_hist.csv
 #> │   ├── sampleA.fragment_length_hist.csv.dvc
 #> │   ├── sampleA.gc_metrics.csv
@@ -87,37 +120,50 @@ dir_tree(indir)
 #> │   ├── sampleA_Fusions.csv.dvc
 #> │   ├── sampleA_SampleAnalysisResults.json
 #> │   └── sampleA_SampleAnalysisResults.json.dvc
-#> └── dragenvar
-#>     ├── sampleA.allele_transition_noise_metrics.csv
-#>     ├── sampleA.allele_transition_noise_metrics.csv.dvc
-#>     ├── sampleA.cnv_metrics.csv
-#>     ├── sampleA.cnv_metrics.csv.dvc
-#>     ├── sampleA.contamination.json
-#>     ├── sampleA.contamination.json.dvc
-#>     ├── sampleA.gvcf_metrics.csv
-#>     ├── sampleA.gvcf_metrics.csv.dvc
-#>     ├── sampleA.hrdscore.csv
-#>     ├── sampleA.hrdscore.csv.dvc
-#>     ├── sampleA.microsat_output.json
-#>     ├── sampleA.microsat_output.json.dvc
-#>     ├── sampleA.ploidy.vcf.gz
-#>     ├── sampleA.ploidy.vcf.gz.dvc
-#>     ├── sampleA.ploidy_estimation_metrics.csv
-#>     ├── sampleA.ploidy_estimation_metrics.csv.dvc
-#>     ├── sampleA.sv_metrics.csv
-#>     ├── sampleA.sv_metrics.csv.dvc
-#>     ├── sampleA.tmb.metrics.csv
-#>     ├── sampleA.tmb.metrics.csv.dvc
-#>     ├── sampleA.vc_hethom_ratio_metrics.csv
-#>     ├── sampleA.vc_hethom_ratio_metrics.csv.dvc
-#>     ├── sampleA.vc_metrics.csv
-#>     ├── sampleA.vc_metrics.csv.dvc
-#>     ├── sampleB.cnv_metrics.csv
-#>     ├── sampleB.cnv_metrics.csv.dvc
-#>     ├── sampleB.ploidy_estimation_metrics.csv
-#>     ├── sampleB.ploidy_estimation_metrics.csv.dvc
-#>     ├── sampleB.vc_metrics.csv
-#>     └── sampleB.vc_metrics.csv.dvc
+#> ├── dragenvar
+#> │   ├── sampleA.allele_transition_noise_metrics.csv
+#> │   ├── sampleA.allele_transition_noise_metrics.csv.dvc
+#> │   ├── sampleA.cnv_metrics.csv
+#> │   ├── sampleA.cnv_metrics.csv.dvc
+#> │   ├── sampleA.contamination.json
+#> │   ├── sampleA.contamination.json.dvc
+#> │   ├── sampleA.gvcf_metrics.csv
+#> │   ├── sampleA.gvcf_metrics.csv.dvc
+#> │   ├── sampleA.hrdscore.csv
+#> │   ├── sampleA.hrdscore.csv.dvc
+#> │   ├── sampleA.microsat_output.json
+#> │   ├── sampleA.microsat_output.json.dvc
+#> │   ├── sampleA.ploidy.vcf.gz
+#> │   ├── sampleA.ploidy.vcf.gz.dvc
+#> │   ├── sampleA.ploidy_estimation_metrics.csv
+#> │   ├── sampleA.ploidy_estimation_metrics.csv.dvc
+#> │   ├── sampleA.sv_metrics.csv
+#> │   ├── sampleA.sv_metrics.csv.dvc
+#> │   ├── sampleA.tmb.metrics.csv
+#> │   ├── sampleA.tmb.metrics.csv.dvc
+#> │   ├── sampleA.vc_hethom_ratio_metrics.csv
+#> │   ├── sampleA.vc_hethom_ratio_metrics.csv.dvc
+#> │   ├── sampleA.vc_metrics.csv
+#> │   ├── sampleA.vc_metrics.csv.dvc
+#> │   ├── sampleB.cnv_metrics.csv
+#> │   ├── sampleB.cnv_metrics.csv.dvc
+#> │   ├── sampleB.ploidy_estimation_metrics.csv
+#> │   ├── sampleB.ploidy_estimation_metrics.csv.dvc
+#> │   ├── sampleB.vc_metrics.csv
+#> │   └── sampleB.vc_metrics.csv.dvc
+#> └── interop
+#>     ├── imaging_tables
+#>     │   ├── compressed
+#>     │   │   ├── imaging_table.csv.gz
+#>     │   │   └── imaging_table.csv.gz.dvc
+#>     │   └── uncompressed
+#>     │       ├── imaging_table.csv
+#>     │       └── imaging_table.csv.dvc
+#>     └── summaries
+#>         ├── runA-index_summary.csv
+#>         ├── runA-index_summary.csv.dvc
+#>         ├── runA_summary.csv
+#>         └── runA_summary.csv.dvc
 ```
 
 ## Output - Single Tool
@@ -134,11 +180,15 @@ DragenMap$new(file.path(indir, "dragenmap"))$run(
   input_id = "sampleA_id"
 )
 list.files(outdir, pattern = "\\.parquet$")
-#> [1] "metadata_dragenmap.parquet"            "sampleA_dragenmap_fraglenhist.parquet"
-#> [3] "sampleA_dragenmap_gcbias.parquet"      "sampleA_dragenmap_gcmain.parquet"     
-#> [5] "sampleA_dragenmap_metrics.parquet"     "sampleA_dragenmap_time.parquet"       
-#> [7] "sampleA_dragenmap_trimmer.parquet"     "sampleA_dragenmap_umihist.parquet"    
-#> [9] "sampleA_dragenmap_umimain.parquet"
+#>  [1] "metadata_dragenmap.parquet"               "sampleA_dragenmap_fraglenhist.parquet"   
+#>  [3] "sampleA_dragenmap_gcbias.parquet"         "sampleA_dragenmap_gcmain.parquet"        
+#>  [5] "sampleA_dragenmap_metrics.parquet"        "sampleA_dragenmap_replayconfig.parquet"  
+#>  [7] "sampleA_dragenmap_replaymain.parquet"     "sampleA_dragenmap_time.parquet"          
+#>  [9] "sampleA_dragenmap_trimmer.parquet"        "sampleA_dragenmap_umihist.parquet"       
+#> [11] "sampleA_dragenmap_umimain.parquet"        "sampleB_2_dragenmap_replayconfig.parquet"
+#> [13] "sampleB_2_dragenmap_replaymain.parquet"   "sampleB_2_dragenmap_time.parquet"        
+#> [15] "sampleB_dragenmap_replayconfig.parquet"   "sampleB_dragenmap_replaymain.parquet"    
+#> [17] "sampleB_dragenmap_time.parquet"
 ```
 
 ### File naming
@@ -275,7 +325,7 @@ d$run(
   format = "parquet"
 )
 list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
-#>  chr [1:64] "metadata.parquet" "sampleA_dragenfqc_posbasecontent.parquet" ...
+#>  chr [1:88] "dragenbcl_adaptercyclemetrics.parquet" ...
 ```
 
 ## ID columns
@@ -422,7 +472,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>  $ input_dirs  : list<character> [1:1] 
 #>   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"
 #>   ..@ ptype: chr(0) 
-#>  $ output_dir  : chr "/tmp/RtmpZVxS90/qs_dragen"
+#>  $ output_dir  : chr "/tmp/RtmpspAElf/qs_dragen"
 #>  $ pkg_versions: list<
 #>   tbl_df<
 #>     name   : character
@@ -431,7 +481,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #> > [1:1] 
 #>   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr [1:2] "nemo" "tidydragen"
-#>   .. ..$ version: chr [1:2] "0.1.0.9003" "0.0.0.9001"
+#>   .. ..$ version: chr [1:2] "0.1.0.9004" "0.0.0.9002"
 #>   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr(0) 
 #>   .. ..$ version: chr(0) 
@@ -443,11 +493,11 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>     fin   : character
 #>   >
 #> > [1:1] 
-#>   ..$ : tibble [63 × 4] (S3: tbl_df/tbl/data.frame)
-#>   .. ..$ tbl   : chr [1:63] "dragenmap_metrics" "dragenmap_time" "dragenmap_fraglenhist" "dragenmap_trimmer" ...
-#>   .. ..$ prefix: chr [1:63] "sampleA" "sampleA" "sampleA" "sampleA" ...
-#>   .. ..$ fout  : chr [1:63] "sampleA_dragenmap_metrics.parquet" "sampleA_dragenmap_time.parquet" "sampleA_dragenmap_fraglenhist.parquet" "sampleA_dragenmap_trimmer.parquet" ...
-#>   .. ..$ fin   : chr [1:63] "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.mapping_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.time_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.fragment_length_hist.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.trimmer_metrics.csv" ...
+#>   ..$ : tibble [87 × 4] (S3: tbl_df/tbl/data.frame)
+#>   .. ..$ tbl   : chr [1:87] "dragenmap_metrics" "dragenmap_time" "dragenmap_time" "dragenmap_time" ...
+#>   .. ..$ prefix: chr [1:87] "sampleA" "sampleB" "sampleB_2" "sampleA" ...
+#>   .. ..$ fout  : chr [1:87] "sampleA_dragenmap_metrics.parquet" "sampleB_dragenmap_time.parquet" "sampleB_2_dragenmap_time.parquet" "sampleA_dragenmap_time.parquet" ...
+#>   .. ..$ fin   : chr [1:87] "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.mapping_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-dragencaller/sampleB."| __truncated__ "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-tmb/sampleB.time_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.time_metrics.csv" ...
 #>   ..@ ptype: tibble [0 × 4] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ tbl   : chr(0) 
 #>   .. ..$ prefix: chr(0) 

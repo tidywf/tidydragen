@@ -47,7 +47,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_runs)
-#> /tmp/Rtmpix6eRO/naming-demo/runs
+#> /tmp/RtmpUGPvCa/naming-demo/runs
 #> ├── run1
 #> │   ├── sampleA.tool1.table1.tsv
 #> │   └── sampleA.tool1.table2.tsv
@@ -95,7 +95,7 @@ tool$run(
 )
 
 dir_tree(dir_outA)
-#> /tmp/Rtmpix6eRO/naming-demo/outA
+#> /tmp/RtmpUGPvCa/naming-demo/outA
 #> ├── metadata_tool1.parquet
 #> ├── sampleA_2_tool1_table1.parquet
 #> ├── sampleA_2_tool1_table2.parquet
@@ -153,7 +153,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_outB)
-#> /tmp/Rtmpix6eRO/naming-demo/outB
+#> /tmp/RtmpUGPvCa/naming-demo/outB
 #> ├── run1
 #> │   ├── metadata_tool1.parquet
 #> │   ├── sampleA_tool1_table1.parquet
