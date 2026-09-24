@@ -530,7 +530,7 @@ tables:
         type: 'float'
         description: 'maximum coverage over the gene'
         versions: ['latest']
-  sarinfo:
+  sarmain:
     description: 'TSO500 SampleAnalysisResults sample information.'
     pattern: "_SampleAnalysisResults\\.json$"
     glob: ["*_SampleAnalysisResults.json"]

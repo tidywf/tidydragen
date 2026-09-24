@@ -41,8 +41,8 @@
 #' gc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_genecov")
 #' expect_false("median" %in% names(gc))
 #' expect_equal(gc$gene[1], "TNFRSF14")
-#' # SAR fan-out: sarinfo / sarqc / sarsnv / sarcnv / sarswds / sarsw
-#' si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarinfo")
+#' # SAR fan-out: sarmain / sarqc / sarsnv / sarcnv / sarswds / sarsw
+#' si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarmain")
 #' expect_equal(si$sample_id, "sampleA")
 #' expect_equal(nrow(si), 1L)
 #' qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc")
@@ -144,27 +144,27 @@ DragenTso <- R6::R6Class(
       d[]
     },
     #' @description Parse a `SampleAnalysisResults.json` file; returns its `data`
-    #' block wrapped in a one-row tibble list-column. `tidy_sarinfo()` fans it out.
+    #' block wrapped in a one-row tibble list-column. `tidy_sarmain()` fans it out.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_sarinfo = function(x) {
+    parse_sarmain = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
       d <- tibble::tibble(data = list(j[["data"]]))
       attr(d, "file_version") <- "latest"
       d[]
     },
     #' @description Fan a `SampleAnalysisResults.json` `data` block into six
-    #' tables: `sarinfo` (sample info), `sarqc` (QC + expanded metrics + TMB/MSI
+    #' tables: `sarmain` (sample info), `sarqc` (QC + expanded metrics + TMB/MSI
     #' biomarkers, wide), `sarswds` (Nirvana data sources), `sarsw` (software +
     #' Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv` (CNVs).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_sarinfo = function(x) {
+    tidy_sarmain = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- self$parse_sarinfo(x)
+        x <- self$parse_sarmain(x)
       }
       dat <- x$data[[1]]
       ## sampleInformation
       si <- dat[["sampleInformation"]]
-      sarinfo <- tibble::tibble(
+      sarmain <- tibble::tibble(
         sample_id = si[["sampleId"]] %||% NA_character_,
         analysis_date = si[["analysisDate"]] %||% NA_character_,
         analysis_time = si[["analysisTime"]] %||% NA_character_,
@@ -262,7 +262,7 @@ DragenTso <- R6::R6Class(
         )
       }
       list(
-        sarinfo = sarinfo,
+        sarmain = sarmain,
         sarqc = sarqc,
         sarsnv = sarsnv,
         sarcnv = sarcnv,

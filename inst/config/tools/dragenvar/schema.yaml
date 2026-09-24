@@ -376,7 +376,7 @@ tables:
         type: 'float'
         description: 'non-synonymous TMB'
         versions: ['latest']
-  ploidystats:
+  ploidymain:
     description: 'DRAGEN ploidy estimation sample-level metrics.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     glob: ["*.ploidy_estimation_metrics.csv"]

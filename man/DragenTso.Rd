@@ -37,8 +37,8 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \item \href{#method-DragenTso-new}{\code{DragenTso$new()}}
 \item \href{#method-DragenTso-parse_smallvariants}{\code{DragenTso$parse_smallvariants()}}
 \item \href{#method-DragenTso-parse_fusions}{\code{DragenTso$parse_fusions()}}
-\item \href{#method-DragenTso-parse_sarinfo}{\code{DragenTso$parse_sarinfo()}}
-\item \href{#method-DragenTso-tidy_sarinfo}{\code{DragenTso$tidy_sarinfo()}}
+\item \href{#method-DragenTso-parse_sarmain}{\code{DragenTso$parse_sarmain()}}
+\item \href{#method-DragenTso-tidy_sarmain}{\code{DragenTso$tidy_sarmain()}}
 }
 }
 \if{html}{\out{
@@ -115,13 +115,13 @@ then a CSV table; may hold zero data rows).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenTso-parse_sarinfo"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenTso-parse_sarinfo}{}}}
-\subsection{Method \code{parse_sarinfo()}}{
+\if{html}{\out{<a id="method-DragenTso-parse_sarmain"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-parse_sarmain}{}}}
+\subsection{Method \code{parse_sarmain()}}{
 Parse a \code{SampleAnalysisResults.json} file; returns its \code{data}
-block wrapped in a one-row tibble list-column. \code{tidy_sarinfo()} fans it out.
+block wrapped in a one-row tibble list-column. \code{tidy_sarmain()} fans it out.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sarinfo(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sarmain(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -133,15 +133,15 @@ block wrapped in a one-row tibble list-column. \code{tidy_sarinfo()} fans it out
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenTso-tidy_sarinfo"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenTso-tidy_sarinfo}{}}}
-\subsection{Method \code{tidy_sarinfo()}}{
+\if{html}{\out{<a id="method-DragenTso-tidy_sarmain"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-tidy_sarmain}{}}}
+\subsection{Method \code{tidy_sarmain()}}{
 Fan a \code{SampleAnalysisResults.json} \code{data} block into six
-tables: \code{sarinfo} (sample info), \code{sarqc} (QC + expanded metrics + TMB/MSI
+tables: \code{sarmain} (sample info), \code{sarqc} (QC + expanded metrics + TMB/MSI
 biomarkers, wide), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
 Nirvana config), \code{sarsnv} (per-transcript small variants), \code{sarcnv} (CNVs).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sarinfo(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sarmain(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

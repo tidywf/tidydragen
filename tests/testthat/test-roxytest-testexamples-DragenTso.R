@@ -34,8 +34,8 @@ test_that("Function DragenTso() @ L69", {
   gc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_genecov")
   expect_false("median" %in% names(gc))
   expect_equal(gc$gene[1], "TNFRSF14")
-  # SAR fan-out: sarinfo / sarqc / sarsnv / sarcnv / sarswds / sarsw
-  si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarinfo")
+  # SAR fan-out: sarmain / sarqc / sarsnv / sarcnv / sarswds / sarsw
+  si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarmain")
   expect_equal(si$sample_id, "sampleA")
   expect_equal(nrow(si), 1L)
   qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc")

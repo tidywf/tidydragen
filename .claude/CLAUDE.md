@@ -28,7 +28,7 @@ Each tool has its own `inst/config/tools/<tool>/schema.yaml`.
 | `DragenMap` | `*.mapping_metrics.csv`, `*.time_metrics.csv`, `*.fragment_length_hist.csv`, `*.trimmer/umi/gc_metrics.csv` (cttso), `*-replay.json`                                                                        | `metrics`, `time`, `fraglenhist`, `trimmer`, `umimain`/`umihist`, `gcmain`/`gcbias`, `replaymain`/`replayconfig`                                                                                                 |
 | `DragenFqc` | `*.fastqc_metrics.csv`                                                                                                                                                                                      | 8 flat per-section tables (`dragenfqc_posbasecontent` … `_seqpos`)                                                                                                                                               |
 | `DragenCov` | coverage `*.csv`/`*.bed` (region {wgs/tmb/exon/target_bed/qc-coverage-region-*} + pheno variants)                                                                                                           | `metricsmain`/`metricsbins`/`metricscumu`, `contigmean`, `finehist`, `reportbedmain`/`reportbedcumu`, `readreportbed`                                                                                            |
-| `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json`                                             | `vc`, `sv`, `cnv`, `ploidystats`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON)                                            |
+| `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json`                                             | `vc`, `sv`, `cnv`, `ploidymain`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON)                                             |
 | `DragenRna` | `*.fusion_metrics.csv`, `*.quant_metrics.csv`                                                                                                                                                               | `fusion`, `quant`                                                                                                                                                                                                |
 | `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sar{info,qc,snv,cnv,swds,sw}`                                                                                            |
 | `DragenBcl` | BCLConvert `Reports/`: `Adapter[_Cycle]_Metrics.csv`, `Demultiplex[_Tile]_Stats.csv`, `Index_Hopping_Counts.csv`, `Quality[_Tile]_Metrics.csv`, `Top_Unknown_Barcodes.csv`, `fastq_list.csv`, `RunInfo.xml` | `adaptercyclemetrics`, `adaptermetrics`, `demultiplexstats`, `demultiplextilestats`, `indexhoppingcounts`, `qualitymetrics`, `qualitytilemetrics`, `topunknownbarcodes`, `fastqlist`, `runinfo` (XML via `xml2`) |
@@ -75,15 +75,21 @@ column to its schema `type`).
 
 - **1 file → N tables:** fan out via a named list of tibbles →
   `nemo::nemo_enframe()`, `$name` per sub-table. Fan-out tools set
-  `flat_tidy_names = TRUE` → output is `<tool>_<name>`.
+  `flat_tidy_names = TRUE` → output is `<tool>_<name>`. The full rules (shared
+  with tidywigits) are in `docs/r-pkg/schema.md` → *Fan-out*; the rest of this
+  bullet list is the tidydragen-specific part.
 - **Schema table name == output table name** for every tool (only exception:
-  nemo's `metadata_<tool>`). On fan-out tools, rename the file-matching table to
-  its **primary** sub-table --- nemo dispatch binds `parse_`/`tidy_` method
-  names to that table name (`glue("tidy_{table_name}")`), so a mismatch silently
-  falls back to `tidy_file` and breaks.
-- **Sentinel tables:** a schema table with `pattern: "__no_file_match__<x>"` is
-  never matched to a file --- exists only to supply a `col_map` for a fan-out
-  sub-table. See `dragen-multitable-from-one-file` in memory.
+  nemo's `metadata_<tool>`). On fan-out tools the file-matching table is named
+  `<stem>main` (`metricsmain`, `umimain`, `ploidymain`, `sarmain`, ...) and each
+  derived sibling `<stem><qualifier>` --- nemo dispatch binds `parse_`/`tidy_`
+  method names to the matched table name (`glue("tidy_{table_name}")`), so a
+  mismatch silently falls back to `tidy_file` and breaks.
+- **`DragenFqc` is the one exception** to `<stem>main`: its 8 sub-tables are
+  peers of one FASTQC metrics file with no primary among them, so each keeps a
+  content name (`posbasecontent` matches the file).
+- **Sentinel tables:** a schema table with `pattern: "__no_file_match__<x>"` and
+  no `glob` is never matched to a file --- exists only to supply a `col_map` for
+  a fan-out sub-table. See *Fan-out* in `docs/r-pkg/schema.md`.
 - **Region + phenotype (coverage):** folded into `prefix` by `refine_files()`
   (`wgs`/`tmb`/`qc-coverage-region-<label>` + `normal`/`tumor`). `vc` instead
   keeps region as a `region` column via `region_split()`.
@@ -99,7 +105,7 @@ column to its schema `type`).
   which file got the `_2` suffix.
 - **`ftype` is nominal once a `parse_<table>()` method exists** --- nemo calls
   it first and never consults `ftype`, so name it for the real format: `runinfo` =
-  `xml`, `microsat`/`contamination`/`sarinfo` = `json`, `ploidyvcf` = `vcf`.
+  `xml`, `microsat`/`contamination`/`sarmain` = `json`, `ploidyvcf` = `vcf`.
 - **Ragged metrics rows → base `read.csv(fill=TRUE)`, NOT readr** --- readr
   infers column count from the first row and silently merges `pct` into `count`.
 - Numeric counts typed **`float`** in schemas (avoid 32-bit overflow); `int` for
