@@ -2,13 +2,14 @@
 
 # File R/Dragen.R: @testexamples
 
-test_that("Function Dragen() @ L33", {
+test_that("Function Dragen() @ L64", {
   
   indir <- system.file("extdata", package = "tidydragen")
   odir <- tempdir()
   d <- Dragen$new(indir)
   d$run(output_dir = odir, format = "parquet", input_id = "run1")
   (lf <- list.files(odir, pattern = "\\.parquet$", full.names = FALSE))
+  (pats <- d$get_sync_patterns())
   # every registered tool emits at least one table from the combined fixtures
   expect_true(any(grepl("_dragenmap_", lf)))
   expect_true(any(grepl("_dragenfqc_", lf)))
@@ -23,5 +24,15 @@ test_that("Function Dragen() @ L33", {
   # spot-check one output round-trips
   mapf <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenmap_metrics")
   expect_gt(nrow(mapf), 0L)
+  # `aws s3 sync` filters are ordered and last-match wins, so the pattern
+  # tibble must read: deny-all, then the schema includes, then the excludes
+  # that carve the Logs_Intermediates/ duplicates back out. Reordering any of
+  # the three blocks silently changes what gets synced.
+  nex <- length(DRAGEN_SYNC_EXCLUDE)
+  expect_equal(pats$inex[1], "ex")
+  expect_equal(pats$pat[1], "*")
+  expect_true(all(utils::head(pats$inex[-1], -nex) == "in"))
+  expect_true(all(utils::tail(pats$inex, nex) == "ex"))
+  expect_equal(utils::tail(pats$pat, nex), DRAGEN_SYNC_EXCLUDE)
 })
 

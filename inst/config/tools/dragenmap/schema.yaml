@@ -2,6 +2,7 @@ tables:
   metrics:
     description: 'DRAGEN mapping/aligning summary metrics.'
     pattern: "\\.mapping_metrics\\.csv$"
+    glob: ["*.mapping_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Total input reads'
@@ -467,6 +468,7 @@ tables:
   time:
     description: 'DRAGEN run-time metrics (seconds per pipeline step).'
     pattern: "\\.time_metrics\\.csv$"
+    glob: ["*.time_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Time aligning anchored reads'
@@ -662,6 +664,7 @@ tables:
   fraglenhist:
     description: 'DRAGEN fragment length histogram per sample.'
     pattern: "\\.fragment_length_hist\\.csv$"
+    glob: ["*.fragment_length_hist.csv"]
     ftype: 'csv'
     columns:
       - raw: 'sample'
@@ -682,6 +685,7 @@ tables:
   trimmer:
     description: 'DRAGEN read trimmer statistics (adapter/poly-G/quality trimming).'
     pattern: "\\.trimmer_metrics\\.csv$"
+    glob: ["*.trimmer_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Total input reads'
@@ -837,6 +841,7 @@ tables:
   umimain:
     description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
     pattern: "\\.umi_metrics\\.csv$"
+    glob: ["*.umi_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Collapsible region size standard deviation'
@@ -1012,6 +1017,7 @@ tables:
   gcmain:
     description: 'DRAGEN GC bias summary metrics.'
     pattern: "\\.gc_metrics\\.csv$"
+    glob: ["*.gc_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Window size'
@@ -1102,6 +1108,7 @@ tables:
   replaymain:
     description: 'DRAGEN run provenance main elements.'
     pattern: "-replay\\.json$"
+    glob: ["*-replay.json"]
     ftype: 'json'
     columns:
       - raw: 'system.dragen_version'

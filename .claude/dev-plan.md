@@ -197,7 +197,7 @@ by suffix (not a guaranteed ordering).
 
 Reference runs synced under `nogit/dragen-tso500-ctdna/`; full S3 listing +
 per-file parse decisions in `nogit/aws-s3-ls-dragen-tso500-ctdna-*.{md,csv}`.
-Pull the parse-relevant subset via `tidydragen::s3sync_cttso()`.
+Pull the parse-relevant subset via `tidydragen::s3sync()`.
 
 Authoritative prior art: dracarys [PR
 #135](https://github.com/umccr/dracarys/pull/135) (`Wf_tso_ctdna_tumor_only_v2`,

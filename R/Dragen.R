@@ -1,3 +1,23 @@
+#' DRAGEN S3 Sync Excludes
+#'
+#' Trailing `--exclude` globs applied after the schema-derived includes when
+#' syncing a DRAGEN run (see [s3sync()]). A ctTSO run writes the same
+#' app-layer outputs twice — once under `Logs_Intermediates/<sample>/` and once
+#' under `Results/<sample>/` — so these drop the `Logs_Intermediates/` copy and
+#' keep the `Results/` one. `aws s3 sync` filters are ordered and last-match
+#' wins, hence these must come last.
+#'
+#' @export
+DRAGEN_SYNC_EXCLUDE <- c(
+  "*Logs_Intermediates/*_CombinedVariantOutput.tsv",
+  "*Logs_Intermediates/*_Fusions.csv",
+  "*Logs_Intermediates/*.tmb.trace.tsv",
+  "*Logs_Intermediates/*.exon_cov_report.tsv",
+  "*Logs_Intermediates/*.gene_cov_report.tsv",
+  "*Logs_Intermediates/*_SampleAnalysisResults.json",
+  "*Logs_Intermediates/*.microsat_output.json"
+)
+
 #' @title Dragen Object
 #'
 #' @description
@@ -13,6 +33,7 @@
 #' d <- Dragen$new(indir)
 #' d$run(output_dir = odir, format = "parquet", input_id = "run1")
 #' (lf <- list.files(odir, pattern = "\\.parquet$", full.names = FALSE))
+#' (pats <- d$get_sync_patterns())
 #' @testexamples
 #' # every registered tool emits at least one table from the combined fixtures
 #' expect_true(any(grepl("_dragenmap_", lf)))
@@ -28,6 +49,16 @@
 #' # spot-check one output round-trips
 #' mapf <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenmap_metrics")
 #' expect_gt(nrow(mapf), 0L)
+#' # `aws s3 sync` filters are ordered and last-match wins, so the pattern
+#' # tibble must read: deny-all, then the schema includes, then the excludes
+#' # that carve the Logs_Intermediates/ duplicates back out. Reordering any of
+#' # the three blocks silently changes what gets synced.
+#' nex <- length(DRAGEN_SYNC_EXCLUDE)
+#' expect_equal(pats$inex[1], "ex")
+#' expect_equal(pats$pat[1], "*")
+#' expect_true(all(utils::head(pats$inex[-1], -nex) == "in"))
+#' expect_true(all(utils::tail(pats$inex, nex) == "ex"))
+#' expect_equal(utils::tail(pats$pat, nex), DRAGEN_SYNC_EXCLUDE)
 #' @include DragenMap.R DragenFqc.R DragenCov.R DragenVar.R DragenRna.R DragenTso.R DragenBcl.R Interop.R
 #' @export
 Dragen <- R6::R6Class(
@@ -35,6 +66,9 @@ Dragen <- R6::R6Class(
   cloneable = FALSE,
   inherit = Workflow,
   public = list(
+    #' @field sync_exclude (`character(n)`)\cr
+    #' Trailing `aws s3 sync` excludes, see [DRAGEN_SYNC_EXCLUDE].
+    sync_exclude = DRAGEN_SYNC_EXCLUDE,
     #' @description Create a new Dragen object.
     #' @param path (`character(n)`)\cr
     #' Path(s) to DRAGEN results.

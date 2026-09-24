@@ -2,6 +2,7 @@ tables:
   summarymain:
     description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
     pattern: "(?<!-index)_summary\\.csv$"
+    glob: ["*_summary.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Level'
@@ -217,6 +218,7 @@ tables:
   imagingtable:
     description: 'InterOp per-lane x tile x cycle imaging metrics (imaging_table.csv, gzipped or not).'
     pattern: "imaging_table\\.csv(\\.gz)?$"
+    glob: ["*imaging_table.csv.gz", "*imaging_table.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -467,6 +469,7 @@ tables:
   indexsummarymain:
     description: 'InterOp per-lane index-demux totals (fanned out of index_summary.csv).'
     pattern: "-index_summary\\.csv$"
+    glob: ["*-index_summary.csv"]
     ftype: 'csv'
     columns:
       - raw: 'lane'

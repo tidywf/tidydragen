@@ -2,6 +2,7 @@ tables:
   vc:
     description: 'DRAGEN variant caller metrics.'
     pattern: "\\.vc_metrics\\.csv$"
+    glob: ["*.vc_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       # --- PREFILTER / POSTFILTER ---
@@ -170,6 +171,7 @@ tables:
   sv:
     description: 'DRAGEN structural variant metrics.'
     pattern: "\\.sv_metrics\\.csv$"
+    glob: ["*.sv_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Total number of structural variants (PASS)'
@@ -200,6 +202,7 @@ tables:
   cnv:
     description: 'DRAGEN CNV metrics.'
     pattern: "\\.cnv_metrics\\.csv$"
+    glob: ["*.cnv_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Bases in reference genome'
@@ -335,6 +338,7 @@ tables:
   tmb:
     description: 'DRAGEN tumor mutational burden metrics.'
     pattern: "\\.tmb\\.metrics\\.csv$"
+    glob: ["*.tmb.metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Total Input Variant Count'
@@ -375,6 +379,7 @@ tables:
   ploidystats:
     description: 'DRAGEN ploidy estimation sample-level metrics.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
+    glob: ["*.ploidy_estimation_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Ploidy estimation'
@@ -430,6 +435,7 @@ tables:
   nuctrans:
     description: 'DRAGEN allele nucleotide transition noise.'
     pattern: "\\.allele_transition_noise_metrics\\.csv$"
+    glob: ["*.allele_transition_noise_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'value'
@@ -440,6 +446,7 @@ tables:
   hethom:
     description: 'DRAGEN per-chromosome het/hom ratio metrics (PREFILTER/POSTFILTER).'
     pattern: "\\.vc_hethom_ratio_metrics\\.csv$"
+    glob: ["*.vc_hethom_ratio_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Heterozygous'
@@ -460,6 +467,7 @@ tables:
   hrd:
     description: 'DRAGEN HRD score.'
     pattern: "\\.hrdscore\\.csv$"
+    glob: ["*.hrdscore.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Sample'
@@ -490,6 +498,7 @@ tables:
   microsat:
     description: 'DRAGEN microsatellite instability (MSI) summary.'
     pattern: "\\.microsat_output\\.json$"
+    glob: ["*.microsat_output.json"]
     ftype: 'json'
     columns:
       - raw: 'TotalMicrosatelliteSitesAssessed'
@@ -530,6 +539,7 @@ tables:
   ploidyvcf:
     description: 'DRAGEN per-contig coverage summary.'
     pattern: "\\.ploidy\\.vcf\\.gz$"
+    glob: ["*.ploidy.vcf.gz"]
     ftype: 'vcf'
     columns:
       - raw: 'chrom'
@@ -560,6 +570,7 @@ tables:
   gvcf:
     description: 'DRAGEN gVCF variant caller postfilter metrics.'
     pattern: "\\.gvcf_metrics\\.csv$"
+    glob: ["*.gvcf_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Total'
@@ -685,6 +696,7 @@ tables:
   contamination:
     description: 'DRAGEN cross-sample contamination summary (cttso).'
     pattern: "\\.contamination\\.json$"
+    glob: ["*.contamination.json"]
     ftype: 'json'
     columns:
       - raw: 'ContaminationScore'
