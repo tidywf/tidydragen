@@ -428,7 +428,7 @@ tables:
     glob: ["*RunInfo.xml"]
     # Nominal only: parse_runinfo() intercepts (custom parse_<table> wins in nemo
     # dispatch), so this ftype is never consulted by the parser. Named honestly for
-    # the file format (as microsat/contamination/sarinfo = 'json', ploidyvcf = 'vcf').
+    # the file format (as microsat/contamination/sarmain = 'json', ploidyvcf = 'vcf').
     ftype: 'xml'
     columns:
       - raw: 'run_id'

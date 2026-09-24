@@ -52,8 +52,8 @@
 #' tmb <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_tmb")
 #' expect_equal(tmb$tmb, 3.46)
 #' expect_equal(tmb$vars_tot_input, 12004)
-#' # ploidy: split into `ploidystats` (sample scalars) + `ploidyratio` (per-chrom, long)
-#' plo <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_ploidystats")
+#' # ploidy: split into `ploidymain` (sample scalars) + `ploidyratio` (per-chrom, long)
+#' plo <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_ploidymain")
 #' expect_equal(plo$ploidy_est, "XX")
 #' expect_equal(plo$cov_x_pctile, 45.99)
 #' expect_false("cov_x_div_auto" %in% names(plo))
@@ -61,7 +61,7 @@
 #' expect_equal(pcr$ratio[pcr$chrom == "X"], 0.99)
 #' expect_equal(pcr$ratio[pcr$chrom == "1"], 1.00)
 #' # sampleB: 'median coverage'/'median / Autosomal median' naming -> same tidy names
-#' ploB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_ploidystats")
+#' ploB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_ploidymain")
 #' expect_equal(ploB$cov_x_median, 19.24)
 #' expect_equal(ploB$ploidy_est, "XX")
 #' expect_false("cov_skewness" %in% names(ploB))
@@ -124,7 +124,7 @@ DragenVar <- R6::R6Class(
   public = list(
     #' @field flat_tidy_names (`logical(1)`)\cr
     #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
-    #' dropped). Needed for the `ploidystats`/`ploidyratio` split.
+    #' dropped). Needed for the `ploidymain`/`ploidyratio` split.
     flat_tidy_names = TRUE,
     #' @description Create a new DragenVar object.
     #' @param path (`character(1)`)\cr
@@ -197,16 +197,16 @@ DragenVar <- R6::R6Class(
         d
       })
     },
-    #' @description Tidy `ploidy_estimation_metrics.csv` into `ploidystats` (sample
+    #' @description Tidy `ploidy_estimation_metrics.csv` into `ploidymain` (sample
     #' scalars) and `ploidyratio` (long, one row per chromosome ratio).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_ploidystats = function(x) {
+    tidy_ploidymain = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_ratio <- grepl("/", x$variable)
-      # scalars -> ploidystats table; per-chrom ratios -> ploidyratio sentinel
-      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidystats")
+      # scalars -> ploidymain table; per-chrom ratios -> ploidyratio sentinel
+      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidymain")
       ratio <- private$tidy_metrics(
         x[is_ratio, , drop = FALSE],
         "ploidyratio",
@@ -216,7 +216,7 @@ DragenVar <- R6::R6Class(
           d
         }
       )
-      stats$name <- "ploidystats"
+      stats$name <- "ploidymain"
       ratio$name <- "ploidyratio"
       dplyr::bind_rows(stats, ratio)
     },

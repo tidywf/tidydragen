@@ -23,7 +23,7 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \describe{
 \item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
 \code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
-dropped). Needed for the \code{ploidystats}/\code{ploidyratio} split.}
+dropped). Needed for the \code{ploidymain}/\code{ploidyratio} split.}
 }
 \if{html}{\out{</div>}}
 }
@@ -35,7 +35,7 @@ dropped). Needed for the \code{ploidystats}/\code{ploidyratio} split.}
 \item \href{#method-DragenVar-tidy_gvcf}{\code{DragenVar$tidy_gvcf()}}
 \item \href{#method-DragenVar-tidy_cnv}{\code{DragenVar$tidy_cnv()}}
 \item \href{#method-DragenVar-tidy_hethom}{\code{DragenVar$tidy_hethom()}}
-\item \href{#method-DragenVar-tidy_ploidystats}{\code{DragenVar$tidy_ploidystats()}}
+\item \href{#method-DragenVar-tidy_ploidymain}{\code{DragenVar$tidy_ploidymain()}}
 \item \href{#method-DragenVar-tidy_nuctrans}{\code{DragenVar$tidy_nuctrans()}}
 \item \href{#method-DragenVar-parse_microsat}{\code{DragenVar$parse_microsat()}}
 \item \href{#method-DragenVar-parse_contamination}{\code{DragenVar$parse_contamination()}}
@@ -149,13 +149,13 @@ Tidy \code{vc_hethom_ratio_metrics.csv}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenVar-tidy_ploidystats"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidystats}{}}}
-\subsection{Method \code{tidy_ploidystats()}}{
-Tidy \code{ploidy_estimation_metrics.csv} into \code{ploidystats} (sample
+\if{html}{\out{<a id="method-DragenVar-tidy_ploidymain"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidymain}{}}}
+\subsection{Method \code{tidy_ploidymain()}}{
+Tidy \code{ploidy_estimation_metrics.csv} into \code{ploidymain} (sample
 scalars) and \code{ploidyratio} (long, one row per chromosome ratio).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidystats(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidymain(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
