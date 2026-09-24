@@ -2,6 +2,7 @@ tables:
   metricsmain:
     description: 'DRAGEN coverage summary metrics.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
+    glob: ["*.*_coverage_metrics*.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Aligned bases'
@@ -117,6 +118,7 @@ tables:
   contigmean:
     description: 'DRAGEN per-contig mean coverage (chrom, aligned bases, mean coverage).'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
+    glob: ["*.*_contig_mean_cov*.csv"]
     ftype: 'csv-nohead'
     columns:
       - raw: 'chrom'
@@ -137,6 +139,7 @@ tables:
   finehist:
     description: 'DRAGEN fine coverage histogram (per-depth base counts).'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_fine_hist(?:_normal|_tumor)?\\.csv$"
+    glob: ["*.*_fine_hist*.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Depth'
@@ -152,6 +155,7 @@ tables:
   reportbedmain:
     description: 'DRAGEN coverage report BED, distribution stats per region interval.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
+    glob: ["*.*_cov_report*.bed"]
     ftype: 'tsv'
     columns:
       - raw: '#chrom'
@@ -237,6 +241,7 @@ tables:
   readreportbed:
     description: 'DRAGEN per-gene read coverage report BED.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"
+    glob: ["*.*_read_cov_report*.bed"]
     ftype: 'tsv'
     columns:
       - raw: '#chrom'

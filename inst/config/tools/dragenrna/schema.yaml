@@ -2,6 +2,7 @@ tables:
   fusion:
     description: 'DRAGEN RNA gene fusion statistics.'
     pattern: "\\.fusion_metrics\\.csv$"
+    glob: ["*.fusion_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'All fusion candidates (unfiltered)'
@@ -22,6 +23,7 @@ tables:
   quant:
     description: 'DRAGEN RNA quantification statistics.'
     pattern: "\\.quant_metrics\\.csv$"
+    glob: ["*.quant_metrics.csv"]
     ftype: 'dragen-metrics'
     columns:
       - raw: 'Library orientation'

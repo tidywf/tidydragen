@@ -2,6 +2,7 @@ tables:
   adaptercyclemetrics:
     description: 'BCLConvert per-cycle adapter-trimming metrics (Adapter_Cycle_Metrics.csv).'
     pattern: "^Adapter_Cycle_Metrics\\.csv$"
+    glob: ["*Adapter_Cycle_Metrics.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -47,6 +48,7 @@ tables:
   adaptermetrics:
     description: 'BCLConvert adapter-trimming metrics per sample/read (Adapter_Metrics.csv).'
     pattern: "^Adapter_Metrics\\.csv$"
+    glob: ["*Adapter_Metrics.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -92,6 +94,7 @@ tables:
   demultiplexstats:
     description: 'BCLConvert demultiplexing stats per sample/lane (Demultiplex_Stats.csv). The combined Index column is split into index/index2.'
     pattern: "^Demultiplex_Stats\\.csv$"
+    glob: ["*Demultiplex_Stats.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -157,6 +160,7 @@ tables:
   demultiplextilestats:
     description: 'BCLConvert per-tile demultiplexing stats (Demultiplex_Tile_Stats.csv). Same as demultiplexstats plus a tile column; Index split into index/index2.'
     pattern: "^Demultiplex_Tile_Stats\\.csv$"
+    glob: ["*Demultiplex_Tile_Stats.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -227,6 +231,7 @@ tables:
   indexhoppingcounts:
     description: 'BCLConvert index-hopping read counts for unique dual indexes (Index_Hopping_Counts.csv).'
     pattern: "^Index_Hopping_Counts\\.csv$"
+    glob: ["*Index_Hopping_Counts.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -267,6 +272,7 @@ tables:
   qualitymetrics:
     description: 'BCLConvert quality-score metrics per sample/read (Quality_Metrics.csv).'
     pattern: "^Quality_Metrics\\.csv$"
+    glob: ["*Quality_Metrics.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -322,6 +328,7 @@ tables:
   qualitytilemetrics:
     description: 'BCLConvert per-tile quality-score metrics (Quality_Tile_Metrics.csv). Same as qualitymetrics plus a tile column.'
     pattern: "^Quality_Tile_Metrics\\.csv$"
+    glob: ["*Quality_Tile_Metrics.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -382,6 +389,7 @@ tables:
   topunknownbarcodes:
     description: 'BCLConvert most-common barcode sequences not listed in the sample sheet (Top_Unknown_Barcodes.csv).'
     pattern: "^Top_Unknown_Barcodes\\.csv$"
+    glob: ["*Top_Unknown_Barcodes.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Lane'
@@ -417,6 +425,7 @@ tables:
   runinfo:
     description: 'Illumina run metadata from RunInfo.xml (copied into Reports/ by BCLConvert). One row per run; read lengths pivoted wide (data reads -> read1/read2, index reads -> index1/index2).'
     pattern: "^RunInfo\\.xml$"
+    glob: ["*RunInfo.xml"]
     # Nominal only: parse_runinfo() intercepts (custom parse_<table> wins in nemo
     # dispatch), so this ftype is never consulted by the parser. Named honestly for
     # the file format (as microsat/contamination/sarinfo = 'json', ploidyvcf = 'vcf').
@@ -500,6 +509,7 @@ tables:
   fastqlist:
     description: 'BCLConvert FASTQ list (fastq_list.csv). Read1File/Read2File are pivoted long into read/filepath.'
     pattern: "^fastq_list\\.csv$"
+    glob: ["*fastq_list.csv"]
     ftype: 'csv'
     columns:
       - raw: 'RGID'

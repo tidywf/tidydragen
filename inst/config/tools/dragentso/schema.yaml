@@ -2,6 +2,7 @@ tables:
   smallvariants:
     description: 'TSO500 CombinedVariantOutput [Small Variants] section.'
     pattern: "_CombinedVariantOutput\\.tsv$"
+    glob: ["*_CombinedVariantOutput.tsv"]
     ftype: 'tsv'
     columns:
       - raw: 'Gene'
@@ -62,6 +63,7 @@ tables:
   fusions:
     description: 'TSO500 DNA fusion calls.'
     pattern: "_Fusions\\.csv$"
+    glob: ["*_Fusions.csv"]
     ftype: 'csv'
     columns:
       - raw: 'Sample'
@@ -157,6 +159,7 @@ tables:
   tmbtrace:
     description: 'TSO500 per-variant TMB trace.'
     pattern: "\\.tmb\\.trace\\.tsv$"
+    glob: ["*.tmb.trace.tsv"]
     ftype: 'tsv'
     columns:
       - raw: 'Chromosome'
@@ -297,6 +300,7 @@ tables:
   tmbmsaf:
     description: 'TSO500 per-variant maximum somatic allele frequency (TMB MSAF).'
     pattern: "\\.tmb\\.msaf\\.csv$"
+    glob: ["*.tmb.msaf.csv"]
     ftype: 'csv'
     columns:
       - raw: 'MaxSomaticAF'
@@ -442,6 +446,7 @@ tables:
   exoncov:
     description: 'TSO500 per-exon coverage report.'
     pattern: "\\.exon_cov_report\\.tsv$"
+    glob: ["*.exon_cov_report.tsv"]
     ftype: 'tsv'
     columns:
       - raw: 'chr'
@@ -487,6 +492,7 @@ tables:
   genecov:
     description: 'TSO500 per-gene coverage report.'
     pattern: "\\.gene_cov_report\\.tsv$"
+    glob: ["*.gene_cov_report.tsv"]
     ftype: 'tsv'
     columns:
       - raw: 'chr'
@@ -527,6 +533,7 @@ tables:
   sarinfo:
     description: 'TSO500 SampleAnalysisResults sample information.'
     pattern: "_SampleAnalysisResults\\.json$"
+    glob: ["*_SampleAnalysisResults.json"]
     ftype: 'json'
     columns:
       - raw: 'sampleId'

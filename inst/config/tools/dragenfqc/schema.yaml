@@ -2,6 +2,7 @@ tables:
   posbasecontent:
     description: 'DRAGEN FASTQC positional base content: per-base proportion by read position and mate.'
     pattern: "\\.fastqc_metrics\\.csv$"
+    glob: ["*.fastqc_metrics.csv"]
     ftype: 'csv'
     columns:
       - raw: 'mate'
