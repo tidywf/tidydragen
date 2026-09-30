@@ -30,9 +30,9 @@ Each tool has its own `inst/config/tools/<tool>/schema.yaml`.
 | `DragenCov` | coverage `*.csv`/`*.bed` (region {wgs/tmb/exon/target_bed/qc-coverage-region-*} + pheno variants)                                                                                                           | `metricsmain`/`metricsbins`/`metricscumu`, `contigmean`, `finehist`, `reportbedmain`/`reportbedcumu`, `readreportbed`                                                                                            |
 | `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json`                                             | `vc`, `sv`, `cnv`, `ploidymain`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON)                                             |
 | `DragenRna` | `*.fusion_metrics.csv`, `*.quant_metrics.csv`                                                                                                                                                               | `fusion`, `quant`                                                                                                                                                                                                |
-| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sar{info,qc,snv,cnv,swds,sw}`                                                                                            |
+| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sarmain` → `sar{qc,qcthr,snv,cnv,swds,sw}`                                                                               |
 | `DragenBcl` | BCLConvert `Reports/`: `Adapter[_Cycle]_Metrics.csv`, `Demultiplex[_Tile]_Stats.csv`, `Index_Hopping_Counts.csv`, `Quality[_Tile]_Metrics.csv`, `Top_Unknown_Barcodes.csv`, `fastq_list.csv`, `RunInfo.xml` | `adaptercyclemetrics`, `adaptermetrics`, `demultiplexstats`, `demultiplextilestats`, `indexhoppingcounts`, `qualitymetrics`, `qualitytilemetrics`, `topunknownbarcodes`, `fastqlist`, `runinfo` (XML via `xml2`) |
-| `Interop`   | Illumina InterOp run-QC summaries (NOT a DRAGEN output --- see below): `<run>_summary.csv`, `<run>-index_summary.csv`                                                                                       | `summary`/`summaryreadlane`, `indexsummary`/`indexsummarydetail`                                                                                                                                                 |
+| `Interop`   | Illumina InterOp run-QC (NOT a DRAGEN output --- see below): `<run>_summary.csv`, `<run>-index_summary.csv`, `imaging_table.csv[.gz]`                                                                       | `summarymain`/`summaryreadlane`, `indexsummarymain`/`indexsummarydetail`, `imagingtable`                                                                                                                         |
 
 Output name = `<prefix>_<tool>_<table>`; `prefix` is the sample id (+
 region/pheno for coverage).
@@ -41,11 +41,14 @@ region/pheno for coverage).
   `refine_files()` blanks `prefix` → outputs are `dragenbcl_<table>` (a run over
   several `Reports/` dirs disambiguates as `_2`/`_3`; run id lands in
   `input_id`, traceable via `metadata_dragenbcl`).
-- **`Interop` is Illumina run-QC, not a DRAGEN tool** --- decodes
-  `InterOp/*.bin` upstream via the `interop` toolchain; tidydragen only parses
-  its CSV output. Inherits `Tool` directly, no `refine_files()` override needed.
-  Registered in `DRAGEN_TOOLS` anyway since it's typically co-located with
-  BCLConvert/DRAGEN outputs.
+- **`Interop` is Illumina run-QC, not a DRAGEN tool** --- `InterOp/*.bin` is
+  decoded upstream by the `interop` toolchain; tidydragen only parses its CSV
+  output. Inherits `Tool` directly (so registers its own fan-out,
+  `flat_tidy_names = TRUE`). The summary files carry the run id in the filename;
+  `imaging_table.csv[.gz]` doesn't, so `refine_files()` blanks its `prefix`
+  (run-scoped, like `DragenBcl`) → `interop_imagingtable`. Registered in
+  `DRAGEN_TOOLS` anyway since it's typically co-located with BCLConvert/DRAGEN
+  outputs.
 
 The `Dragen` `Workflow` (`R/Dragen.R`, exported `DRAGEN_TOOLS`) registers all 8
 tools and tolerates absent files (each missing tool → 0 tables). Current status,
@@ -91,14 +94,16 @@ column to its schema `type`).
   no `glob` is never matched to a file --- exists only to supply a `col_map` for
   a fan-out sub-table. See *Fan-out* in `docs/r-pkg/schema.md`.
 - **Region + phenotype (coverage):** folded into `prefix` by `refine_files()`
-  (`wgs`/`tmb`/`qc-coverage-region-<label>` + `normal`/`tumor`). `vc` instead
-  keeps region as a `region` column via `region_split()`.
+  (`wgs`/`tmb`/`exon`/`target_bed`/`qc-coverage-region-<label>` +
+  `normal`/`tumor`). `vc` instead keeps region as a `region` column via
+  `region_split()`.
 - **`csv-nohead` ftype** registered on `DragenTool` (`trim_ws=TRUE`) for
   headerless coverage CSVs.
 - **Run-scoped tools (`DragenBcl`):** no sample id in filenames, so
   `refine_files()` blanks `prefix` → `dragenbcl_<table>`; relies on a nemo
   `Tool$run()` accommodation appending the disambiguator with no leading `_`.
-  Reusable for InterOp. See `dragenbcl-run-scoped-no-prefix` in memory.
+  `Interop` reuses it for `imagingtable`. Design notes: *BCLConvert* in
+  `.claude/dev-plan.md`.
 - **Same-basename, different-content files (cttso `replaymain`/`time`) need no
   dedup** --- nemo's generic collision handling already assigns distinct
   prefixes; match rows by content (e.g. `grepl("Tmb", command_line)`), not by
@@ -162,13 +167,8 @@ official metric definitions.
 Full Makefile target list (shared with nemo/tidywigits):
 `tidywf/docs/r-pkg/dev-commands.md`.
 
-Build loop: `edit → make roxydoc → make build → make test`. **`make build`
-required after any `schema.yaml` change** --- `nemo::Config` resolves
-`system.file('config/tools', ...)`, which only works for an installed package
-(`devtools::load_all()` alone isn't enough there).
-
-Editing `../nemo`? Rebuild it (`cd ../nemo && make build`) first --- it's
-installed, not `load_all`ed.
+Build loop (`make build` after schema edits, rebuild `../nemo` after editing
+it): *Build loop* in that same doc.
 
 `devtools::load_all()` (no make equivalent) to load package interactively:
 

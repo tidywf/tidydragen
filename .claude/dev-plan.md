@@ -11,13 +11,13 @@ duplicate it here.
 ## Status
 
 Build functionally complete: **8 tools** (`DragenMap`, `DragenFqc`, `DragenCov`,
-`DragenVar`, `DragenRna`, `DragenTso`, `DragenBcl`, `Interop`). 239 roxytests
+`DragenVar`, `DragenRna`, `DragenTso`, `DragenBcl`, `Interop`). All roxytests
 pass.
 
 | Phase                    | Status                 | Notes                                                                                                                                                                          |
 | ------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 0--5: core DRAGEN        | done                   | `DragenTool` base, shared `dragen-metrics` parser, coverage `refine_files`/`csv-nohead`, FastQC 8-table fan-out (→ own `DragenFqc`), JSON+VCF (`microsat`, native `ploidyvcf`) |
-| 6 Tier 1+2: cttso        | done                   | region-enum fix, new M tables (`trimmer`/`umi`/`gc`/`gvcf`), flat JSON `contamination`, `DragenTso` (6 file tables + 6-way SAR fan-out)                                        |
+| 6 Tier 1+2: cttso        | done                   | region-enum fix, new M tables (`trimmer`/`umi`/`gc`/`gvcf`), flat JSON `contamination`, `DragenTso` (6 file tables + SAR fan-out: `sarmain` + 6 siblings)                      |
 | 6 Tier 3: `cnv.vcf` etc. | resolved, out of scope | see Scope decisions below                                                                                                                                                      |
 | BCLConvert (`DragenBcl`) | done                   | see below                                                                                                                                                                      |
 | InterOp (`Interop`)      | done                   | see below                                                                                                                                                                      |
@@ -274,6 +274,3 @@ the right thing) mode: `on_unmapped` (append an unknown metric name),
 - Custom-parse tables go through `tidy_file`, which renames **by position**
   (`ncol` must equal schema rows) and does **no** type conversion --- a custom
   `parse_` must emit typed columns in schema order.
-- **`make build` required after any `schema.yaml` change**, not just
-  `load_all()` --- `Config` resolves `system.file('config/tools', ...)`, which
-  only works for an installed package.
