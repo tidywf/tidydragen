@@ -561,6 +561,26 @@ tables:
         type: 'char'
         description: 'analysis name'
         versions: ['latest']
+      - raw: 'schema_version'
+        tidy: 'schema_version'
+        type: 'char'
+        description: 'SampleAnalysisResults JSON schema version'
+        versions: ['latest']
+      - raw: 'library_type'
+        tidy: 'library_type'
+        type: 'char'
+        description: 'sequencing library type (DNA)'
+        versions: ['latest']
+      - raw: 'library_id'
+        tidy: 'library_id'
+        type: 'char'
+        description: 'sequencing library ID'
+        versions: ['latest']
+      - raw: 'analysis_completed'
+        tidy: 'analysis_completed'
+        type: 'char'
+        description: 'library analysis completed (logical)'
+        versions: ['latest']
   sarqc:
     description: 'TSO500 SampleAnalysisResults QC, expanded metrics, and TMB/MSI biomarkers (one wide row).'
     pattern: '__no_file_match__sarqc'
@@ -635,6 +655,121 @@ tables:
         tidy: 'msi_sum_jsd'
         type: 'float'
         description: 'MSI sum of Jensen-Shannon distances'
+        versions: ['latest']
+      - raw: 'mean_family_size'
+        tidy: 'mean_family_size'
+        type: 'float'
+        description: 'mean UMI read family size'
+        versions: ['latest']
+      - raw: 'median_target_coverage'
+        tidy: 'median_target_coverage'
+        type: 'float'
+        description: 'median depth across unique manifest target loci'
+        versions: ['latest']
+      - raw: 'pct_chimeric_reads'
+        tidy: 'pct_chimeric_reads'
+        type: 'float'
+        description: 'percent of passing-QC reads aligned as chimeric'
+        versions: ['latest']
+      - raw: 'pct_exon_500x'
+        tidy: 'pct_exon_500x'
+        type: 'float'
+        description: 'percent of exon bases at >=500x fragment coverage'
+        versions: ['latest']
+      - raw: 'pct_exon_1500x'
+        tidy: 'pct_exon_1500x'
+        type: 'float'
+        description: 'percent of exon bases at >=1500x fragment coverage'
+        versions: ['latest']
+      - raw: 'pct_read_enrichment'
+        tidy: 'pct_read_enrichment'
+        type: 'float'
+        description: 'percent of reads overlapping manifest target regions'
+        versions: ['latest']
+      - raw: 'pct_usable_umi_reads'
+        tidy: 'pct_usable_umi_reads'
+        type: 'float'
+        description: 'percent of reads with valid UMI sequences'
+        versions: ['latest']
+      - raw: 'pct_aligned_reads'
+        tidy: 'pct_aligned_reads'
+        type: 'float'
+        description: 'percent of reads aligned (non-supplementary, non-secondary, passing QC)'
+        versions: ['latest']
+      - raw: 'pct_target_04x_mean'
+        tidy: 'pct_target_04x_mean'
+        type: 'float'
+        description: 'percent of target bases at >=0.4x mean target coverage'
+        versions: ['latest']
+      - raw: 'pct_target_500x'
+        tidy: 'pct_target_500x'
+        type: 'float'
+        description: 'percent of target bases at >=500x fragment coverage'
+        versions: ['latest']
+      - raw: 'pct_target_1000x'
+        tidy: 'pct_target_1000x'
+        type: 'float'
+        description: 'percent of target bases at >=1000x fragment coverage'
+        versions: ['latest']
+      - raw: 'pct_target_1500x'
+        tidy: 'pct_target_1500x'
+        type: 'float'
+        description: 'percent of target bases at >=1500x fragment coverage'
+        versions: ['latest']
+      - raw: 'pct_duplexfamilies'
+        tidy: 'pct_duplexfamilies'
+        type: 'float'
+        description: 'percent of UMI families that are duplex'
+        versions: ['latest']
+      - raw: 'median_insert_size'
+        tidy: 'median_insert_size'
+        type: 'float'
+        description: 'median fragment (insert) size (bp)'
+        versions: ['latest']
+      - raw: 'pct_soft_clipped_bases'
+        tidy: 'pct_soft_clipped_bases'
+        type: 'float'
+        description: 'percent of soft-clipped bases'
+        versions: ['latest']
+      - raw: 'pct_q30_bases'
+        tidy: 'pct_q30_bases'
+        type: 'float'
+        description: 'percent of bases with quality >=Q30'
+        versions: ['latest']
+  sarqcthr:
+    description: 'TSO500 SampleAnalysisResults QC metrics with lower/upper spec limits (one row per QC group x metric).'
+    pattern: '__no_file_match__sarqcthr'
+    ftype: 'csv'
+    columns:
+      - raw: 'group'
+        tidy: 'group'
+        type: 'char'
+        description: 'QC metric group name'
+        versions: ['latest']
+      - raw: 'metric'
+        tidy: 'metric'
+        type: 'char'
+        description: 'QC metric name (lowercased, as in sarqc)'
+        versions: ['latest']
+      - raw: 'value'
+        tidy: 'value'
+        type: 'float'
+        description: 'QC metric value'
+        versions: ['latest']
+      - raw: 'uom'
+        tidy: 'uom'
+        type: 'char'
+        description: 'unit of measure'
+        versions: ['latest']
+      - raw: 'lsl'
+        tidy: 'lsl'
+        type: 'float'
+        description: 'lower spec limit (NA = none)'
+        versions: ['latest']
+      - raw: 'usl'
+        tidy: 'usl'
+        type: 'float'
+        description: 'upper spec limit (NA = none)'
         versions: ['latest']
   sarswds:
     description: 'TSO500 SampleAnalysisResults Nirvana annotation data sources.'
@@ -751,6 +886,16 @@ tables:
         type: 'float'
         description: 'alternative allele depth'
         versions: ['latest']
+      - raw: 'variant_type'
+        tidy: 'variant_type'
+        type: 'char'
+        description: 'Nirvana variant type (SNV/MNV/insertion/deletion/indel)'
+        versions: ['latest']
+      - raw: 'hgvsg'
+        tidy: 'hgvsg'
+        type: 'char'
+        description: 'HGVS genomic notation'
+        versions: ['latest']
       - raw: 'transcript'
         tidy: 'transcript'
         type: 'char'
@@ -775,6 +920,71 @@ tables:
         tidy: 'hgvsp'
         type: 'char'
         description: 'HGVS protein notation'
+        versions: ['latest']
+      - raw: 'source'
+        tidy: 'source'
+        type: 'char'
+        description: 'transcript source (RefSeq/Ensembl)'
+        versions: ['latest']
+      - raw: 'biotype'
+        tidy: 'biotype'
+        type: 'char'
+        description: 'transcript biotype'
+        versions: ['latest']
+      - raw: 'codons'
+        tidy: 'codons'
+        type: 'char'
+        description: 'reference/alternate codons'
+        versions: ['latest']
+      - raw: 'aminoacids'
+        tidy: 'aminoacids'
+        type: 'char'
+        description: 'reference/alternate amino acids'
+        versions: ['latest']
+      - raw: 'cdnapos'
+        tidy: 'cdnapos'
+        type: 'char'
+        description: 'cDNA position (may be a range)'
+        versions: ['latest']
+      - raw: 'cdspos'
+        tidy: 'cdspos'
+        type: 'char'
+        description: 'CDS position (may be a range)'
+        versions: ['latest']
+      - raw: 'exons'
+        tidy: 'exons'
+        type: 'char'
+        description: 'affected exon(s), as n/total'
+        versions: ['latest']
+      - raw: 'introns'
+        tidy: 'introns'
+        type: 'char'
+        description: 'affected intron(s), as n/total'
+        versions: ['latest']
+      - raw: 'isjunctionpreserving'
+        tidy: 'isjunctionpreserving'
+        type: 'char'
+        description: 'splice-junction-preserving flag (logical; sparse)'
+        versions: ['latest']
+      - raw: 'proteinpos'
+        tidy: 'proteinpos'
+        type: 'char'
+        description: 'protein position (may be a range)'
+        versions: ['latest']
+      - raw: 'geneid'
+        tidy: 'geneid'
+        type: 'char'
+        description: 'gene ID (Entrez/Ensembl)'
+        versions: ['latest']
+      - raw: 'iscanonical'
+        tidy: 'iscanonical'
+        type: 'char'
+        description: 'canonical transcript flag (logical)'
+        versions: ['latest']
+      - raw: 'proteinid'
+        tidy: 'proteinid'
+        type: 'char'
+        description: 'protein ID'
         versions: ['latest']
   sarcnv:
     description: 'TSO500 SampleAnalysisResults copy-number variants.'

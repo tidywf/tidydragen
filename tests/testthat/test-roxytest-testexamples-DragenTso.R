@@ -2,7 +2,7 @@
 
 # File R/DragenTso.R: @testexamples
 
-test_that("Function DragenTso() @ L69", {
+test_that("Function DragenTso() @ L83", {
   
   cls <- DragenTso; tool <- "dragentso"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -34,19 +34,33 @@ test_that("Function DragenTso() @ L69", {
   gc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_genecov")
   expect_false("median" %in% names(gc))
   expect_equal(gc$gene[1], "TNFRSF14")
-  # SAR fan-out: sarmain / sarqc / sarsnv / sarcnv / sarswds / sarsw
+  # SAR fan-out: sarmain / sarqc / sarqcthr / sarsnv / sarcnv / sarswds / sarsw
   si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarmain")
   expect_equal(si$sample_id, "sampleA")
   expect_equal(nrow(si), 1L)
-  qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc")
+  qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc\\.parquet")
   expect_equal(nrow(qc), 1L)
   expect_equal(qc$contamination_score, 50)
   expect_equal(qc$tmb_per_mb, 2.4)
   expect_equal(qc$msi_pct_unstable_sites, 0)
+  expect_equal(qc$pct_target_04x_mean, 94.7)
+  expect_equal(si$library_type, "DNA")
+  expect_true(si$analysis_completed)
+  expect_equal(si$schema_version, "7.0.0")
+  # sarqcthr: 6 QC metric rows (median_exon_coverage in two groups) with limits
+  th <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqcthr")
+  expect_equal(nrow(th), 6L)
+  gsm <- th[th$metric == "gene_scaled_mad", ]
+  expect_equal(c(gsm$lsl, gsm$usl), c(0, 0.059))
+  expect_true(is.na(th$usl[th$metric == "pct_exon_1000x"]))
+  expect_true(is.na(th$uom[th$metric == "contamination_score"]))
   sn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarsnv")
   expect_equal(nrow(sn), 10L)
   expect_equal(sn$hgnc[sn$pos == 2488153], "TNFRSF14")
   expect_equal(sn$consequence[sn$pos == 2488153], "missense_variant")
+  expect_true(all(c("biotype", "iscanonical", "proteinid", "introns", "isjunctionpreserving") %in% names(sn)))
+  expect_equal(sn$variant_type[sn$pos == 2488153], "SNV")
+  expect_equal(sn$hgvsg[sn$pos == 2488153], "NC_000001.10:g.2488153A>G")
   # this sample reports no CNVs -> sarcnv is an empty (0-row) table with the schema cols
   cn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarcnv")
   expect_equal(nrow(cn), 0L)

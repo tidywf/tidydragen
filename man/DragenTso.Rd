@@ -136,9 +136,10 @@ block wrapped in a one-row tibble list-column. \code{tidy_sarmain()} fans it out
 \if{html}{\out{<a id="method-DragenTso-tidy_sarmain"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenTso-tidy_sarmain}{}}}
 \subsection{Method \code{tidy_sarmain()}}{
-Fan a \code{SampleAnalysisResults.json} \code{data} block into six
-tables: \code{sarmain} (sample info), \code{sarqc} (QC + expanded metrics + TMB/MSI
-biomarkers, wide), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
+Fan a \code{SampleAnalysisResults.json} \code{data} block into seven
+tables: \code{sarmain} (sample + library info), \code{sarqc} (QC + expanded metrics +
+TMB/MSI biomarkers, wide), \code{sarqcthr} (QC metrics with LSL/USL thresholds,
+long), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
 Nirvana config), \code{sarsnv} (per-transcript small variants), \code{sarcnv} (CNVs).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sarmain(x)}\if{html}{\out{</div>}}

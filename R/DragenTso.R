@@ -41,19 +41,33 @@
 #' gc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_genecov")
 #' expect_false("median" %in% names(gc))
 #' expect_equal(gc$gene[1], "TNFRSF14")
-#' # SAR fan-out: sarmain / sarqc / sarsnv / sarcnv / sarswds / sarsw
+#' # SAR fan-out: sarmain / sarqc / sarqcthr / sarsnv / sarcnv / sarswds / sarsw
 #' si <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarmain")
 #' expect_equal(si$sample_id, "sampleA")
 #' expect_equal(nrow(si), 1L)
-#' qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc")
+#' qc <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqc\\.parquet")
 #' expect_equal(nrow(qc), 1L)
 #' expect_equal(qc$contamination_score, 50)
 #' expect_equal(qc$tmb_per_mb, 2.4)
 #' expect_equal(qc$msi_pct_unstable_sites, 0)
+#' expect_equal(qc$pct_target_04x_mean, 94.7)
+#' expect_equal(si$library_type, "DNA")
+#' expect_true(si$analysis_completed)
+#' expect_equal(si$schema_version, "7.0.0")
+#' # sarqcthr: 6 QC metric rows (median_exon_coverage in two groups) with limits
+#' th <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqcthr")
+#' expect_equal(nrow(th), 6L)
+#' gsm <- th[th$metric == "gene_scaled_mad", ]
+#' expect_equal(c(gsm$lsl, gsm$usl), c(0, 0.059))
+#' expect_true(is.na(th$usl[th$metric == "pct_exon_1000x"]))
+#' expect_true(is.na(th$uom[th$metric == "contamination_score"]))
 #' sn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarsnv")
 #' expect_equal(nrow(sn), 10L)
 #' expect_equal(sn$hgnc[sn$pos == 2488153], "TNFRSF14")
 #' expect_equal(sn$consequence[sn$pos == 2488153], "missense_variant")
+#' expect_true(all(c("biotype", "iscanonical", "proteinid", "introns", "isjunctionpreserving") %in% names(sn)))
+#' expect_equal(sn$variant_type[sn$pos == 2488153], "SNV")
+#' expect_equal(sn$hgvsg[sn$pos == 2488153], "NC_000001.10:g.2488153A>G")
 #' # this sample reports no CNVs -> sarcnv is an empty (0-row) table with the schema cols
 #' cn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarcnv")
 #' expect_equal(nrow(cn), 0L)
@@ -152,9 +166,10 @@ DragenTso <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Fan a `SampleAnalysisResults.json` `data` block into six
-    #' tables: `sarmain` (sample info), `sarqc` (QC + expanded metrics + TMB/MSI
-    #' biomarkers, wide), `sarswds` (Nirvana data sources), `sarsw` (software +
+    #' @description Fan a `SampleAnalysisResults.json` `data` block into seven
+    #' tables: `sarmain` (sample + library info), `sarqc` (QC + expanded metrics +
+    #' TMB/MSI biomarkers, wide), `sarqcthr` (QC metrics with LSL/USL thresholds,
+    #' long), `sarswds` (Nirvana data sources), `sarsw` (software +
     #' Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv` (CNVs).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_sarmain = function(x) {
@@ -169,11 +184,42 @@ DragenTso <- R6::R6Class(
         analysis_date = si[["analysisDate"]] %||% NA_character_,
         analysis_time = si[["analysisTime"]] %||% NA_character_,
         analysis_run_name = si[["analysisRunName"]] %||% NA_character_,
-        analysis_name = si[["analysisName"]] %||% NA_character_
+        analysis_name = si[["analysisName"]] %||% NA_character_,
+        schema_version = dat[["schemaVersion"]] %||% NA_character_
       )
-      ## sampleMetrics -> qualityControlMetrics + expandedMetrics (long -> wide)
+      ## sampleMetrics
       sm <- dat[["sampleMetrics"]]
-      m2row <- function(m) tibble::tibble(name = m[["name"]], value = m[["value"]])
+      # sequencingLibraries: one DNA library for ctTSO500 -> keep the first
+      sl <- sm[["sequencingLibraries"]][[1]]
+      sarmain <- tibble::tibble(
+        !!!sarmain,
+        library_type = sl[["libraryType"]] %||% NA_character_,
+        library_id = sl[["libraryId"]] %||% NA_character_,
+        analysis_completed = sl[["analysisCompleted"]] %||% NA
+      )
+      ## qualityControlMetrics -> long table with the LSL/USL thresholds
+      num <- function(v) as.numeric(v %||% NA)
+      sarqcthr <- purrr::map(sm[["qualityControlMetrics"]], \(g) {
+        purrr::map(g[["metrics"]], \(m) {
+          uom <- m[["UOM"]] %||% NA_character_
+          tibble::tibble(
+            group = g[["name"]] %||% NA_character_,
+            metric = sub("\\.", "", tolower(m[["name"]])),
+            value = num(m[["value"]]),
+            uom = if (identical(uom, "NA")) NA_character_ else uom,
+            lsl = num(m[["LSL"]]),
+            usl = num(m[["USL"]])
+          )
+        }) |>
+          purrr::list_rbind()
+      }) |>
+        purrr::list_rbind()
+      if (nrow(sarqcthr) == 0) {
+        sarqcthr <- nemo::empty_tbl(cnames = c("group", "metric", "value", "uom", "lsl", "usl"))
+      }
+      ## qualityControlMetrics + expandedMetrics (long -> wide)
+      # failed samples (analysisCompleted: false) omit `value` -> NA, not a dropped col
+      m2row <- function(m) tibble::tibble(name = m[["name"]], value = m[["value"]] %||% NA)
       qc_rows <- purrr::map(sm[["qualityControlMetrics"]], \(g) {
         purrr::map(g[["metrics"]], m2row) |> purrr::list_rbind()
       }) |>
@@ -189,23 +235,19 @@ DragenTso <- R6::R6Class(
         tidyr::pivot_wider(names_from = "name", values_from = "value")
       ## biomarkers -> folded into sarqc
       biom <- dat[["biomarkers"]]
-      bl <- list()
-      if (!is.null(biom[["microsatelliteInstability"]])) {
-        msi <- biom[["microsatelliteInstability"]]
-        bl[["msi_pct_unstable_sites"]] <- msi[["msiPercentUnstableSites"]]
-        am <- private$sar_amet(msi[["additionalMetrics"]])
-        bl[["msi_sum_jsd"]] <- am[["SumJsd"]]
-      }
-      if (!is.null(biom[["tumorMutationalBurden"]])) {
-        tmb <- biom[["tumorMutationalBurden"]]
-        am <- private$sar_amet(tmb[["additionalMetrics"]])
-        bl[["tmb_per_mb"]] <- tmb[["tumorMutationalBurdenPerMegabase"]]
-        bl[["tmb_coding_region_size_mb"]] <- am[["CodingRegionSizeMb"]]
-        bl[["tmb_somatic_coding_variants_count"]] <- am[["SomaticCodingVariantsCount"]]
-      }
-      if (length(bl) > 0) {
-        sarqc <- tibble::tibble(!!!sarqc, !!!lapply(bl, as.numeric))
-      }
+      # always emit the five columns (NA when biomarkers is `{}`, e.g. failed samples)
+      msi <- biom[["microsatelliteInstability"]]
+      tmb <- biom[["tumorMutationalBurden"]]
+      am_msi <- private$sar_amet(msi[["additionalMetrics"]])
+      am_tmb <- private$sar_amet(tmb[["additionalMetrics"]])
+      bl <- list(
+        msi_pct_unstable_sites = msi[["msiPercentUnstableSites"]],
+        msi_sum_jsd = am_msi[["SumJsd"]],
+        tmb_per_mb = tmb[["tumorMutationalBurdenPerMegabase"]],
+        tmb_coding_region_size_mb = am_tmb[["CodingRegionSizeMb"]],
+        tmb_somatic_coding_variants_count = am_tmb[["SomaticCodingVariantsCount"]]
+      )
+      sarqc <- tibble::tibble(!!!sarqc, !!!lapply(bl, \(v) as.numeric(v %||% NA)))
       ## softwareConfiguration
       sc <- dat[["softwareConfiguration"]]
       nvl <- sc[["nirvanaVersionList"]]
@@ -264,6 +306,7 @@ DragenTso <- R6::R6Class(
       list(
         sarmain = sarmain,
         sarqc = sarqc,
+        sarqcthr = sarqcthr,
         sarsnv = sarsnv,
         sarcnv = sarcnv,
         sarswds = sarswds,
@@ -295,6 +338,8 @@ DragenTso <- R6::R6Class(
         "qual",
         "dp_tot",
         "dp_alt",
+        "variant_type",
+        "hgvsg",
         "transcript",
         "source",
         "biotype",
@@ -311,6 +356,7 @@ DragenTso <- R6::R6Class(
         "iscanonical",
         "proteinid",
         "introns",
+        "isjunctionpreserving",
         "consequence"
       )
       if (length(snvs) == 0) {
@@ -338,11 +384,20 @@ DragenTso <- R6::R6Class(
         af = vapply(snvs, \(s) as.numeric(s[["vcfVariantFrequency"]] %||% NA), numeric(1)),
         qual = vapply(snvs, \(s) as.numeric(s[["quality"]] %||% NA), numeric(1)),
         dp_tot = vapply(snvs, \(s) as.numeric(s[["totalDepth"]] %||% NA), numeric(1)),
-        dp_alt = vapply(snvs, \(s) as.numeric(s[["altAlleleDepth"]] %||% NA), numeric(1))
+        dp_alt = vapply(snvs, \(s) as.numeric(s[["altAlleleDepth"]] %||% NA), numeric(1)),
+        variant_type = vapply(
+          snvs,
+          \(s) s[["nirvana"]][[1]][["variantType"]] %||% NA_character_,
+          character(1)
+        ),
+        hgvsg = vapply(snvs, \(s) s[["nirvana"]][[1]][["hgvsg"]] %||% NA_character_, character(1))
       )[idx, , drop = FALSE]
       # main is pre-expanded by idx so the two are already row-aligned
-      tibble::tibble(!!!main, !!!txt) |>
+      res <- tibble::tibble(!!!main, !!!txt) |>
         dplyr::rename_with(tolower)
+      # transcript fields are sparse (e.g. introns) -> pad so the shape is stable
+      res[setdiff(cols, names(res))] <- NA_character_
+      res
     },
     # The CVO/Fusions/trace/coverage files are duplicated in Results/ and
     # Logs_Intermediates/; nemo matches on bname so both collide. Keep the
