@@ -15,7 +15,7 @@ Dragen$run() works across all pipelines."><meta property="og:image" content="htt
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ Dragen$run() works across all pipelines."><meta property="og:image" content="htt
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Dragen Object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9002/R/Dragen.R" class="external-link"><code>R/Dragen.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9003/R/Dragen.R" class="external-link"><code>R/Dragen.R</code></a></small>
       <div class="d-none name"><code>Dragen.Rd</code></div>
     </div>
 
@@ -66,6 +66,15 @@ the pipeline; tools whose files are absent contribute nothing, so a single
     <p><code><a href="https://tidywf.github.io/nemo/reference/Workflow.html" class="external-link">nemo::Workflow</a></code> -&gt; <code>Dragen</code></p>
     </div>
     <div class="section level2">
+    <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
+    <p></p><div class="r6-fields"><dl><dt><code>sync_exclude</code></dt>
+<dd><p>(<code>character(n)</code>)<br>
+Trailing <code>aws s3 sync</code> excludes, see <a href="DRAGEN_SYNC_EXCLUDE.html">DRAGEN_SYNC_EXCLUDE</a>.</p></dd>
+
+
+</dl><p></p></div>
+    </div>
+    <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
 
 <div class="section">
@@ -73,9 +82,11 @@ the pipeline; tools whose files are absent contribute nothing, so a single
 
 <ul><li><p><a href="#method-Dragen-new"><code>Dragen$new()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="filter_files"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-filter_files"><code>nemo::Workflow$filter_files()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_globs"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_globs"><code>nemo::Workflow$get_globs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_metadata"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_metadata"><code>nemo::Workflow$get_metadata()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_schemas_raw"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_raw"><code>nemo::Workflow$get_schemas_raw()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_schemas_tidy"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_tidy"><code>nemo::Workflow$get_schemas_tidy()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_sync_patterns"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_sync_patterns"><code>nemo::Workflow$get_sync_patterns()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_tbls"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tbls"><code>nemo::Workflow$get_tbls()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_tools"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tools"><code>nemo::Workflow$get_tools()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="list_files"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-list_files"><code>nemo::Workflow$list_files()</code></a></span></li>
@@ -152,53 +163,69 @@ Path(s) to DRAGEN results.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [39] "sampleA_dragentso_fusions.parquet"               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [40] "sampleA_dragentso_genecov.parquet"               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [41] "sampleA_dragentso_sarcnv.parquet"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "sampleA_dragentso_sarinfo.parquet"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "sampleA_dragentso_sarmain.parquet"               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [43] "sampleA_dragentso_sarqc.parquet"                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "sampleA_dragentso_sarsnv.parquet"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "sampleA_dragentso_sarsw.parquet"                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "sampleA_dragentso_sarswds.parquet"               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "sampleA_dragentso_smallvariants.parquet"         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "sampleA_dragentso_tmbmsaf.parquet"               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "sampleA_dragentso_tmbtrace.parquet"              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [50] "sampleA_dragenvar_cnv.parquet"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "sampleA_dragenvar_contamination.parquet"         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [52] "sampleA_dragenvar_gvcf.parquet"                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "sampleA_dragenvar_hethom.parquet"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [54] "sampleA_dragenvar_hrd.parquet"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "sampleA_dragenvar_microsat.parquet"              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [56] "sampleA_dragenvar_nuctrans.parquet"              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "sampleA_dragenvar_ploidyratio.parquet"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [58] "sampleA_dragenvar_ploidystats.parquet"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [59] "sampleA_dragenvar_ploidyvcf.parquet"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [60] "sampleA_dragenvar_sv.parquet"                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [61] "sampleA_dragenvar_tmb.parquet"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [62] "sampleA_dragenvar_vc.parquet"                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [63] "sampleA_exon_dragencov_metricsbins.parquet"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [64] "sampleA_exon_dragencov_metricscumu.parquet"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [65] "sampleA_exon_dragencov_metricsmain.parquet"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [66] "sampleA_target_bed_dragencov_metricsbins.parquet"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [67] "sampleA_target_bed_dragencov_metricscumu.parquet"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [68] "sampleA_target_bed_dragencov_metricsmain.parquet"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [69] "sampleA_umccr_dragencov_readreportbed.parquet"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [70] "sampleA_umccr_dragencov_reportbedcumu.parquet"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [71] "sampleA_umccr_dragencov_reportbedmain.parquet"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [72] "sampleA_wgs_dragencov_contigmean.parquet"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [73] "sampleA_wgs_dragencov_finehist.parquet"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [74] "sampleA_wgs_dragencov_metricsbins.parquet"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [75] "sampleA_wgs_dragencov_metricscumu.parquet"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [76] "sampleA_wgs_dragencov_metricsmain.parquet"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [77] "sampleA_wgs_normal_dragencov_contigmean.parquet" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [78] "sampleA_wgs_tumor_dragencov_contigmean.parquet"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [79] "sampleB_2_dragenmap_replayconfig.parquet"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [80] "sampleB_2_dragenmap_replaymain.parquet"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [81] "sampleB_2_dragenmap_time.parquet"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [82] "sampleB_dragenmap_replayconfig.parquet"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [83] "sampleB_dragenmap_replaymain.parquet"            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [84] "sampleB_dragenmap_time.parquet"                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [85] "sampleB_dragenvar_cnv.parquet"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [86] "sampleB_dragenvar_ploidyratio.parquet"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [87] "sampleB_dragenvar_ploidystats.parquet"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [88] "sampleB_dragenvar_vc.parquet"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "sampleA_dragentso_sarqcthr.parquet"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "sampleA_dragentso_sarsnv.parquet"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "sampleA_dragentso_sarsw.parquet"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "sampleA_dragentso_sarswds.parquet"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "sampleA_dragentso_smallvariants.parquet"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "sampleA_dragentso_tmbmsaf.parquet"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50] "sampleA_dragentso_tmbtrace.parquet"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "sampleA_dragenvar_cnv.parquet"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [52] "sampleA_dragenvar_contamination.parquet"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "sampleA_dragenvar_gvcf.parquet"                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [54] "sampleA_dragenvar_hethom.parquet"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "sampleA_dragenvar_hrd.parquet"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [56] "sampleA_dragenvar_microsat.parquet"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "sampleA_dragenvar_nuctrans.parquet"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [58] "sampleA_dragenvar_ploidymain.parquet"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [59] "sampleA_dragenvar_ploidyratio.parquet"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [60] "sampleA_dragenvar_ploidyvcf.parquet"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [61] "sampleA_dragenvar_sv.parquet"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [62] "sampleA_dragenvar_tmb.parquet"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [63] "sampleA_dragenvar_vc.parquet"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [64] "sampleA_exon_dragencov_metricsbins.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [65] "sampleA_exon_dragencov_metricscumu.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [66] "sampleA_exon_dragencov_metricsmain.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [67] "sampleA_target_bed_dragencov_metricsbins.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [68] "sampleA_target_bed_dragencov_metricscumu.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [69] "sampleA_target_bed_dragencov_metricsmain.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [70] "sampleA_umccr_dragencov_readreportbed.parquet"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [71] "sampleA_umccr_dragencov_reportbedcumu.parquet"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [72] "sampleA_umccr_dragencov_reportbedmain.parquet"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [73] "sampleA_wgs_dragencov_contigmean.parquet"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [74] "sampleA_wgs_dragencov_finehist.parquet"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [75] "sampleA_wgs_dragencov_metricsbins.parquet"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [76] "sampleA_wgs_dragencov_metricscumu.parquet"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [77] "sampleA_wgs_dragencov_metricsmain.parquet"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [78] "sampleA_wgs_normal_dragencov_contigmean.parquet" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [79] "sampleA_wgs_tumor_dragencov_contigmean.parquet"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [80] "sampleB_2_dragenmap_replayconfig.parquet"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [81] "sampleB_2_dragenmap_replaymain.parquet"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [82] "sampleB_2_dragenmap_time.parquet"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [83] "sampleB_dragenmap_replayconfig.parquet"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [84] "sampleB_dragenmap_replaymain.parquet"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [85] "sampleB_dragenmap_time.parquet"                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [86] "sampleB_dragenvar_cnv.parquet"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [87] "sampleB_dragenvar_ploidymain.parquet"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [88] "sampleB_dragenvar_ploidyratio.parquet"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [89] "sampleB_dragenvar_vc.parquet"                    </span>
+<span class="r-in"><span><span class="op">(</span><span class="va">pats</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="fu">get_sync_patterns</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 56 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    inex  pat                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ex    *                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> in    *.mapping_metrics.csv     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> in    *.time_metrics.csv        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> in    *.fragment_length_hist.csv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> in    *.trimmer_metrics.csv     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> in    *.umi_metrics.csv         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> in    *.gc_metrics.csv          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> in    *-replay.json             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> in    *.fastqc_metrics.csv      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> in    *.*_coverage_metrics*.csv </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 46 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

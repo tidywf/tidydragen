@@ -47,7 +47,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_runs)
-#> /tmp/RtmpUGPvCa/naming-demo/runs
+#> /tmp/RtmpOh3FMJ/naming-demo/runs
 #> ├── run1
 #> │   ├── sampleA.tool1.table1.tsv
 #> │   └── sampleA.tool1.table2.tsv
@@ -74,10 +74,10 @@ tool$list_files() |>
 #>   bname                    parser prefix   
 #>   <chr>                    <chr>  <chr>    
 #> 1 sampleA.tool1.table1.tsv table1 sampleA  
-#> 2 sampleA.tool1.table1.tsv table1 sampleA_2
-#> 3 sampleA.tool1.table1.tsv table1 sampleA_3
-#> 4 sampleA.tool1.table2.tsv table2 sampleA  
-#> 5 sampleA.tool1.table2.tsv table2 sampleA_2
+#> 2 sampleA.tool1.table2.tsv table2 sampleA  
+#> 3 sampleA.tool1.table1.tsv table1 sampleA_2
+#> 4 sampleA.tool1.table2.tsv table2 sampleA_2
+#> 5 sampleA.tool1.table1.tsv table1 sampleA_3
 #> 6 sampleA.tool1.table2.tsv table2 sampleA_3
 ```
 
@@ -95,7 +95,7 @@ tool$run(
 )
 
 dir_tree(dir_outA)
-#> /tmp/RtmpUGPvCa/naming-demo/outA
+#> /tmp/RtmpOh3FMJ/naming-demo/outA
 #> ├── metadata_tool1.parquet
 #> ├── sampleA_2_tool1_table1.parquet
 #> ├── sampleA_2_tool1_table2.parquet
@@ -153,7 +153,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_outB)
-#> /tmp/RtmpUGPvCa/naming-demo/outB
+#> /tmp/RtmpOh3FMJ/naming-demo/outB
 #> ├── run1
 #> │   ├── metadata_tool1.parquet
 #> │   ├── sampleA_tool1_table1.parquet

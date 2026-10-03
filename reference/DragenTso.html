@@ -17,7 +17,7 @@ copies would collide; refine_files() keeps the Results/ copy."><meta property="o
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ copies would collide; refine_files() keeps the Results/ copy."><meta property="o
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>DragenTso Object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9002/R/DragenTso.R" class="external-link"><code>R/DragenTso.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9003/R/DragenTso.R" class="external-link"><code>R/DragenTso.R</code></a></small>
       <div class="d-none name"><code>DragenTso.Rd</code></div>
     </div>
 
@@ -85,9 +85,10 @@ copies would collide; <code>refine_files()</code> keeps the <code>Results/</code
 <ul><li><p><a href="#method-DragenTso-new"><code>DragenTso$new()</code></a></p></li>
 <li><p><a href="#method-DragenTso-parse_smallvariants"><code>DragenTso$parse_smallvariants()</code></a></p></li>
 <li><p><a href="#method-DragenTso-parse_fusions"><code>DragenTso$parse_fusions()</code></a></p></li>
-<li><p><a href="#method-DragenTso-parse_sarinfo"><code>DragenTso$parse_sarinfo()</code></a></p></li>
-<li><p><a href="#method-DragenTso-tidy_sarinfo"><code>DragenTso$tidy_sarinfo()</code></a></p></li>
+<li><p><a href="#method-DragenTso-parse_sarmain"><code>DragenTso$parse_sarmain()</code></a></p></li>
+<li><p><a href="#method-DragenTso-tidy_sarmain"><code>DragenTso$tidy_sarmain()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="filter_files"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-filter_files"><code>nemo::Tool$filter_files()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_globs"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_globs"><code>nemo::Tool$get_globs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_metadata"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_metadata"><code>nemo::Tool$get_metadata()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_tbls"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_tbls"><code>nemo::Tool$get_tbls()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="list_files"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-list_files"><code>nemo::Tool$list_files()</code></a></span></li>
@@ -152,12 +153,12 @@ then a CSV table; may hold zero data rows).</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-DragenTso-parse_sarinfo"></a><div class="section">
-<h3 id="method-parse-sarinfo-">Method <code>parse_sarinfo()</code><a class="anchor" aria-label="anchor" href="#method-parse-sarinfo-"></a></h3>
+</div><p></p><hr><a id="method-DragenTso-parse_sarmain"></a><div class="section">
+<h3 id="method-parse-sarmain-">Method <code>parse_sarmain()</code><a class="anchor" aria-label="anchor" href="#method-parse-sarmain-"></a></h3>
 <p>Parse a <code>SampleAnalysisResults.json</code> file; returns its <code>data</code>
-block wrapped in a one-row tibble list-column. <code>tidy_sarinfo()</code> fans it out.</p><div class="section">
+block wrapped in a one-row tibble list-column. <code>tidy_sarmain()</code> fans it out.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenTso</span><span class="op">$</span><span class="fu">parse_sarinfo</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenTso</span><span class="op">$</span><span class="fu">parse_sarmain</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -169,14 +170,15 @@ block wrapped in a one-row tibble list-column. <code>tidy_sarinfo()</code> fans 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-DragenTso-tidy_sarinfo"></a><div class="section">
-<h3 id="method-tidy-sarinfo-">Method <code>tidy_sarinfo()</code><a class="anchor" aria-label="anchor" href="#method-tidy-sarinfo-"></a></h3>
-<p>Fan a <code>SampleAnalysisResults.json</code> <code>data</code> block into six
-tables: <code>sarinfo</code> (sample info), <code>sarqc</code> (QC + expanded metrics + TMB/MSI
-biomarkers, wide), <code>sarswds</code> (Nirvana data sources), <code>sarsw</code> (software +
+</div><p></p><hr><a id="method-DragenTso-tidy_sarmain"></a><div class="section">
+<h3 id="method-tidy-sarmain-">Method <code>tidy_sarmain()</code><a class="anchor" aria-label="anchor" href="#method-tidy-sarmain-"></a></h3>
+<p>Fan a <code>SampleAnalysisResults.json</code> <code>data</code> block into seven
+tables: <code>sarmain</code> (sample + library info), <code>sarqc</code> (QC + expanded metrics +
+TMB/MSI biomarkers, wide), <code>sarqcthr</code> (QC metrics with LSL/USL thresholds,
+long), <code>sarswds</code> (Nirvana data sources), <code>sarsw</code> (software +
 Nirvana config), <code>sarsnv</code> (per-transcript small variants), <code>sarcnv</code> (CNVs).</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenTso</span><span class="op">$</span><span class="fu">tidy_sarinfo</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenTso</span><span class="op">$</span><span class="fu">tidy_sarmain</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -204,14 +206,15 @@ Nirvana config), <code>sarsnv</code> (per-transcript small variants), <code>sarc
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "sampleA_dragentso_fusions.parquet"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "sampleA_dragentso_genecov.parquet"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "sampleA_dragentso_sarcnv.parquet"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "sampleA_dragentso_sarinfo.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "sampleA_dragentso_sarmain.parquet"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "sampleA_dragentso_sarqc.parquet"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "sampleA_dragentso_sarsnv.parquet"       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "sampleA_dragentso_sarsw.parquet"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "sampleA_dragentso_sarswds.parquet"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "sampleA_dragentso_smallvariants.parquet"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "sampleA_dragentso_tmbmsaf.parquet"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "sampleA_dragentso_tmbtrace.parquet"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "sampleA_dragentso_sarqcthr.parquet"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "sampleA_dragentso_sarsnv.parquet"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "sampleA_dragentso_sarsw.parquet"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "sampleA_dragentso_sarswds.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "sampleA_dragentso_smallvariants.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "sampleA_dragentso_tmbmsaf.parquet"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "sampleA_dragentso_tmbtrace.parquet"     </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -15,7 +15,7 @@ SV, CNV, ploidy, TMB, HRD, etc.).
 
   (`logical(1)`)  
   `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser
-  token dropped). Needed for the `ploidystats`/`ploidyratio` split.
+  token dropped). Needed for the `ploidymain`/`ploidyratio` split.
 
 ## Methods
 
@@ -31,7 +31,7 @@ SV, CNV, ploidy, TMB, HRD, etc.).
 
 - [`DragenVar$tidy_hethom()`](#method-DragenVar-tidy_hethom)
 
-- [`DragenVar$tidy_ploidystats()`](#method-DragenVar-tidy_ploidystats)
+- [`DragenVar$tidy_ploidymain()`](#method-DragenVar-tidy_ploidymain)
 
 - [`DragenVar$tidy_nuctrans()`](#method-DragenVar-tidy_nuctrans)
 
@@ -44,6 +44,7 @@ SV, CNV, ploidy, TMB, HRD, etc.).
 Inherited methods
 
 - [`nemo::Tool$filter_files()`](https://tidywf.github.io/nemo/reference/Tool.html#method-filter_files)
+- [`nemo::Tool$get_globs()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_globs)
 - [`nemo::Tool$get_metadata()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_metadata)
 - [`nemo::Tool$get_tbls()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_tbls)
 - [`nemo::Tool$list_files()`](https://tidywf.github.io/nemo/reference/Tool.html#method-list_files)
@@ -147,14 +148,14 @@ Tidy `vc_hethom_ratio_metrics.csv`.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_ploidystats()`
+### Method `tidy_ploidymain()`
 
-Tidy `ploidy_estimation_metrics.csv` into `ploidystats` (sample scalars)
+Tidy `ploidy_estimation_metrics.csv` into `ploidymain` (sample scalars)
 and `ploidyratio` (long, one row per chromosome ratio).
 
 #### Usage
 
-    DragenVar$tidy_ploidystats(x)
+    DragenVar$tidy_ploidymain(x)
 
 #### Arguments
 
@@ -248,14 +249,14 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 #>  [5] "sampleA_dragenvar_hrd.parquet"          
 #>  [6] "sampleA_dragenvar_microsat.parquet"     
 #>  [7] "sampleA_dragenvar_nuctrans.parquet"     
-#>  [8] "sampleA_dragenvar_ploidyratio.parquet"  
-#>  [9] "sampleA_dragenvar_ploidystats.parquet"  
+#>  [8] "sampleA_dragenvar_ploidymain.parquet"   
+#>  [9] "sampleA_dragenvar_ploidyratio.parquet"  
 #> [10] "sampleA_dragenvar_ploidyvcf.parquet"    
 #> [11] "sampleA_dragenvar_sv.parquet"           
 #> [12] "sampleA_dragenvar_tmb.parquet"          
 #> [13] "sampleA_dragenvar_vc.parquet"           
 #> [14] "sampleB_dragenvar_cnv.parquet"          
-#> [15] "sampleB_dragenvar_ploidyratio.parquet"  
-#> [16] "sampleB_dragenvar_ploidystats.parquet"  
+#> [15] "sampleB_dragenvar_ploidymain.parquet"   
+#> [16] "sampleB_dragenvar_ploidyratio.parquet"  
 #> [17] "sampleB_dragenvar_vc.parquet"           
 ```

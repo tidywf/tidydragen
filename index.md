@@ -293,7 +293,7 @@ res # shows summary of Dragen object
 #> |tidied        |true                                                                   |
 #> |written       |true                                                                   |
 list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
-#>  chr [1:88] "dragenbcl_adaptercyclemetrics.parquet" "dragenbcl_adaptermetrics.parquet" ...
+#>  chr [1:89] "dragenbcl_adaptercyclemetrics.parquet" "dragenbcl_adaptermetrics.parquet" ...
 ```
 
 Results can also be written to a PostgreSQL database with
@@ -319,7 +319,7 @@ Using {remotes} directly from GitHub:
 
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.0.0.9002") # specific version
+remotes::install_github("tidywf/tidydragen@v0.0.0.9003") # specific version
 ```
 
 Alternatively:
@@ -348,22 +348,23 @@ export PATH="${td_cli}:${PATH}"
 
 ``` R
 $ tidydragen.R --version
-tidydragen 0.0.0.9002
+tidydragen 0.0.0.9003
 
 #-----------------------------------#
 $ tidydragen.R --help
-usage: tidydragen.R [-h] [-v] {tidy,list} ...
+usage: tidydragen.R [-h] [-v] {tidy,list,sync} ...
 
 ✨ DRAGEN Output Tidying ✨
 
 positional arguments:
-  {tidy,list}    sub-command help
-    tidy         Tidy Workflow Outputs
-    list         List Parsable Workflow Outputs
+  {tidy,list,sync}  sub-command help
+    tidy            Tidy Workflow Outputs
+    list            List Parsable Workflow Outputs
+    sync            Sync Parsable Workflow Outputs From AWS S3
 
 options:
-  -h, --help     show this help message and exit
-  -v, --version  show program's version number and exit
+  -h, --help        show this help message and exit
+  -v, --version     show program's version number and exit
 '
 #-----------------------------------#
 #------- Tidy ----------------------#
@@ -371,6 +372,7 @@ $ tidydragen.R tidy --help
 usage: tidydragen.R tidy [-h] -d IN_DIR [-o OUTPUT_DIR] [-f FORMAT]
                          [--input_id INPUT_ID] [--output_id OUTPUT_ID |
                          --ulid] [--dbname DBNAME] [--dbuser DBUSER]
+                         [--dbhost DBHOST] [--dbport DBPORT]
                          [--include INCLUDE] [--exclude EXCLUDE]
                          [--prefix_include] [-q]
 
@@ -387,6 +389,10 @@ options:
   --ulid                Generate a ULID as output ID.
   --dbname DBNAME       Database name.
   --dbuser DBUSER       Database user.
+  --dbhost DBHOST       Database host (default: driver/env default, e.g.
+                        PGHOST).
+  --dbport DBPORT       Database port (default: driver/env default, e.g.
+                        PGPORT).
   --include INCLUDE     Include only these files (comma sep tool_parsers).
   --exclude EXCLUDE     Exclude only these files (comma sep tool_parsers).
   --prefix_include      Include input prefix column in output tables.

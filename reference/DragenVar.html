@@ -9,7 +9,7 @@ CNV, ploidy, TMB, HRD, etc.)."><meta property="og:image" content="https://tidywf
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,7 @@ CNV, ploidy, TMB, HRD, etc.)."><meta property="og:image" content="https://tidywf
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>DragenVar Object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9002/R/DragenVar.R" class="external-link"><code>R/DragenVar.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9003/R/DragenVar.R" class="external-link"><code>R/DragenVar.R</code></a></small>
       <div class="d-none name"><code>DragenVar.Rd</code></div>
     </div>
 
@@ -60,7 +60,7 @@ CNV, ploidy, TMB, HRD, etc.).</p>
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
     <p></p><div class="r6-fields"><dl><dt><code>flat_tidy_names</code></dt>
 <dd><p>(<code>logical(1)</code>)<br><code>TRUE</code>: fan-out sub-tables are named <code>&lt;tool&gt;_&lt;tidy_name&gt;</code> (parser token
-dropped). Needed for the <code>ploidystats</code>/<code>ploidyratio</code> split.</p></dd>
+dropped). Needed for the <code>ploidymain</code>/<code>ploidyratio</code> split.</p></dd>
 
 
 </dl><p></p></div>
@@ -76,12 +76,13 @@ dropped). Needed for the <code>ploidystats</code>/<code>ploidyratio</code> split
 <li><p><a href="#method-DragenVar-tidy_gvcf"><code>DragenVar$tidy_gvcf()</code></a></p></li>
 <li><p><a href="#method-DragenVar-tidy_cnv"><code>DragenVar$tidy_cnv()</code></a></p></li>
 <li><p><a href="#method-DragenVar-tidy_hethom"><code>DragenVar$tidy_hethom()</code></a></p></li>
-<li><p><a href="#method-DragenVar-tidy_ploidystats"><code>DragenVar$tidy_ploidystats()</code></a></p></li>
+<li><p><a href="#method-DragenVar-tidy_ploidymain"><code>DragenVar$tidy_ploidymain()</code></a></p></li>
 <li><p><a href="#method-DragenVar-tidy_nuctrans"><code>DragenVar$tidy_nuctrans()</code></a></p></li>
 <li><p><a href="#method-DragenVar-parse_microsat"><code>DragenVar$parse_microsat()</code></a></p></li>
 <li><p><a href="#method-DragenVar-parse_contamination"><code>DragenVar$parse_contamination()</code></a></p></li>
 <li><p><a href="#method-DragenVar-parse_ploidyvcf"><code>DragenVar$parse_ploidyvcf()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="filter_files"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-filter_files"><code>nemo::Tool$filter_files()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_globs"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_globs"><code>nemo::Tool$get_globs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_metadata"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_metadata"><code>nemo::Tool$get_metadata()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="get_tbls"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-get_tbls"><code>nemo::Tool$get_tbls()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Tool" data-id="list_files"><a href="https://tidywf.github.io/nemo/reference/Tool.html#method-list_files"><code>nemo::Tool$list_files()</code></a></span></li>
@@ -177,12 +178,12 @@ from metric names into a <code>region</code> column.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-DragenVar-tidy_ploidystats"></a><div class="section">
-<h3 id="method-tidy-ploidystats-">Method <code>tidy_ploidystats()</code><a class="anchor" aria-label="anchor" href="#method-tidy-ploidystats-"></a></h3>
-<p>Tidy <code>ploidy_estimation_metrics.csv</code> into <code>ploidystats</code> (sample
+</div><p></p><hr><a id="method-DragenVar-tidy_ploidymain"></a><div class="section">
+<h3 id="method-tidy-ploidymain-">Method <code>tidy_ploidymain()</code><a class="anchor" aria-label="anchor" href="#method-tidy-ploidymain-"></a></h3>
+<p>Tidy <code>ploidy_estimation_metrics.csv</code> into <code>ploidymain</code> (sample
 scalars) and <code>ploidyratio</code> (long, one row per chromosome ratio).</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenVar</span><span class="op">$</span><span class="fu">tidy_ploidystats</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">DragenVar</span><span class="op">$</span><span class="fu">tidy_ploidymain</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -279,15 +280,15 @@ depth <code>ndc</code>.</p><div class="section">
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "sampleA_dragenvar_hrd.parquet"          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "sampleA_dragenvar_microsat.parquet"     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "sampleA_dragenvar_nuctrans.parquet"     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "sampleA_dragenvar_ploidyratio.parquet"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "sampleA_dragenvar_ploidystats.parquet"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "sampleA_dragenvar_ploidymain.parquet"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "sampleA_dragenvar_ploidyratio.parquet"  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "sampleA_dragenvar_ploidyvcf.parquet"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "sampleA_dragenvar_sv.parquet"           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [12] "sampleA_dragenvar_tmb.parquet"          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] "sampleA_dragenvar_vc.parquet"           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [14] "sampleB_dragenvar_cnv.parquet"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "sampleB_dragenvar_ploidyratio.parquet"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "sampleB_dragenvar_ploidystats.parquet"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "sampleB_dragenvar_ploidymain.parquet"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "sampleB_dragenvar_ploidyratio.parquet"  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [17] "sampleB_dragenvar_vc.parquet"           </span>
 </code></pre></div>
     </div>

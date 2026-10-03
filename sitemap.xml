@@ -15,6 +15,7 @@
 <url><loc>https://tidywf.github.io/tidydragen/articles/uml.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/authors.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/index.html</loc></url>
+<url><loc>https://tidywf.github.io/tidydragen/reference/DRAGEN_SYNC_EXCLUDE.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DRAGEN_TOOLS.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/Dragen.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/DragenBcl.html</loc></url>
@@ -32,8 +33,6 @@
 <url><loc>https://tidywf.github.io/tidydragen/reference/fastqc_bin_open.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/index.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/s3sync.html</loc></url>
-<url><loc>https://tidywf.github.io/tidydragen/reference/s3sync_bcl.html</loc></url>
-<url><loc>https://tidywf.github.io/tidydragen/reference/s3sync_cttso.html</loc></url>
 <url><loc>https://tidywf.github.io/tidydragen/reference/tidydragen-package.html</loc></url>
 </urlset>
 

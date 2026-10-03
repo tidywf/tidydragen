@@ -33,13 +33,14 @@ bname only, so the two copies would collide; `refine_files()` keeps the
 
 - [`DragenTso$parse_fusions()`](#method-DragenTso-parse_fusions)
 
-- [`DragenTso$parse_sarinfo()`](#method-DragenTso-parse_sarinfo)
+- [`DragenTso$parse_sarmain()`](#method-DragenTso-parse_sarmain)
 
-- [`DragenTso$tidy_sarinfo()`](#method-DragenTso-tidy_sarinfo)
+- [`DragenTso$tidy_sarmain()`](#method-DragenTso-tidy_sarmain)
 
 Inherited methods
 
 - [`nemo::Tool$filter_files()`](https://tidywf.github.io/nemo/reference/Tool.html#method-filter_files)
+- [`nemo::Tool$get_globs()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_globs)
 - [`nemo::Tool$get_metadata()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_metadata)
 - [`nemo::Tool$get_tbls()`](https://tidywf.github.io/nemo/reference/Tool.html#method-get_tbls)
 - [`nemo::Tool$list_files()`](https://tidywf.github.io/nemo/reference/Tool.html#method-list_files)
@@ -110,14 +111,14 @@ table; may hold zero data rows).
 
 ------------------------------------------------------------------------
 
-### Method `parse_sarinfo()`
+### Method `parse_sarmain()`
 
 Parse a `SampleAnalysisResults.json` file; returns its `data` block
-wrapped in a one-row tibble list-column. `tidy_sarinfo()` fans it out.
+wrapped in a one-row tibble list-column. `tidy_sarmain()` fans it out.
 
 #### Usage
 
-    DragenTso$parse_sarinfo(x)
+    DragenTso$parse_sarmain(x)
 
 #### Arguments
 
@@ -128,17 +129,18 @@ wrapped in a one-row tibble list-column. `tidy_sarinfo()` fans it out.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_sarinfo()`
+### Method `tidy_sarmain()`
 
-Fan a `SampleAnalysisResults.json` `data` block into six tables:
-`sarinfo` (sample info), `sarqc` (QC + expanded metrics + TMB/MSI
-biomarkers, wide), `sarswds` (Nirvana data sources), `sarsw` (software +
+Fan a `SampleAnalysisResults.json` `data` block into seven tables:
+`sarmain` (sample + library info), `sarqc` (QC + expanded metrics +
+TMB/MSI biomarkers, wide), `sarqcthr` (QC metrics with LSL/USL
+thresholds, long), `sarswds` (Nirvana data sources), `sarsw` (software +
 Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv`
 (CNVs).
 
 #### Usage
 
-    DragenTso$tidy_sarinfo(x)
+    DragenTso$tidy_sarmain(x)
 
 #### Arguments
 
@@ -160,12 +162,13 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 #>  [2] "sampleA_dragentso_fusions.parquet"      
 #>  [3] "sampleA_dragentso_genecov.parquet"      
 #>  [4] "sampleA_dragentso_sarcnv.parquet"       
-#>  [5] "sampleA_dragentso_sarinfo.parquet"      
+#>  [5] "sampleA_dragentso_sarmain.parquet"      
 #>  [6] "sampleA_dragentso_sarqc.parquet"        
-#>  [7] "sampleA_dragentso_sarsnv.parquet"       
-#>  [8] "sampleA_dragentso_sarsw.parquet"        
-#>  [9] "sampleA_dragentso_sarswds.parquet"      
-#> [10] "sampleA_dragentso_smallvariants.parquet"
-#> [11] "sampleA_dragentso_tmbmsaf.parquet"      
-#> [12] "sampleA_dragentso_tmbtrace.parquet"     
+#>  [7] "sampleA_dragentso_sarqcthr.parquet"     
+#>  [8] "sampleA_dragentso_sarsnv.parquet"       
+#>  [9] "sampleA_dragentso_sarsw.parquet"        
+#> [10] "sampleA_dragentso_sarswds.parquet"      
+#> [11] "sampleA_dragentso_smallvariants.parquet"
+#> [12] "sampleA_dragentso_tmbmsaf.parquet"      
+#> [13] "sampleA_dragentso_tmbtrace.parquet"     
 ```

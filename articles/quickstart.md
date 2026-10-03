@@ -325,7 +325,7 @@ d$run(
   format = "parquet"
 )
 list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
-#>  chr [1:88] "dragenbcl_adaptercyclemetrics.parquet" ...
+#>  chr [1:89] "dragenbcl_adaptercyclemetrics.parquet" ...
 ```
 
 ## ID columns
@@ -472,7 +472,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>  $ input_dirs  : list<character> [1:1] 
 #>   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"
 #>   ..@ ptype: chr(0) 
-#>  $ output_dir  : chr "/tmp/RtmpspAElf/qs_dragen"
+#>  $ output_dir  : chr "/tmp/RtmpMA5bJu/qs_dragen"
 #>  $ pkg_versions: list<
 #>   tbl_df<
 #>     name   : character
@@ -481,7 +481,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #> > [1:1] 
 #>   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr [1:2] "nemo" "tidydragen"
-#>   .. ..$ version: chr [1:2] "0.1.0.9004" "0.0.0.9002"
+#>   .. ..$ version: chr [1:2] "0.1.0.9005" "0.0.0.9003"
 #>   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr(0) 
 #>   .. ..$ version: chr(0) 
@@ -493,11 +493,11 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>     fin   : character
 #>   >
 #> > [1:1] 
-#>   ..$ : tibble [87 × 4] (S3: tbl_df/tbl/data.frame)
-#>   .. ..$ tbl   : chr [1:87] "dragenmap_metrics" "dragenmap_time" "dragenmap_time" "dragenmap_time" ...
-#>   .. ..$ prefix: chr [1:87] "sampleA" "sampleB" "sampleB_2" "sampleA" ...
-#>   .. ..$ fout  : chr [1:87] "sampleA_dragenmap_metrics.parquet" "sampleB_dragenmap_time.parquet" "sampleB_2_dragenmap_time.parquet" "sampleA_dragenmap_time.parquet" ...
-#>   .. ..$ fin   : chr [1:87] "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.mapping_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-dragencaller/sampleB."| __truncated__ "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-tmb/sampleB.time_metrics.csv" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/sampleA.time_metrics.csv" ...
+#>   ..$ : tibble [88 × 4] (S3: tbl_df/tbl/data.frame)
+#>   .. ..$ tbl   : chr [1:88] "dragenmap_replaymain" "dragenmap_replayconfig" "dragenmap_time" "dragenmap_replaymain" ...
+#>   .. ..$ prefix: chr [1:88] "sampleB" "sampleB" "sampleB" "sampleB_2" ...
+#>   .. ..$ fout  : chr [1:88] "sampleB_dragenmap_replaymain.parquet" "sampleB_dragenmap_replayconfig.parquet" "sampleB_dragenmap_time.parquet" "sampleB_2_dragenmap_replaymain.parquet" ...
+#>   .. ..$ fin   : chr [1:88] "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-dragencaller/sampleB-replay.json" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-dragencaller/sampleB-replay.json" "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-dragencaller/sampleB."| __truncated__ "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata/dragenmap/cttso-tmb/sampleB-replay.json" ...
 #>   ..@ ptype: tibble [0 × 4] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ tbl   : chr(0) 
 #>   .. ..$ prefix: chr(0) 
