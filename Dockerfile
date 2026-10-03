@@ -47,15 +47,6 @@ RUN conda clean --all --force-pkgs-dirs --yes
 # Now copy env to smaller image
 FROM quay.io/bioconda/base-glibc-debian-bash:3.1
 
-# OCI labels belong on the final published image (builder-stage labels are not
-# inherited by this stage).
-LABEL org.opencontainers.image.authors="peterdiakumis@gmail.com" \
-      org.opencontainers.image.description="Illumina DRAGEN workflow tidying" \
-      org.opencontainers.image.source="https://github.com/tidywf/tidydragen" \
-      org.opencontainers.image.url="https://github.com/tidywf/tidydragen" \
-      org.opencontainers.image.documentation="https://tidywf.github.io/tidydragen" \
-      org.opencontainers.image.licenses="MIT"
-
 COPY --from=builder "/opt/miniforge/envs/" "/opt/miniforge/envs/"
 
 # env is activated by default
