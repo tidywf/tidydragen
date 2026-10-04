@@ -11,12 +11,16 @@ knitr:
 #| label: setup
 #| message: false
 
-use("tidydragen", "DRAGEN_TOOLS")
+use("tidydragen", c("DRAGEN_TOOLS", "DRAGEN_TOOL_COLOURS"))
 use("nemo", "nemo_schema_reactable")
 ```
 
 ```{r}
 #| label: reactable
 
-nemo_schema_reactable(names(DRAGEN_TOOLS), pkg = "tidydragen")
+nemo_schema_reactable(
+  names(DRAGEN_TOOLS),
+  pkg = "tidydragen",
+  tool_colours = DRAGEN_TOOL_COLOURS
+)
 ```

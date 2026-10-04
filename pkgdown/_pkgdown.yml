@@ -61,6 +61,7 @@ reference:
   - title: "Other"
     contents:
       - DRAGEN_TOOLS
+      - DRAGEN_TOOL_COLOURS
       - DRAGEN_SYNC_EXCLUDE
       - dragen_cov_bin_split
       - dragen_cov_metric_normalize
