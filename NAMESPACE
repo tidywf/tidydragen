@@ -2,6 +2,7 @@
 
 export(DRAGEN_SYNC_EXCLUDE)
 export(DRAGEN_TOOLS)
+export(DRAGEN_TOOL_COLOURS)
 export(Dragen)
 export(DragenBcl)
 export(DragenCov)

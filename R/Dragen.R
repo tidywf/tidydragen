@@ -99,3 +99,20 @@ DRAGEN_TOOLS <- list(
   dragenbcl = DragenBcl,
   interop = Interop
 )
+
+#' DRAGEN Tool Colours
+#'
+#' CSS colours for DRAGEN tools, used for the tool pills in
+#' [nemo::nemo_schema_reactable()]. Other tools fall back to grey.
+#'
+#' @export
+DRAGEN_TOOL_COLOURS <- c(
+  dragenmap = "#3b82f6", # blue
+  dragenfqc = "#d946ef", # fuchsia
+  dragencov = "#14b8a6", # teal
+  dragenvar = "#ef4444", # red
+  dragenrna = "#8b5cf6", # violet
+  dragentso = "#f59e0b", # amber
+  dragenbcl = "#65a30d", # lime
+  interop = "#4f46e5" # indigo
+)
