@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9003</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9003/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9004/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -80,164 +80,101 @@
 
 
 
-    <p>tidydragen turns raw <a href="https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html" class="external-link">Illumina DRAGEN</a> output directories into consistently structured, versioned, analysis-ready tables/files. This vignette walks through the core usage patterns.</p>
+    <p>tidydragen turns raw <a href="https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html" class="external-link">Illumina DRAGEN</a> output directories into versioned, analysis-ready tables.</p>
 <section class="level2"><h2 id="test-data">Test data<a class="anchor" aria-label="anchor" href="#test-data"></a>
 </h2>
-<p>Example input files ship in <code>inst/extdata/</code>, one subdirectory per tool. Larger real-world DRAGEN results are tracked separately via <a href="https://dvc.org/" class="external-link">DVC</a> and can be downloaded with either:</p>
-<ul>
-<li>
-<code>dvc pull</code>: requires dvc installation and cloned tidydragen source repo.</li>
-<li>
-<code>?nemo::dvc_download_all()</code>: no additional requirements, uses <code><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file()</a></code> internally.</li>
-</ul>
-<p>No credentials are required since the remote is a public Cloudflare R2 bucket.</p>
+<p>Example inputs live in <code>inst/extdata/</code>, one subdirectory per tool. Larger files are tracked via <a href="https://dvc.org/" class="external-link">DVC</a> on a public Cloudflare R2 bucket (no credentials). Fetch them with <code>dvc pull</code> from a cloned repo, or from R with <code><a href="https://tidywf.github.io/nemo/reference/dvc_download_all.html" class="external-link">nemo::dvc_download_all()</a></code>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/dragencov"</span>, package <span class="op">=</span> <span class="st">"tidydragen"</span><span class="op">)</span></span>
+<span><span class="fu">nemo</span><span class="fu">::</span><span class="fu"><a href="https://tidywf.github.io/nemo/reference/dvc_download_all.html" class="external-link">dvc_download_all</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"dvc_test"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </section><section class="level2"><h2 id="input">Input<a class="anchor" aria-label="anchor" href="#input"></a>
 </h2>
 <p>Example DRAGEN results (one subdirectory per tool):</p>
 <div class="cell">
-<details class="code-fold"><summary>View input files</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>View input files</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">indir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"tidydragen"</span><span class="op">)</span></span>
-<span><span class="fu">dir_tree</span><span class="op">(</span><span class="va">indir</span><span class="op">)</span></span>
+<span><span class="fu">dir_tree</span><span class="op">(</span><span class="va">indir</span>, invert <span class="op">=</span> <span class="cn">TRUE</span>, glob <span class="op">=</span> <span class="st">"*.dvc"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; /home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata</span></span>
 <span><span class="co">#&gt; ├── dragenbcl</span></span>
 <span><span class="co">#&gt; │   ├── Adapter_Cycle_Metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── Adapter_Cycle_Metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Adapter_Metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── Adapter_Metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Demultiplex_Stats.csv</span></span>
-<span><span class="co">#&gt; │   ├── Demultiplex_Stats.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Demultiplex_Tile_Stats.csv</span></span>
-<span><span class="co">#&gt; │   ├── Demultiplex_Tile_Stats.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Index_Hopping_Counts.csv</span></span>
-<span><span class="co">#&gt; │   ├── Index_Hopping_Counts.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Quality_Metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── Quality_Metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Quality_Tile_Metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── Quality_Tile_Metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── RunInfo.xml</span></span>
-<span><span class="co">#&gt; │   ├── RunInfo.xml.dvc</span></span>
 <span><span class="co">#&gt; │   ├── Top_Unknown_Barcodes.csv</span></span>
-<span><span class="co">#&gt; │   ├── Top_Unknown_Barcodes.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── fastq_list.csv</span></span>
-<span><span class="co">#&gt; │   └── fastq_list.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── fastq_list.csv</span></span>
 <span><span class="co">#&gt; ├── dragencov</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.exon_coverage_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.exon_coverage_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.qc-coverage-region-umccr_cov_report.bed</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.qc-coverage-region-umccr_cov_report.bed.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.qc-coverage-region-umccr_read_cov_report.bed</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.qc-coverage-region-umccr_read_cov_report.bed.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.target_bed_coverage_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.target_bed_coverage_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov_normal.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov_normal.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov_tumor.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.wgs_contig_mean_cov_tumor.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.wgs_coverage_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.wgs_coverage_metrics.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.wgs_fine_hist.csv</span></span>
-<span><span class="co">#&gt; │   └── sampleA.wgs_fine_hist.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleA.wgs_fine_hist.csv</span></span>
 <span><span class="co">#&gt; ├── dragenfqc</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.fastqc_metrics.csv</span></span>
-<span><span class="co">#&gt; │   └── sampleA.fastqc_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleA.fastqc_metrics.csv</span></span>
 <span><span class="co">#&gt; ├── dragenmap</span></span>
 <span><span class="co">#&gt; │   ├── cttso-dragencaller</span></span>
 <span><span class="co">#&gt; │   │   ├── sampleB-replay.json</span></span>
-<span><span class="co">#&gt; │   │   ├── sampleB-replay.json.dvc</span></span>
-<span><span class="co">#&gt; │   │   ├── sampleB.time_metrics.csv</span></span>
-<span><span class="co">#&gt; │   │   └── sampleB.time_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   │   └── sampleB.time_metrics.csv</span></span>
 <span><span class="co">#&gt; │   ├── cttso-tmb</span></span>
 <span><span class="co">#&gt; │   │   ├── sampleB-replay.json</span></span>
-<span><span class="co">#&gt; │   │   ├── sampleB-replay.json.dvc</span></span>
-<span><span class="co">#&gt; │   │   ├── sampleB.time_metrics.csv</span></span>
-<span><span class="co">#&gt; │   │   └── sampleB.time_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   │   └── sampleB.time_metrics.csv</span></span>
 <span><span class="co">#&gt; │   ├── sampleA-replay.json</span></span>
-<span><span class="co">#&gt; │   ├── sampleA-replay.json.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.fragment_length_hist.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.fragment_length_hist.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.gc_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.gc_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.mapping_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.mapping_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.time_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.time_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.trimmer_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.trimmer_metrics.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.umi_metrics.csv</span></span>
-<span><span class="co">#&gt; │   └── sampleA.umi_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleA.umi_metrics.csv</span></span>
 <span><span class="co">#&gt; ├── dragenrna</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.fusion_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.fusion_metrics.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.quant_metrics.csv</span></span>
-<span><span class="co">#&gt; │   └── sampleA.quant_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleA.quant_metrics.csv</span></span>
 <span><span class="co">#&gt; ├── dragentso</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.exon_cov_report.tsv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.exon_cov_report.tsv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.gene_cov_report.tsv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.gene_cov_report.tsv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.tmb.msaf.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.tmb.msaf.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.tmb.trace.tsv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.tmb.trace.tsv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA_CombinedVariantOutput.tsv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA_CombinedVariantOutput.tsv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA_Fusions.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA_Fusions.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── sampleA_SampleAnalysisResults.json</span></span>
-<span><span class="co">#&gt; │   └── sampleA_SampleAnalysisResults.json.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleA_SampleAnalysisResults.json</span></span>
 <span><span class="co">#&gt; ├── dragenvar</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.allele_transition_noise_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.allele_transition_noise_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.cnv_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.cnv_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.contamination.json</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.contamination.json.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.gvcf_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.gvcf_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.hrdscore.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.hrdscore.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.microsat_output.json</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.microsat_output.json.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.ploidy.vcf.gz</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.ploidy.vcf.gz.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.ploidy_estimation_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.ploidy_estimation_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.sv_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.sv_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.tmb.metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.tmb.metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.vc_hethom_ratio_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.vc_hethom_ratio_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleA.vc_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleA.vc_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleB.cnv_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleB.cnv_metrics.csv.dvc</span></span>
 <span><span class="co">#&gt; │   ├── sampleB.ploidy_estimation_metrics.csv</span></span>
-<span><span class="co">#&gt; │   ├── sampleB.ploidy_estimation_metrics.csv.dvc</span></span>
-<span><span class="co">#&gt; │   ├── sampleB.vc_metrics.csv</span></span>
-<span><span class="co">#&gt; │   └── sampleB.vc_metrics.csv.dvc</span></span>
+<span><span class="co">#&gt; │   └── sampleB.vc_metrics.csv</span></span>
 <span><span class="co">#&gt; └── interop</span></span>
 <span><span class="co">#&gt;     ├── imaging_tables</span></span>
 <span><span class="co">#&gt;     │   ├── compressed</span></span>
-<span><span class="co">#&gt;     │   │   ├── imaging_table.csv.gz</span></span>
-<span><span class="co">#&gt;     │   │   └── imaging_table.csv.gz.dvc</span></span>
+<span><span class="co">#&gt;     │   │   └── imaging_table.csv.gz</span></span>
 <span><span class="co">#&gt;     │   └── uncompressed</span></span>
-<span><span class="co">#&gt;     │       ├── imaging_table.csv</span></span>
-<span><span class="co">#&gt;     │       └── imaging_table.csv.dvc</span></span>
+<span><span class="co">#&gt;     │       └── imaging_table.csv</span></span>
 <span><span class="co">#&gt;     └── summaries</span></span>
 <span><span class="co">#&gt;         ├── runA-index_summary.csv</span></span>
-<span><span class="co">#&gt;         ├── runA-index_summary.csv.dvc</span></span>
-<span><span class="co">#&gt;         ├── runA_summary.csv</span></span>
-<span><span class="co">#&gt;         └── runA_summary.csv.dvc</span></span></code></pre></div>
+<span><span class="co">#&gt;         └── runA_summary.csv</span></span></code></pre></div>
 </details>
 </div>
 </section><section class="level2"><h2 id="output---single-tool">Output - Single Tool<a class="anchor" aria-label="anchor" href="#output---single-tool"></a>
 </h2>
-<p>Each tool has its own R6 class. Construct it with the tool’s output directory, then call <code>run()</code> to parse, tidy, and write in one step:</p>
+<p>Each tool has its own R6 class. <code>run()</code> parses, tidies and writes in one step:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"qs_map"</span><span class="op">)</span></span>
 <span><span class="va"><a href="../reference/DragenMap.html">DragenMap</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">indir</span>, <span class="st">"dragenmap"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span></span>
 <span>  output_dir <span class="op">=</span> <span class="va">outdir</span>,</span>
@@ -257,13 +194,13 @@
 </div>
 <section class="level3"><h3 id="file-naming">File naming<a class="anchor" aria-label="anchor" href="#file-naming"></a>
 </h3>
-<p>Output files follow the pattern <code>{prefix}_{tool}_{table}.parquet</code>, where <code>prefix</code> is derived from the input filenames (here <code>sampleA</code>). A single input file can fan out into several tables (e.g. the mapping outputs yield <code>metrics</code>, <code>time</code>, <code>fraglenhist</code>, and more). The <code>metadata.parquet</code> file is always written alongside the data files and records input/output paths and package versions.</p>
+<p>Output files follow <code>{prefix}_{tool}_{table}.parquet</code>, where <code>prefix</code> comes from the input filenames (here <code>sampleA</code>). One input file can fan out into several tables. See <a href="output_naming.html">Output Naming</a> for region/phenotype prefixes and collision handling.</p>
 </section><section class="level3"><h3 id="reading-a-table-back">Reading a table back<a class="anchor" aria-label="anchor" href="#reading-a-table-back"></a>
 </h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">read_parquet</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"sampleA_dragenmap_metrics.parquet"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">m</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span>list.len <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tibble [4 × 131] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ input_id                                 : chr [1:4] "sampleA_id" "sampleA_id" "sampleA_id" "sampleA_id"</span></span>
 <span><span class="co">#&gt;  $ section                                  : chr [1:4] "TUMOR" "NORMAL" "TUMOR" "NORMAL"</span></span>
@@ -275,102 +212,13 @@
 <span><span class="co">#&gt;  $ reads_num_dupmarked_mate_reads_removed   : num [1:4] NA NA NA NA</span></span>
 <span><span class="co">#&gt;  $ reads_num_uniq                           : num [1:4] 2.11e+09 8.08e+08 2.11e+09 8.08e+08</span></span>
 <span><span class="co">#&gt;  $ reads_num_uniq_pct                       : num [1:4] 80.1 86.1 80.1 86.1</span></span>
-<span><span class="co">#&gt;  $ reads_w_mate_seq                         : num [1:4] 2.64e+09 9.39e+08 2.64e+09 9.39e+08</span></span>
-<span><span class="co">#&gt;  $ reads_w_mate_seq_pct                     : num [1:4] 100 100 100 100</span></span>
-<span><span class="co">#&gt;  $ reads_wo_mate_seq                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_wo_mate_seq_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_qcfail                             : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_qcfail_pct                         : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped                             : num [1:4] 2.57e+09 9.19e+08 2.57e+09 9.19e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pct                         : num [1:4] 97.6 97.9 97.6 97.9</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r1                          : num [1:4] 1.29e+09 4.61e+08 1.29e+09 4.61e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r1_pct                      : num [1:4] 98.1 98.2 98.1 98.2</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r2                          : num [1:4] 1.28e+09 4.58e+08 1.28e+09 4.58e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r2_pct                      : num [1:4] 97.2 97.6 97.2 97.6</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai                         : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_pct                     : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_nrd                         : num [1:4] 45892511 16234720 45892511 16234720</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_nrd_pct                     : num [1:4] 1.74 1.73 1.74 1.73</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_nrd                     : num [1:4] 45892511 16234720 45892511 16234720</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_nrd_pct                 : num [1:4] 1.74 1.73 1.74 1.73</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_rna_rrna_filt               : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_rna_chrm_excl               : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_incl_refext_filt_excl       : num [1:4] 2.62e+09 9.35e+08 2.62e+09 9.35e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_incl_refext_filt_excl_pct   : num [1:4] 99.4 99.6 99.4 99.6</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped                           : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_pct                       : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext              : num [1:4] 16241647 3682373 16241647 3682373</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_pct          : num [1:4] 0.62 0.39 0.62 0.39</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_filt                : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_filt_pct            : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_excl                : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_excl_pct            : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_filt_excl    : num [1:4] 16241647 3682373 16241647 3682373</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_filt_excl_pct: num [1:4] 0.62 0.39 0.62 0.39</span></span>
-<span><span class="co">#&gt;  $ reads_singleton                          : num [1:4] 14289628 3295781 14289628 3295781</span></span>
-<span><span class="co">#&gt;  $ reads_singleton_pct                      : num [1:4] 0.54 0.35 0.54 0.35</span></span>
-<span><span class="co">#&gt;  $ reads_paired                             : num [1:4] 2.56e+09 9.16e+08 2.56e+09 9.16e+08</span></span>
-<span><span class="co">#&gt;  $ reads_paired_pct                         : num [1:4] 97.1 97.5 97.1 97.5</span></span>
-<span><span class="co">#&gt;  $ reads_paired_proper                      : num [1:4] 2.55e+09 9.12e+08 2.55e+09 9.12e+08</span></span>
-<span><span class="co">#&gt;  $ reads_paired_proper_pct                  : num [1:4] 96.7 97.1 96.7 97.1</span></span>
-<span><span class="co">#&gt;  $ reads_discordant                         : num [1:4] 11520728 3939608 11520728 3939608</span></span>
-<span><span class="co">#&gt;  $ reads_discordant_pct                     : num [1:4] 0.44 0.42 0.44 0.42</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom           : num [1:4] 3992370 1220540 3992370 1220540</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_pct       : num [1:4] 0.16 0.13 0.16 0.13</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_mapq10    : num [1:4] 2933157 846318 2933157 846318</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_mapq10_pct: num [1:4] 0.11 0.09 0.11 0.09</span></span>
-<span><span class="co">#&gt;  $ reads_map_multiloc                       : num [1:4] 1.10e+08 3.84e+07 1.10e+08 3.84e+07</span></span>
-<span><span class="co">#&gt;  $ reads_map_multiloc_pct                   : num [1:4] 4.16 4.09 4.16 4.09</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_40_inf                        : num [1:4] 2.40e+09 8.57e+08 2.40e+09 8.57e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_40_inf_pct                    : num [1:4] 90.9 91.3 90.9 91.3</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_30_40                         : num [1:4] 7124864 2469532 7124864 2469532</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_30_40_pct                     : num [1:4] 0.27 0.26 0.27 0.26</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_20_30                         : num [1:4] 17744796 6147077 17744796 6147077</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_20_30_pct                     : num [1:4] 0.67 0.65 0.67 0.65</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_10_20                         : num [1:4] 28433795 10003292 28433795 10003292</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_10_20_pct                     : num [1:4] 1.08 1.07 1.08 1.07</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_0_10                          : num [1:4] 1.24e+08 4.32e+07 1.24e+08 4.32e+07</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_0_10_pct                      : num [1:4] 4.7 4.6 4.7 4.6</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_na_unmapped                   : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_na_unmapped_pct               : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r1                           : num [1:4] 40110680 14217155 40110680 14217155</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r1_pct                       : num [1:4] 3.1 3.08 3.1 3.08</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r2                           : num [1:4] 37398760 13618249 37398760 13618249</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r2_pct                       : num [1:4] 2.92 2.97 2.92 2.97</span></span>
-<span><span class="co">#&gt;  $ reads_splicejunc                         : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ bases_tot                                : num [1:4] 3.98e+11 1.42e+11 3.98e+11 1.42e+11</span></span>
-<span><span class="co">#&gt;  $ bases_tot_r1                             : num [1:4] 1.99e+11 7.09e+10 1.99e+11 7.09e+10</span></span>
-<span><span class="co">#&gt;  $ bases_tot_r2                             : num [1:4] 1.99e+11 7.09e+10 1.99e+11 7.09e+10</span></span>
-<span><span class="co">#&gt;  $ bases_mapped                             : num [1:4] 3.89e+11 1.39e+11 3.89e+11 1.39e+11</span></span>
-<span><span class="co">#&gt;  $ bases_mapped_r1                          : num [1:4] 1.95e+11 6.96e+10 1.95e+11 6.96e+10</span></span>
-<span><span class="co">#&gt;  $ bases_mapped_r2                          : num [1:4] 1.93e+11 6.92e+10 1.93e+11 6.92e+10</span></span>
-<span><span class="co">#&gt;  $ bases_softclip                           : num [1:4] 4.57e+09 1.28e+09 4.57e+09 1.28e+09</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_pct                       : num [1:4] 1.18 0.93 1.18 0.93</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r1                        : num [1:4] 1.49e+09 4.82e+08 1.49e+09 4.82e+08</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r1_pct                    : num [1:4] 0.76 0.69 0.76 0.69</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r2                        : num [1:4] 3.08e+09 8.03e+08 3.08e+09 8.03e+08</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r2_pct                    : num [1:4] 1.59 1.16 1.59 1.16</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip                           : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_pct                       : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r1                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r1_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r2                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r2_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1                      : num [1:4] 8.57e+08 3.16e+08 8.57e+08 3.16e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_pct                  : num [1:4] 0.44 0.45 0.44 0.45</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2                      : num [1:4] 1.83e+09 4.77e+08 1.83e+09 4.77e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2_pct                  : num [1:4] 0.94 0.69 0.94 0.69</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_noindels             : num [1:4] 7.35e+08 2.72e+08 7.35e+08 2.72e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_noindels_pct         : num [1:4] 0.38 0.39 0.38 0.39</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2_noindels             : num [1:4] 1.72e+09 4.37e+08 1.72e+09 4.37e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2_noindels_pct         : num [1:4] 0.89 0.63 0.89 0.63</span></span>
 <span><span class="co">#&gt;   [list output truncated]</span></span></code></pre></div>
 </div>
 </section></section><section class="level2"><h2 id="output---full-dragen-run">Output - Full DRAGEN run<a class="anchor" aria-label="anchor" href="#output---full-dragen-run"></a>
 </h2>
-<p><code>Dragen</code> processes all supported tools in one call. Point it at a directory containing DRAGEN results; tools whose files are absent simply contribute nothing, so the same call works across e.g. the germline, somatic tumor-normal, RNA and ctTSO500 pipelines:</p>
+<p><code>Dragen</code> runs all supported tools on a parent directory. Tools whose files are absent contribute nothing, so the same call works across the germline, somatic, RNA and ctTSO500 pipelines:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"qs_dragen"</span><span class="op">)</span></span>
 <span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Dragen.html">Dragen</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">indir</span><span class="op">)</span></span>
 <span><span class="va">d</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span></span>
@@ -382,7 +230,7 @@
 </div>
 </section><section class="level2"><h2 id="id-columns">ID columns<a class="anchor" aria-label="anchor" href="#id-columns"></a>
 </h2>
-<p>Three optional columns can be prepended to every written table. All are off by default:</p>
+<p>Optional columns prepended to every written table (all off by default), useful when combining samples into one table:</p>
 <table class="table caption-top">
 <colgroup>
 <col style="width: 29%">
@@ -412,9 +260,8 @@
 </tr>
 </tbody>
 </table>
-<p>These are useful when loading results from multiple samples into the same database table or combined data frame:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"qs_map_id"</span><span class="op">)</span></span>
 <span><span class="va"><a href="../reference/DragenMap.html">DragenMap</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">indir</span>, <span class="st">"dragenmap"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span></span>
 <span>  output_dir <span class="op">=</span> <span class="va">outdir_id</span>,</span>
@@ -424,7 +271,7 @@
 <span>  prefix_include <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">read_parquet</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir_id</span>, <span class="st">"sampleA_dragenmap_metrics.parquet"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span>list.len <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tibble [4 × 133] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ input_id                                 : chr [1:4] "sampleA" "sampleA" "sampleA" "sampleA"</span></span>
 <span><span class="co">#&gt;  $ input_prefix                             : chr [1:4] "sampleA" "sampleA" "sampleA" "sampleA"</span></span>
@@ -436,102 +283,13 @@
 <span><span class="co">#&gt;  $ reads_num_dupmarked                      : num [1:4] 5.24e+08 1.31e+08 5.24e+08 1.31e+08</span></span>
 <span><span class="co">#&gt;  $ reads_num_dupmarked_pct                  : num [1:4] 19.9 13.9 19.9 13.9</span></span>
 <span><span class="co">#&gt;  $ reads_num_dupmarked_mate_reads_removed   : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ reads_num_uniq                           : num [1:4] 2.11e+09 8.08e+08 2.11e+09 8.08e+08</span></span>
-<span><span class="co">#&gt;  $ reads_num_uniq_pct                       : num [1:4] 80.1 86.1 80.1 86.1</span></span>
-<span><span class="co">#&gt;  $ reads_w_mate_seq                         : num [1:4] 2.64e+09 9.39e+08 2.64e+09 9.39e+08</span></span>
-<span><span class="co">#&gt;  $ reads_w_mate_seq_pct                     : num [1:4] 100 100 100 100</span></span>
-<span><span class="co">#&gt;  $ reads_wo_mate_seq                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_wo_mate_seq_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_qcfail                             : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_qcfail_pct                         : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped                             : num [1:4] 2.57e+09 9.19e+08 2.57e+09 9.19e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pct                         : num [1:4] 97.6 97.9 97.6 97.9</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r1                          : num [1:4] 1.29e+09 4.61e+08 1.29e+09 4.61e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r1_pct                      : num [1:4] 98.1 98.2 98.1 98.2</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r2                          : num [1:4] 1.28e+09 4.58e+08 1.28e+09 4.58e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_r2_pct                      : num [1:4] 97.2 97.6 97.2 97.6</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai                         : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_pct                     : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_nrd                         : num [1:4] 45892511 16234720 45892511 16234720</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_nrd_pct                     : num [1:4] 1.74 1.73 1.74 1.73</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_nrd                     : num [1:4] 45892511 16234720 45892511 16234720</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_pai_nrd_pct                 : num [1:4] 1.74 1.73 1.74 1.73</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_rna_rrna_filt               : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_rna_chrm_excl               : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_incl_refext_filt_excl       : num [1:4] 2.62e+09 9.35e+08 2.62e+09 9.35e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapped_incl_refext_filt_excl_pct   : num [1:4] 99.4 99.6 99.4 99.6</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped                           : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_pct                       : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext              : num [1:4] 16241647 3682373 16241647 3682373</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_pct          : num [1:4] 0.62 0.39 0.62 0.39</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_filt                : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_filt_pct            : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_excl                : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_excl_pct            : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_filt_excl    : num [1:4] 16241647 3682373 16241647 3682373</span></span>
-<span><span class="co">#&gt;  $ reads_unmapped_minus_refext_filt_excl_pct: num [1:4] 0.62 0.39 0.62 0.39</span></span>
-<span><span class="co">#&gt;  $ reads_singleton                          : num [1:4] 14289628 3295781 14289628 3295781</span></span>
-<span><span class="co">#&gt;  $ reads_singleton_pct                      : num [1:4] 0.54 0.35 0.54 0.35</span></span>
-<span><span class="co">#&gt;  $ reads_paired                             : num [1:4] 2.56e+09 9.16e+08 2.56e+09 9.16e+08</span></span>
-<span><span class="co">#&gt;  $ reads_paired_pct                         : num [1:4] 97.1 97.5 97.1 97.5</span></span>
-<span><span class="co">#&gt;  $ reads_paired_proper                      : num [1:4] 2.55e+09 9.12e+08 2.55e+09 9.12e+08</span></span>
-<span><span class="co">#&gt;  $ reads_paired_proper_pct                  : num [1:4] 96.7 97.1 96.7 97.1</span></span>
-<span><span class="co">#&gt;  $ reads_discordant                         : num [1:4] 11520728 3939608 11520728 3939608</span></span>
-<span><span class="co">#&gt;  $ reads_discordant_pct                     : num [1:4] 0.44 0.42 0.44 0.42</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom           : num [1:4] 3992370 1220540 3992370 1220540</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_pct       : num [1:4] 0.16 0.13 0.16 0.13</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_mapq10    : num [1:4] 2933157 846318 2933157 846318</span></span>
-<span><span class="co">#&gt;  $ reads_paired_mapped_diff_chrom_mapq10_pct: num [1:4] 0.11 0.09 0.11 0.09</span></span>
-<span><span class="co">#&gt;  $ reads_map_multiloc                       : num [1:4] 1.10e+08 3.84e+07 1.10e+08 3.84e+07</span></span>
-<span><span class="co">#&gt;  $ reads_map_multiloc_pct                   : num [1:4] 4.16 4.09 4.16 4.09</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_40_inf                        : num [1:4] 2.40e+09 8.57e+08 2.40e+09 8.57e+08</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_40_inf_pct                    : num [1:4] 90.9 91.3 90.9 91.3</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_30_40                         : num [1:4] 7124864 2469532 7124864 2469532</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_30_40_pct                     : num [1:4] 0.27 0.26 0.27 0.26</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_20_30                         : num [1:4] 17744796 6147077 17744796 6147077</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_20_30_pct                     : num [1:4] 0.67 0.65 0.67 0.65</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_10_20                         : num [1:4] 28433795 10003292 28433795 10003292</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_10_20_pct                     : num [1:4] 1.08 1.07 1.08 1.07</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_0_10                          : num [1:4] 1.24e+08 4.32e+07 1.24e+08 4.32e+07</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_0_10_pct                      : num [1:4] 4.7 4.6 4.7 4.6</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_na_unmapped                   : num [1:4] 62134158 19917093 62134158 19917093</span></span>
-<span><span class="co">#&gt;  $ reads_mapq_na_unmapped_pct               : num [1:4] 2.36 2.12 2.36 2.12</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r1                           : num [1:4] 40110680 14217155 40110680 14217155</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r1_pct                       : num [1:4] 3.1 3.08 3.1 3.08</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r2                           : num [1:4] 37398760 13618249 37398760 13618249</span></span>
-<span><span class="co">#&gt;  $ reads_indel_r2_pct                       : num [1:4] 2.92 2.97 2.92 2.97</span></span>
-<span><span class="co">#&gt;  $ reads_splicejunc                         : num [1:4] NA NA NA NA</span></span>
-<span><span class="co">#&gt;  $ bases_tot                                : num [1:4] 3.98e+11 1.42e+11 3.98e+11 1.42e+11</span></span>
-<span><span class="co">#&gt;  $ bases_tot_r1                             : num [1:4] 1.99e+11 7.09e+10 1.99e+11 7.09e+10</span></span>
-<span><span class="co">#&gt;  $ bases_tot_r2                             : num [1:4] 1.99e+11 7.09e+10 1.99e+11 7.09e+10</span></span>
-<span><span class="co">#&gt;  $ bases_mapped                             : num [1:4] 3.89e+11 1.39e+11 3.89e+11 1.39e+11</span></span>
-<span><span class="co">#&gt;  $ bases_mapped_r1                          : num [1:4] 1.95e+11 6.96e+10 1.95e+11 6.96e+10</span></span>
-<span><span class="co">#&gt;  $ bases_mapped_r2                          : num [1:4] 1.93e+11 6.92e+10 1.93e+11 6.92e+10</span></span>
-<span><span class="co">#&gt;  $ bases_softclip                           : num [1:4] 4.57e+09 1.28e+09 4.57e+09 1.28e+09</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_pct                       : num [1:4] 1.18 0.93 1.18 0.93</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r1                        : num [1:4] 1.49e+09 4.82e+08 1.49e+09 4.82e+08</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r1_pct                    : num [1:4] 0.76 0.69 0.76 0.69</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r2                        : num [1:4] 3.08e+09 8.03e+08 3.08e+09 8.03e+08</span></span>
-<span><span class="co">#&gt;  $ bases_softclip_r2_pct                    : num [1:4] 1.59 1.16 1.59 1.16</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip                           : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_pct                       : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r1                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r1_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r2                        : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_hardclip_r2_pct                    : num [1:4] 0 0 0 0</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1                      : num [1:4] 8.57e+08 3.16e+08 8.57e+08 3.16e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_pct                  : num [1:4] 0.44 0.45 0.44 0.45</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2                      : num [1:4] 1.83e+09 4.77e+08 1.83e+09 4.77e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r2_pct                  : num [1:4] 0.94 0.69 0.94 0.69</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_noindels             : num [1:4] 7.35e+08 2.72e+08 7.35e+08 2.72e+08</span></span>
-<span><span class="co">#&gt;  $ bases_mismatched_r1_noindels_pct         : num [1:4] 0.38 0.39 0.38 0.39</span></span>
 <span><span class="co">#&gt;   [list output truncated]</span></span></code></pre></div>
 </div>
 </section><section class="level2"><h2 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
 </h2>
-<p>Every <code>run()</code> writes a <code>metadata.parquet</code> alongside the data files. It records the input directory, output directory, IDs, and the versions of R packages used:</p>
+<p>Every <code>run()</code> also writes metadata (input/output dirs, IDs, R package versions): <code>metadata.parquet</code> for <code>Dragen</code>, <code>metadata_&lt;tool&gt;.parquet</code> for a single tool.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">read_parquet</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir_d</span>, <span class="st">"metadata.parquet"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tibble [1 × 6] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ input_id    : chr NA</span></span>
@@ -539,7 +297,7 @@
 <span><span class="co">#&gt;  $ input_dirs  : list&lt;character&gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: chr(0) </span></span>
-<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/RtmpMA5bJu/qs_dragen"</span></span>
+<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/Rtmp3bMAO2/qs_dragen"</span></span>
 <span><span class="co">#&gt;  $ pkg_versions: list&lt;</span></span>
 <span><span class="co">#&gt;   tbl_df&lt;</span></span>
 <span><span class="co">#&gt;     name   : character</span></span>
@@ -548,7 +306,7 @@
 <span><span class="co">#&gt; &gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr [1:2] "nemo" "tidydragen"</span></span>
-<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9005" "0.0.0.9003"</span></span>
+<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9006" "0.0.0.9004"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr(0) </span></span>
 <span><span class="co">#&gt;   .. ..$ version: chr(0) </span></span>
@@ -577,9 +335,7 @@
 <li>
 <a href="schema_table.html">Schema table</a>: browse every table and column for all supported DRAGEN tools</li>
 <li>
-<a href="structure.html">Structure</a>: how schemas, versioning, and the Tool/Workflow class hierarchy work</li>
-<li>
-<a href="output_naming.html">Output naming</a>: how region/phenotype variants are folded into the output prefix</li>
+<a href="structure.html">Structure</a>: schemas, versioning, and the Tool/Workflow class hierarchy (nemo)</li>
 <li>
 <a href="postgresql.html">PostgreSQL</a>: writing results to a database</li>
 </ul></section><script id="quarto-html-after-body" type="application/javascript">

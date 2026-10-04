@@ -319,7 +319,7 @@ Using {remotes} directly from GitHub:
 
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.0.0.9003") # specific version
+remotes::install_github("tidywf/tidydragen@v0.0.0.9004") # specific version
 ```
 
 Alternatively:
@@ -348,7 +348,7 @@ export PATH="${td_cli}:${PATH}"
 
 ``` R
 $ tidydragen.R --version
-tidydragen 0.0.0.9003
+tidydragen 0.0.0.9004
 
 #-----------------------------------#
 $ tidydragen.R --help
