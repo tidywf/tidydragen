@@ -531,7 +531,7 @@ tables:
         description: 'maximum coverage over the gene'
         versions: ['latest']
   sarmain:
-    description: 'TSO500 SampleAnalysisResults sample information.'
+    description: 'TSO500 SampleAnalysisResults sample information. Fan-out primary; derived: sarqc, sarqcthr, sarswds, sarsw, sarsnv, sarcnv.'
     pattern: "_SampleAnalysisResults\\.json$"
     glob: ["*_SampleAnalysisResults.json"]
     ftype: 'json'
@@ -582,7 +582,7 @@ tables:
         description: 'library analysis completed (logical)'
         versions: ['latest']
   sarqc:
-    description: 'TSO500 SampleAnalysisResults QC, expanded metrics, and TMB/MSI biomarkers (one wide row).'
+    description: 'TSO500 SampleAnalysisResults QC, expanded metrics, and TMB/MSI biomarkers (one wide row). Fan-out of sarmain.'
     pattern: '__no_file_match__sarqc'
     ftype: 'csv'
     columns:
@@ -737,7 +737,7 @@ tables:
         description: 'percent of bases with quality >=Q30'
         versions: ['latest']
   sarqcthr:
-    description: 'TSO500 SampleAnalysisResults QC metrics with lower/upper spec limits (one row per QC group x metric).'
+    description: 'TSO500 SampleAnalysisResults QC metrics with lower/upper spec limits (one row per QC group x metric). Fan-out of sarmain.'
     pattern: '__no_file_match__sarqcthr'
     ftype: 'csv'
     columns:
@@ -772,7 +772,7 @@ tables:
         description: 'upper spec limit (NA = none)'
         versions: ['latest']
   sarswds:
-    description: 'TSO500 SampleAnalysisResults Nirvana annotation data sources.'
+    description: 'TSO500 SampleAnalysisResults Nirvana annotation data sources. Fan-out of sarmain.'
     pattern: '__no_file_match__sarswds'
     ftype: 'csv'
     columns:
@@ -797,7 +797,7 @@ tables:
         description: 'data source release date'
         versions: ['latest']
   sarsw:
-    description: 'TSO500 SampleAnalysisResults software and Nirvana configuration.'
+    description: 'TSO500 SampleAnalysisResults software and Nirvana configuration. Fan-out of sarmain.'
     pattern: '__no_file_match__sarsw'
     ftype: 'csv'
     columns:
@@ -842,7 +842,7 @@ tables:
         description: 'RefSeq version'
         versions: ['latest']
   sarsnv:
-    description: 'TSO500 SampleAnalysisResults small variants (one row per variant x Nirvana transcript).'
+    description: 'TSO500 SampleAnalysisResults small variants (one row per variant x Nirvana transcript). Fan-out of sarmain.'
     pattern: '__no_file_match__sarsnv'
     ftype: 'csv'
     columns:
@@ -987,7 +987,7 @@ tables:
         description: 'protein ID'
         versions: ['latest']
   sarcnv:
-    description: 'TSO500 SampleAnalysisResults copy-number variants.'
+    description: 'TSO500 SampleAnalysisResults copy-number variants. Fan-out of sarmain.'
     pattern: '__no_file_match__sarcnv'
     ftype: 'csv'
     columns:

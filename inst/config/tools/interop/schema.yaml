@@ -1,6 +1,6 @@
 tables:
   summarymain:
-    description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
+    description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total). Fan-out primary; derived: summaryreadlane.'
     pattern: "(?<!-index)_summary\\.csv$"
     glob: ["*_summary.csv"]
     ftype: 'csv'
@@ -46,7 +46,7 @@ tables:
         description: 'percent of nanowells occupied (occupancy-enabled instruments)'
         versions: ['latest']
   summaryreadlane:
-    description: 'InterOp per-read x lane x surface detail (fanned out of summary.csv). "mean +/- sd" and "a / b" source cells split into paired columns; surface NA = whole-lane aggregate row.'
+    description: 'InterOp per-read x lane x surface detail. "mean +/- sd" and "a / b" source cells split into paired columns; surface NA = whole-lane aggregate row. Fan-out of summarymain.'
     pattern: '__no_file_match__summaryreadlane'
     ftype: 'csv'
     columns:
@@ -467,7 +467,7 @@ tables:
         description: 'percent of nanowells occupied (occupancy-enabled instruments)'
         versions: ['latest']
   indexsummarymain:
-    description: 'InterOp per-lane index-demux totals (fanned out of index_summary.csv).'
+    description: 'InterOp per-lane index-demux totals. Fan-out primary; derived: indexsummarydetail.'
     pattern: "-index_summary\\.csv$"
     glob: ["*-index_summary.csv"]
     ftype: 'csv'
@@ -508,7 +508,7 @@ tables:
         description: 'maximum per-index %identified in the lane'
         versions: ['latest']
   indexsummarydetail:
-    description: 'InterOp per-index demux rows (fanned out of index_summary.csv).'
+    description: 'InterOp per-index demux rows. Fan-out of indexsummarymain.'
     pattern: '__no_file_match__indexsummarydetail'
     ftype: 'csv'
     columns:

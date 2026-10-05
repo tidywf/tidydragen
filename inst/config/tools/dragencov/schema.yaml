@@ -1,6 +1,6 @@
 tables:
   metricsmain:
-    description: 'DRAGEN coverage summary metrics.'
+    description: 'DRAGEN coverage summary metrics. Fan-out primary; derived: metricsbins, metricscumu.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     glob: ["*.*_coverage_metrics*.csv"]
     ftype: 'dragen-metrics'
@@ -96,7 +96,7 @@ tables:
         description: 'average chr Y coverage / average autosomal coverage'
         versions: ['latest']
   metricsbins:
-    description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin).'
+    description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin). Fan-out of metricsmain.'
     pattern: "__no_file_match__metricsbins"
     ftype: 'dragen-metrics'
     columns:
@@ -106,7 +106,7 @@ tables:
         description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
         versions: ['latest']
   metricscumu:
-    description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min).'
+    description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min). Fan-out of metricsmain.'
     pattern: "__no_file_match__metricscumu"
     ftype: 'dragen-metrics'
     columns:
@@ -153,7 +153,7 @@ tables:
         description: 'number of loci covered at this depth'
         versions: ['latest']
   reportbedmain:
-    description: 'DRAGEN coverage report BED, distribution stats per region interval.'
+    description: 'DRAGEN coverage report BED, distribution stats per region interval. Fan-out primary; derived: reportbedcumu.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     glob: ["*.*_cov_report*.bed"]
     ftype: 'tsv'
@@ -209,7 +209,7 @@ tables:
         description: 'maximum coverage over the interval'
         versions: ['latest']
   reportbedcumu:
-    description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold).'
+    description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold). Fan-out of reportbedmain.'
     pattern: "__no_file_match__reportbedcumu"
     ftype: 'tsv'
     columns:

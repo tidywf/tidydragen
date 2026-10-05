@@ -377,7 +377,7 @@ tables:
         description: 'non-synonymous TMB'
         versions: ['latest']
   ploidymain:
-    description: 'DRAGEN ploidy estimation sample-level metrics.'
+    description: 'DRAGEN ploidy estimation sample-level metrics. Fan-out primary; derived: ploidyratio.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     glob: ["*.ploidy_estimation_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -423,7 +423,7 @@ tables:
         description: 'chrY median coverage'
         versions: ['latest']
   ploidyratio:
-    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage).'
+    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage). Fan-out of ploidymain.'
     pattern: "__no_file_match__ploidyratio"
     ftype: 'dragen-metrics'
     columns:

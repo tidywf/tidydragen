@@ -839,7 +839,7 @@ tables:
         description: 'reads filtered for minimum read length r2'
         versions: ['latest']
   umimain:
-    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
+    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants). Fan-out primary; derived: umihist.'
     pattern: "\\.umi_metrics\\.csv$"
     glob: ["*.umi_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -995,7 +995,7 @@ tables:
         description: 'total number of families'
         versions: ['latest']
   umihist:
-    description: 'DRAGEN UMI histograms: num-supporting-fragments (+ on-target variant) and unique-UMIs-per-fragment-position.'
+    description: 'DRAGEN UMI histograms: num-supporting-fragments (+ on-target variant) and unique-UMIs-per-fragment-position. Fan-out of umimain.'
     pattern: '__no_file_match__umihist'
     ftype: 'dragen-metrics'
     columns:
@@ -1015,7 +1015,7 @@ tables:
         description: 'count in this bin'
         versions: ['latest']
   gcmain:
-    description: 'DRAGEN GC bias summary metrics.'
+    description: 'DRAGEN GC bias summary metrics. Fan-out primary; derived: gcbias.'
     pattern: "\\.gc_metrics\\.csv$"
     glob: ["*.gc_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -1081,7 +1081,7 @@ tables:
         description: 'GC dropout metric (Picard)'
         versions: ['latest']
   gcbias:
-    description: 'DRAGEN per-GC-window counts (GC value 0-100 with window count and percentage).'
+    description: 'DRAGEN per-GC-window counts (GC value 0-100 with window count and percentage). Fan-out of gcmain.'
     pattern: '__no_file_match__gcbias'
     ftype: 'dragen-metrics'
     columns:
@@ -1106,7 +1106,7 @@ tables:
         description: 'normalized coverage at this GC value'
         versions: ['latest']
   replaymain:
-    description: 'DRAGEN run provenance main elements.'
+    description: 'DRAGEN run provenance main elements. Fan-out primary; derived: replayconfig.'
     pattern: "-replay\\.json$"
     glob: ["*-replay.json"]
     ftype: 'json'
@@ -1147,7 +1147,7 @@ tables:
         description: 'command line used to invoke this run (often just --config-file=dragen_config.toml; the real arguments are in replayconfig)'
         versions: ['latest']
   replayconfig:
-    description: 'DRAGEN run provenance dragen_config dump.'
+    description: 'DRAGEN run provenance dragen_config dump. Fan-out of replaymain.'
     pattern: '__no_file_match__replayconfig'
     ftype: 'json'
     columns:
