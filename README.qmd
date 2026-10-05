@@ -64,23 +64,11 @@ options(width = 100)
 
 ## tidydragen
 
-tidydragen is an R package for parsing and tidying output from Illumina's
-[DRAGEN] secondary-analysis pipelines. The following pipelines are supported:
-DNA tumor-normal (somatic), DNA germline-only, RNA tumor-only, and TSO500 ctDNA.
+Parses and tidies Illumina [DRAGEN] outputs into versioned, `snake_case` tables,
+written to Parquet, PostgreSQL, TSV, CSV or RDS (plus a `metadata.parquet` per
+run). Built on [nemo].
 
-A DRAGEN run produces dozens of files per sample across mapping, coverage,
-variant calling, RNA quantification, and (for the ctTSO500 app) combined-variant
-and coverage reports. Consuming them downstream is fragile: most metrics land in
-headerless `section,rg,variable,count[,pct]` CSVs, some files fan out into
-several logical tables, region/phenotype variants share basenames, and column
-layouts drift between DRAGEN versions.
-
-tidydragen addresses this with a schema-driven parsing layer built on the [nemo]
-base R6 classes, supplying DRAGEN-specific schemas and parsers that turn raw
-outputs into consistently structured, versioned, analysis-ready tables. These
-can be written to Apache Parquet, PostgreSQL, TSV, CSV, or RDS. Each run also
-produces a `metadata.parquet` file alongside the tidy tables, capturing IDs,
-paths, and R package versions.
+Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.
 
 [DRAGEN]: <https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html> "Illumina DRAGEN"
 [nemo]: <https://github.com/tidywf/nemo> "nemo"
@@ -108,8 +96,7 @@ glue(
 
 ### Single tool
 
-Each DRAGEN tool has its own R6 class. Most DRAGEN metrics files share a
-headerless `section,rg,variable,count[,pct]` layout e.g.:
+Raw DRAGEN metrics (headerless `section,rg,variable,count[,pct]`):
 
 ```{r}
 #| label: quickstart_raw
@@ -124,8 +111,7 @@ writeLines(head(
 ))
 ```
 
-We can use the `DragenMap` class to parse, tidy, and write these files in one
-call via its `run()` method:
+Parse, tidy and write with `DragenMap$run()`:
 
 ```{r}
 #| label: quickstart_wrangle
@@ -140,7 +126,7 @@ DragenMap$new(indir_map)$run(
 list.files(outdir_map, pattern = "\\.parquet$")
 ```
 
-Now read back one tidied table:
+Tidy output:
 
 ```{r}
 #| label: quickstart_read
@@ -152,9 +138,7 @@ file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
 
 ### Full DRAGEN run
 
-A whole DRAGEN results directory can be processed with the `Dragen` workflow
-class. Tools whose files are absent contribute nothing, so the same call works
-across the germline, somatic tumor-normal, and RNA pipelines:
+`Dragen` runs all tools over a results directory; absent tools are skipped:
 
 ```{r}
 #| label: example_input_tree
@@ -165,8 +149,6 @@ across the germline, somatic tumor-normal, and RNA pipelines:
 indir_d <- system.file("extdata", package = "tidydragen")
 dir_tree(indir_d)
 ```
-
-We can parse, tidy, and write the results into e.g. Parquet format as follows:
 
 ```{r}
 #| label: dragen_parquet_example
@@ -185,14 +167,11 @@ res # shows summary of Dragen object
 list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 ```
 
-Results can also be written to a PostgreSQL database with `format = "db"` and a
-DBI connection (see the [PostgreSQL article][pg]).
+PostgreSQL: `format = "db"` + DBI connection ([article][pg]).
 
 [pg]: <https://tidywf.github.io/tidydragen/articles/postgresql>
 
-Three optional columns can be prepended to every written table to support
-downstream tracing and joining. All are opt-in and off by default, but highly
-recommended for any multi-sample or multi-run pipeline:
+Optional provenance columns (recommended for multi-sample/multi-run use):
 
 | Column         | Purpose                                  | User-supplied or auto-generated? |
 | -------------- | ---------------------------------------- | -------------------------------- |
@@ -206,23 +185,13 @@ recommended for any multi-sample or multi-run pipeline:
 #| label: child-r
 ```
 
-Alternatively:
-
-- conda package: <https://anaconda.org/tidywf/r-tidydragen>
-- Docker image: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
-
-For more details see:
-<https://tidywf.github.io/tidydragen/articles/installation>
+- conda: <https://anaconda.org/tidywf/r-tidydragen>
+- Docker: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
+- more: <https://tidywf.github.io/tidydragen/articles/installation>
 
 ## CLI
 
-A `tidydragen.R` command line interface is available for convenience.
-
-- If you're using the conda package, the `tidydragen.R` command will already be
-  available inside the activated conda environment.
-- If you're *not* using the conda package, you need to export the
-  `tidydragen/inst/cli/` directory to your `PATH` in order to use
-  `tidydragen.R`.
+`tidydragen.R` is on `PATH` in the conda env. Otherwise:
 
 ```{bash}
 #| label: cli1
@@ -245,7 +214,7 @@ echo "$ tidydragen.R --version" & tidydragen.R --version
 echo ""
 echo "#-----------------------------------#"
 echo "$ tidydragen.R --help" & tidydragen.R --help
-echo "'"
+echo ""
 echo "#-----------------------------------#"
 echo "#------- Tidy ----------------------#"
 echo "$ tidydragen.R tidy --help" & tidydragen.R tidy --help

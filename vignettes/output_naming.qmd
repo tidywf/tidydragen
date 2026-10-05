@@ -35,35 +35,19 @@ ex <- system.file("extdata", package = "tidydragen")
 
 ## Special cases: region and phenotype prefixes
 
-The disambiguation above (`_2`, `_3`) keeps files from overwriting each other
-but tells you nothing about *why* two inputs collided. DRAGEN's coverage stage
-emits the same logical table for several genomic regions (`wgs`, `tmb`, `exon`,
-`target_bed`, and one per user-defined `--qc-coverage-region-N`), and, in the
-somatic tumor-normal pipeline, once per phenotype (`normal` / `tumor`). After
-the schema `pattern` is stripped these would collapse to the same prefix and
-overwrite one another (or land as a lossy `sampleA_2`), so you could no longer
-tell which region or phenotype a file came from.
-
-A `Tool` subclass fixes this by overriding the private `refine_files` hook,
-which runs on the base prefix *before* the generic disambiguation passes. So a
-subclass can fold a meaningful distinction into the prefix itself. Once each
-region/phenotype carries a different prefix they no longer collide, and any
-remaining `_2`/`_3` is a genuine repeat-run marker.
+DRAGEN coverage emits the same table per region (`wgs`, `tmb`, `exon`,
+`target_bed`, `--qc-coverage-region-N`) and, for tumor-normal, per phenotype.
+These strip to the same prefix (`sampleA` / `sampleA_2`). Subclasses override
+the private `refine_files()` hook (runs *before* disambiguation) to put the
+region/phenotype in the prefix. Remaining `_2`/`_3` = repeat runs.
 
 ### DragenCov: region + phenotype folded into the prefix
 
-- Problem: `sampleA.wgs_coverage_metrics.csv`,
-  `sampleA.target_bed_coverage_metrics.csv`, and
-  `sampleA.exon_coverage_metrics.csv` all strip to the prefix `sampleA` and all
-  route through the same coverage parser. In a somatic run the per-phenotype
-  contig-mean files (`..._normal.csv` / `..._tumor.csv`) collide too.
-- Fix: the `DragenCov` hook rewrites the prefix to `sampleA_<region>[_<pheno>]`
-  *before* the collision check, so `sampleA.wgs_coverage_metrics.csv` becomes
-  `sampleA_wgs_dragencov_metricsmain` and the normal/tumor contig-mean files
-  become `sampleA_wgs_normal_...` / `sampleA_wgs_tumor_...`, never a lossy
-  `sampleA_2`.
-
-Point a `DragenCov` object at the bundled coverage fixtures:
+- Problem: `sampleA.{wgs,target_bed,exon}_coverage_metrics.csv` all strip to
+  `sampleA` via the same parser; somatic `..._normal.csv`/`..._tumor.csv`
+  contig-mean files collide too.
+- Fix: prefix becomes `sampleA_<region>[_<pheno>]`, e.g.
+  `sampleA_wgs_dragencov_metricsmain`, `sampleA_wgs_normal_...`.
 
 ```{r}
 #| label: cov-init
@@ -73,8 +57,7 @@ dir_tree(dir_inC)
 cv <- DragenCov$new(path = dir_inC)
 ```
 
-Now tidy it. Each region (and, for the contig-mean tables, each phenotype) lands
-in its own file, distinguished by the prefix rather than a positional `_2`:
+One file per region (and phenotype):
 
 ```{r}
 #| label: cov-run
@@ -90,9 +73,7 @@ cv$run(
 list.files(dir_outC, pattern = "\\.parquet$") |> sort()
 ```
 
-Note how the region (and phenotype where present) is carried in the filename
-prefix, and the `input_prefix` column records the same distinction inside each
-table:
+`input_prefix` carries the same distinction:
 
 ```{r}
 #| label: cov-merge
@@ -106,19 +87,13 @@ dir_ls(dir_outC, regexp = "dragencov_contigmean\\.parquet") |>
 
 ### Variant calling: region kept as a column
 
-`DragenVar`'s variant-caller metrics (`vc`) take the opposite approach: rather
-than folding the region into the prefix, they keep it as an explicit `region`
-column via the private `region_split()` helper, since a single file legitimately
-carries metrics for more than one region (`genome` / `targetreg` / `qccovreg`).
-This is the right call when the distinction is a *within-file* dimension rather
-than a *between-file* collision.
+`DragenVar` `vc` metrics keep region (`genome`/`targetreg`/`qccovreg`) as a
+`region` column (private `region_split()`), since one file holds several
+regions: a within-file dimension, not a between-file collision.
 
 ### When to reach for the hook
 
-- Prefer schema `pattern`s that already separate variants where you can; the
-  generic pipeline then needs no help.
-- Use `refine_files()` when a single parser matches multiple input files that
-  must stay apart with a meaningful label rather than a positional `_2`
-  (DragenCov region/phenotype).
-- Keep the distinction as a column when it varies *within* a single file
-  (DragenVar `vc` region).
+- Prefer schema `pattern`s that already separate variants
+- Use `refine_files()` when one parser matches files needing a real label, not
+  `_2` (DragenCov)
+- Use a column when it varies *within* a file (DragenVar `vc`)
