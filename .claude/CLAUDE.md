@@ -167,8 +167,8 @@ official metric definitions.
 Full Makefile target list (shared with nemo/tidywigits):
 `tidywf/docs/r-pkg/dev-commands.md`.
 
-Build loop (`make build` after schema edits, rebuild `../nemo` after editing
-it): *Build loop* in that same doc.
+Dev loop (`make install` after schema edits, reinstall `../nemo` after editing
+it): *Dev loop* in that same doc.
 
 `devtools::load_all()` (no make equivalent) to load package interactively:
 
