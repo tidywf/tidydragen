@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9004</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9004/vignettes/structure.qmd" class="external-link"><code>vignettes/structure.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9005/vignettes/structure.qmd" class="external-link"><code>vignettes/structure.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -80,18 +80,17 @@
 
 
 
-    <p>Each DRAGEN tool has a single <code>schema.yaml</code> under <code>inst/config/tools/&lt;tool&gt;/</code>. See <a href="https://tidywf.github.io/nemo/articles/structure.html" class="external-link uri">https://tidywf.github.io/nemo/articles/structure.html</a> for a walkthrough of the <code>Tool</code>/<code>Workflow</code>/<code>Config</code> class structure and schema contents.</p>
-<p>tidydragen adds one intermediate base, <code>DragenTool</code> (inheriting <code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code>), which all domain tools extend. It carries the DRAGEN-shared parsing logic, most notably the <code>dragen-metrics</code> filetype that handles the headerless <code>section,rg,variable,count[,pct]</code> shape common to DRAGEN <code>*_metrics.csv</code> files. See the <a href="uml.html">UML</a> article for the class diagram.</p>
+    <p>One <code>schema.yaml</code> per tool under <code>inst/config/tools/&lt;tool&gt;/</code>. Class/schema walkthrough: <a href="https://tidywf.github.io/nemo/articles/structure.html" class="external-link">nemo structure</a>.</p>
+<p>All tools extend <code>DragenTool</code> (<code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> child), which holds shared parsing, notably the <code>dragen-metrics</code> ftype for headerless <code>section,rg,variable,count[,pct]</code> <code>*_metrics.csv</code> files. See <a href="uml.html">UML</a>.</p>
 <section class="level2"><h2 id="why-several-tools-not-one">Why several tools, not one<a class="anchor" aria-label="anchor" href="#why-several-tools-not-one"></a>
 </h2>
-<p>DRAGEN emits its outputs in functional groups: mapping, coverage, variant calling, RNA quantification, per-read FastQC, and the ctTSO500 app layer. Rather than a single monolithic <code>Dragen</code> tool bundling every schema, tidydragen gives each group its own tool (<code>DragenMap</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenFqc</code>, <code>DragenTso</code>), for a few reasons:</p>
+<p>One tool per DRAGEN output group: <code>DragenMap</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenFqc</code>, <code>DragenTso</code>.</p>
 <ul>
-<li>Pipelines produce different subsets. A germline-only run has no somatic SV or RNA fusion outputs; an RNA-only run has no variant calling. The <code>Dragen</code> workflow registers all six and tolerates absent files, so each pipeline simply yields the tables it has, with no all-or-nothing coupling.</li>
-<li>One tool, one <code>schema.yaml</code>, one output category. Each tool owns a single, focused schema scoped to its group; the tool name becomes the category token in every output name (e.g. <code>&lt;prefix&gt;_dragencov_finehist</code>), so a table’s origin is self-documenting.</li>
-<li>Independent evolution. Adding, versioning, or fixing one group’s schema touches only that tool, keeping the shared metrics logic on the <code>DragenTool</code> base untouched.</li>
-</ul>
-<p>The shared machinery still lives in one place. Everything common (the <code>dragen-metrics</code>/<code>csv-nohead</code> filetypes, the <code>refine_files</code> prefix logic, the fail-loud policies) sits on the <code>DragenTool</code> base and is inherited by all, so splitting the tools costs no duplication.</p>
-</section><script id="quarto-html-after-body" type="application/javascript">
+<li>Pipelines produce different subsets; <code>Dragen</code> skips absent tools</li>
+<li>One tool = one <code>schema.yaml</code> = one output token (e.g. <code>&lt;prefix&gt;_dragencov_finehist</code>)</li>
+<li>Schemas evolve independently</li>
+<li>Shared logic (<code>dragen-metrics</code>/<code>csv-nohead</code> ftypes, <code>refine_files</code>, fail-loud policies) lives on <code>DragenTool</code>, so no duplication</li>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

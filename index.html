@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9004</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,9 +94,8 @@
 <div class="section level2">
 <h2 id="tidydragen">tidydragen<a class="anchor" aria-label="anchor" href="#tidydragen"></a>
 </h2>
-<p>tidydragen is an R package for parsing and tidying output from Illumina’s <a href="https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html" title="Illumina DRAGEN" class="external-link">DRAGEN</a> secondary-analysis pipelines. The following pipelines are supported: DNA tumor-normal (somatic), DNA germline-only, RNA tumor-only, and TSO500 ctDNA.</p>
-<p>A DRAGEN run produces dozens of files per sample across mapping, coverage, variant calling, RNA quantification, and (for the ctTSO500 app) combined-variant and coverage reports. Consuming them downstream is fragile: most metrics land in headerless <code>section,rg,variable,count[,pct]</code> CSVs, some files fan out into several logical tables, region/phenotype variants share basenames, and column layouts drift between DRAGEN versions.</p>
-<p>tidydragen addresses this with a schema-driven parsing layer built on the <a href="https://github.com/tidywf/nemo" title="nemo" class="external-link">nemo</a> base R6 classes, supplying DRAGEN-specific schemas and parsers that turn raw outputs into consistently structured, versioned, analysis-ready tables. These can be written to Apache Parquet, PostgreSQL, TSV, CSV, or RDS. Each run also produces a <code>metadata.parquet</code> file alongside the tidy tables, capturing IDs, paths, and R package versions.</p>
+<p>Parses and tidies Illumina <a href="https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html" title="Illumina DRAGEN" class="external-link">DRAGEN</a> outputs into versioned, <code>snake_case</code> tables, written to Parquet, PostgreSQL, TSV, CSV or RDS (plus a <code>metadata.parquet</code> per run). Built on <a href="https://github.com/tidywf/nemo" title="nemo" class="external-link">nemo</a>.</p>
+<p>Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -124,7 +123,7 @@
 <div class="section level3">
 <h3 id="single-tool">Single tool<a class="anchor" aria-label="anchor" href="#single-tool"></a>
 </h3>
-<p>Each DRAGEN tool has its own R6 class. Most DRAGEN metrics files share a headerless <code>section,rg,variable,count[,pct]</code> layout e.g.:</p>
+<p>Raw DRAGEN metrics (headerless <code>section,rg,variable,count[,pct]</code>):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">indir_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/dragenmap"</span>, package <span class="op">=</span> <span class="st">"tidydragen"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span>
@@ -138,7 +137,7 @@
 <span><span class="co">#&gt; TUMOR MAPPING/ALIGNING SUMMARY,,Number of duplicate marked and mate reads removed,NA</span></span>
 <span><span class="co">#&gt; TUMOR MAPPING/ALIGNING SUMMARY,,Number of unique reads (excl. duplicate marked reads),2111268421,80.11</span></span>
 <span><span class="co">#&gt; TUMOR MAPPING/ALIGNING SUMMARY,,Reads with mate sequenced,2635326658,100.00</span></span></code></pre></div>
-<p>We can use the <code>DragenMap</code> class to parse, tidy, and write these files in one call via its <code>run()</code> method:</p>
+<p>Parse, tidy and write with <code>DragenMap$run()</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"map_out"</span><span class="op">)</span></span>
 <span><span class="va"><a href="reference/DragenMap.html">DragenMap</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">indir_map</span><span class="op">)</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span></span>
@@ -156,7 +155,7 @@
 <span><span class="co">#&gt; [13] "sampleB_2_dragenmap_replaymain.parquet"   "sampleB_2_dragenmap_time.parquet"        </span></span>
 <span><span class="co">#&gt; [15] "sampleB_dragenmap_replayconfig.parquet"   "sampleB_dragenmap_replaymain.parquet"    </span></span>
 <span><span class="co">#&gt; [17] "sampleB_dragenmap_time.parquet"</span></span></code></pre></div>
-<p>Now read back one tidied table:</p>
+<p>Tidy output:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir_map</span>, <span class="st">"sampleA_dragenmap_metrics.parquet"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html" class="external-link">read_parquet</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -177,7 +176,7 @@
 <div class="section level3">
 <h3 id="full-dragen-run">Full DRAGEN run<a class="anchor" aria-label="anchor" href="#full-dragen-run"></a>
 </h3>
-<p>A whole DRAGEN results directory can be processed with the <code>Dragen</code> workflow class. Tools whose files are absent contribute nothing, so the same call works across the germline, somatic tumor-normal, and RNA pipelines:</p>
+<p><code>Dragen</code> runs all tools over a results directory; absent tools are skipped:</p>
 <details class="code-fold"><summary>
 View input files
 </summary><div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>indir_d <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="at">package =</span> <span class="st">"tidydragen"</span>)</span>
@@ -315,8 +314,7 @@ View input files
 <span id="cb4-133"><a href="#cb4-133" tabindex="-1"></a>        ├── runA<span class="sc">-</span>index_summary.csv.dvc</span>
 <span id="cb4-134"><a href="#cb4-134" tabindex="-1"></a>        ├── runA_summary.csv</span>
 <span id="cb4-135"><a href="#cb4-135" tabindex="-1"></a>        └── runA_summary.csv.dvc</span></code></pre></div>
-</details><p>We can parse, tidy, and write the results into e.g. Parquet format as follows:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+</details><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"dragen_out_parquet"</span><span class="op">)</span></span>
 <span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Dragen.html">Dragen</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">indir_d</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span></span>
@@ -340,8 +338,8 @@ View input files
 <span><span class="co">#&gt; |written       |true                                                                   |</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">outdir_d</span>, pattern <span class="op">=</span> <span class="st">"\\.parquet$"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  chr [1:89] "dragenbcl_adaptercyclemetrics.parquet" "dragenbcl_adaptermetrics.parquet" ...</span></span></code></pre></div>
-<p>Results can also be written to a PostgreSQL database with <code>format = "db"</code> and a DBI connection (see the <a href="https://tidywf.github.io/tidydragen/articles/postgresql">PostgreSQL article</a>).</p>
-<p>Three optional columns can be prepended to every written table to support downstream tracing and joining. All are opt-in and off by default, but highly recommended for any multi-sample or multi-run pipeline:</p>
+<p>PostgreSQL: <code>format = "db"</code> + DBI connection (<a href="https://tidywf.github.io/tidydragen/articles/postgresql">article</a>).</p>
+<p>Optional provenance columns (recommended for multi-sample/multi-run use):</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -376,32 +374,28 @@ View input files
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Using {remotes} directly from GitHub:</p>
+<p>From GitHub:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tidywf/tidydragen"</span><span class="op">)</span> <span class="co"># latest main commit</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tidywf/tidydragen@v0.0.0.9004"</span><span class="op">)</span> <span class="co"># specific version</span></span></code></pre></div>
-<p>Alternatively:</p>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tidywf/tidydragen@v0.0.0.9005"</span><span class="op">)</span> <span class="co"># specific version</span></span></code></pre></div>
 <ul>
-<li>conda package: <a href="https://anaconda.org/tidywf/r-tidydragen" class="external-link uri">https://anaconda.org/tidywf/r-tidydragen</a>
+<li>conda: <a href="https://anaconda.org/tidywf/r-tidydragen" class="external-link uri">https://anaconda.org/tidywf/r-tidydragen</a>
 </li>
-<li>Docker image: <a href="https://github.com/tidywf/tidydragen/pkgs/container/tidydragen" class="external-link uri">https://github.com/tidywf/tidydragen/pkgs/container/tidydragen</a>
+<li>Docker: <a href="https://github.com/tidywf/tidydragen/pkgs/container/tidydragen" class="external-link uri">https://github.com/tidywf/tidydragen/pkgs/container/tidydragen</a>
+</li>
+<li>more: <a href="https://tidywf.github.io/tidydragen/articles/installation" class="uri">https://tidywf.github.io/tidydragen/articles/installation</a>
 </li>
 </ul>
-<p>For more details see: <a href="https://tidywf.github.io/tidydragen/articles/installation" class="uri">https://tidywf.github.io/tidydragen/articles/installation</a></p>
 </div>
 <div class="section level2">
 <h2 id="cli">CLI<a class="anchor" aria-label="anchor" href="#cli"></a>
 </h2>
-<p>A <code>tidydragen.R</code> command line interface is available for convenience.</p>
-<ul>
-<li>If you’re using the conda package, the <code>tidydragen.R</code> command will already be available inside the activated conda environment.</li>
-<li>If you’re <em>not</em> using the conda package, you need to export the <code>tidydragen/inst/cli/</code> directory to your <code>PATH</code> in order to use <code>tidydragen.R</code>.</li>
-</ul>
+<p><code>tidydragen.R</code> is on <code>PATH</code> in the conda env. Otherwise:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="va">td_cli</span><span class="op">=</span><span class="va">$(</span><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'x = system.file("cli", package = "tidydragen"); cat(x, "\n")'</span> <span class="kw">|</span> <span class="fu">xargs</span><span class="va">)</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">"</span><span class="va">${td_cli}</span><span class="st">:</span><span class="va">${PATH}</span><span class="st">"</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="sc">$</span> tidydragen.R <span class="sc">--</span>version</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>tidydragen <span class="dv">0</span>.<span class="dv">0</span>.<span class="fl">0.9004</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>tidydragen <span class="dv">0</span>.<span class="dv">0</span>.<span class="fl">0.9005</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#-----------------------------------#</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="sc">$</span> tidydragen.R <span class="sc">--</span>help</span>
@@ -418,50 +412,50 @@ View input files
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>options<span class="sc">:</span></span>
 <span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  <span class="sc">-</span>h, <span class="sc">--</span>help        show this help message and exit</span>
 <span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  <span class="sc">-</span>v, <span class="sc">--</span>version     show program<span class="st">'s version number and exit</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="st">'</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#-----------------------------------#</span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#------- Tidy ----------------------#</span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="sc">$</span> tidydragen.R tidy <span class="sc">--</span>help</span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>usage<span class="sc">:</span> tidydragen.R tidy [<span class="sc">-</span>h] <span class="sc">-</span>d IN_DIR [<span class="sc">-</span>o OUTPUT_DIR] [<span class="sc">-</span>f FORMAT]</span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>                         [<span class="sc">--</span>input_id INPUT_ID] [<span class="sc">--</span>output_id OUTPUT_ID <span class="sc">|</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>                         <span class="sc">--</span>ulid] [<span class="sc">--</span>dbname DBNAME] [<span class="sc">--</span>dbuser DBUSER]</span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>                         [<span class="sc">--</span>dbhost DBHOST] [<span class="sc">--</span>dbport DBPORT]</span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>                         [<span class="sc">--</span>include INCLUDE] [<span class="sc">--</span>exclude EXCLUDE]</span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>                         [<span class="sc">--</span>prefix_include] [<span class="sc">-</span>q]</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="st">#-----------------------------------#</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="st">#------- Tidy ----------------------#</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="st">$ tidydragen.R tidy --help</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="st">usage: tidydragen.R tidy [-h] -d IN_DIR [-o OUTPUT_DIR] [-f FORMAT]</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="st">                         [--input_id INPUT_ID] [--output_id OUTPUT_ID |</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="st">                         --ulid] [--dbname DBNAME] [--dbuser DBUSER]</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="st">                         [--dbhost DBHOST] [--dbport DBPORT]</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="st">                         [--include INCLUDE] [--exclude EXCLUDE]</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="st">                         [--prefix_include] [-q]</span></span>
 <span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>options<span class="sc">:</span></span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>  <span class="sc">-</span>h, <span class="sc">--</span>help            show this help message and exit</span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>  <span class="sc">-</span>d, <span class="sc">--</span>in_dir IN_DIR   Input directory.</span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>  <span class="sc">-</span>o, <span class="sc">--</span>output_dir OUTPUT_DIR</span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>                        Output directory.</span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>  <span class="sc">-</span>f, <span class="sc">--</span>format FORMAT   Format of output [def<span class="sc">:</span> parquet] (parquet, db, tsv,</span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>                        csv, rds)</span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>  <span class="sc">--</span>input_id INPUT_ID   Input ID <span class="cf">for</span> this run.</span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>  <span class="sc">--</span>output_id OUTPUT_ID</span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>                        Output ID <span class="cf">for</span> this run.</span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>  <span class="sc">--</span>ulid                Generate a ULID as output ID.</span>
-<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>  <span class="sc">--</span>dbname DBNAME       Database name.</span>
-<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>  <span class="sc">--</span>dbuser DBUSER       Database user.</span>
-<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>  <span class="sc">--</span>dbhost DBHOST       Database <span class="fu">host</span> (default<span class="sc">:</span> driver<span class="sc">/</span>env default, e.g.</span>
-<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>                        PGHOST).</span>
-<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>  <span class="sc">--</span>dbport DBPORT       Database <span class="fu">port</span> (default<span class="sc">:</span> driver<span class="sc">/</span>env default, e.g.</span>
-<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>                        PGPORT).</span>
-<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a>  <span class="sc">--</span>include INCLUDE     Include only these <span class="fu">files</span> (comma sep tool_parsers).</span>
-<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a>  <span class="sc">--</span>exclude EXCLUDE     Exclude only these <span class="fu">files</span> (comma sep tool_parsers).</span>
-<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a>  <span class="sc">--</span>prefix_include      Include input prefix column <span class="cf">in</span> output tables.</span>
-<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a>  <span class="sc">-</span>q, <span class="sc">--</span>quiet           Shush all the logs.</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="st">options:</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="st">  -h, --help            show this help message and exit</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="st">  -d, --in_dir IN_DIR   Input directory.</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="st">  -o, --output_dir OUTPUT_DIR</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="st">                        Output directory.</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="st">  -f, --format FORMAT   Format of output [def: parquet] (parquet, db, tsv,</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="st">                        csv, rds)</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="st">  --input_id INPUT_ID   Input ID for this run.</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="st">  --output_id OUTPUT_ID</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="st">                        Output ID for this run.</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="st">  --ulid                Generate a ULID as output ID.</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="st">  --dbname DBNAME       Database name.</span></span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="st">  --dbuser DBUSER       Database user.</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="st">  --dbhost DBHOST       Database host (default: driver/env default, e.g.</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="st">                        PGHOST).</span></span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="st">  --dbport DBPORT       Database port (default: driver/env default, e.g.</span></span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a><span class="st">                        PGPORT).</span></span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a><span class="st">  --include INCLUDE     Include only these files (comma sep tool_parsers).</span></span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a><span class="st">  --exclude EXCLUDE     Exclude only these files (comma sep tool_parsers).</span></span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a><span class="st">  --prefix_include      Include input prefix column in output tables.</span></span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="st">  -q, --quiet           Shush all the logs.</span></span>
 <span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a></span>
-<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="co">#-----------------------------------#</span></span>
-<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="co">#------- List ----------------------#</span></span>
-<span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a><span class="sc">$</span> tidydragen.R list <span class="sc">--</span>help</span>
-<span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a>usage<span class="sc">:</span> tidydragen.R list [<span class="sc">-</span>h] <span class="sc">-</span>d IN_DIR [<span class="sc">-</span>f FORMAT] [<span class="sc">-</span>m MAX] [<span class="sc">-</span>q]</span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a><span class="st">#-----------------------------------#</span></span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a><span class="st">#------- List ----------------------#</span></span>
+<span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a><span class="st">$ tidydragen.R list --help</span></span>
+<span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a><span class="st">usage: tidydragen.R list [-h] -d IN_DIR [-f FORMAT] [-m MAX] [-q]</span></span>
 <span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a></span>
-<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a>options<span class="sc">:</span></span>
-<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a>  <span class="sc">-</span>h, <span class="sc">--</span>help           show this help message and exit</span>
-<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a>  <span class="sc">-</span>d, <span class="sc">--</span>in_dir IN_DIR  Input directory.</span>
-<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a>  <span class="sc">-</span>f, <span class="sc">--</span>format FORMAT  Format of list output [def<span class="sc">:</span> pretty] (tsv, pretty)</span>
-<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a>  <span class="sc">-</span>m, <span class="sc">--</span>max MAX        Max rows to show.</span>
-<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a>  <span class="sc">-</span>q, <span class="sc">--</span>quiet          Shush all the logs.</span></code></pre></div>
+<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a><span class="st">options:</span></span>
+<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a><span class="st">  -h, --help           show this help message and exit</span></span>
+<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a><span class="st">  -d, --in_dir IN_DIR  Input directory.</span></span>
+<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a><span class="st">  -f, --format FORMAT  Format of list output [def: pretty] (tsv, pretty)</span></span>
+<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a><span class="st">  -m, --max MAX        Max rows to show.</span></span>
+<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a><span class="st">  -q, --quiet          Shush all the logs.</span></span></code></pre></div>
 </div>
 </div>
 

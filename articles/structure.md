@@ -1,44 +1,23 @@
 # Structure
 
-Each DRAGEN tool has a single `schema.yaml` under
-`inst/config/tools/<tool>/`. See
-<https://tidywf.github.io/nemo/articles/structure.html> for a
-walkthrough of the `Tool`/`Workflow`/`Config` class structure and schema
-contents.
+One `schema.yaml` per tool under `inst/config/tools/<tool>/`.
+Class/schema walkthrough: [nemo
+structure](https://tidywf.github.io/nemo/articles/structure.html).
 
-tidydragen adds one intermediate base, `DragenTool` (inheriting
-[`nemo::Tool`](https://tidywf.github.io/nemo/reference/Tool.html)),
-which all domain tools extend. It carries the DRAGEN-shared parsing
-logic, most notably the `dragen-metrics` filetype that handles the
-headerless `section,rg,variable,count[,pct]` shape common to DRAGEN
-`*_metrics.csv` files. See the
-[UML](https://tidywf.github.io/tidydragen/articles/uml.md) article for
-the class diagram.
+All tools extend `DragenTool`
+([`nemo::Tool`](https://tidywf.github.io/nemo/reference/Tool.html)
+child), which holds shared parsing, notably the `dragen-metrics` ftype
+for headerless `section,rg,variable,count[,pct]` `*_metrics.csv` files.
+See [UML](https://tidywf.github.io/tidydragen/articles/uml.md).
 
 ## Why several tools, not one
 
-DRAGEN emits its outputs in functional groups: mapping, coverage,
-variant calling, RNA quantification, per-read FastQC, and the ctTSO500
-app layer. Rather than a single monolithic `Dragen` tool bundling every
-schema, tidydragen gives each group its own tool (`DragenMap`,
-`DragenCov`, `DragenVar`, `DragenRna`, `DragenFqc`, `DragenTso`), for a
-few reasons:
+One tool per DRAGEN output group: `DragenMap`, `DragenCov`, `DragenVar`,
+`DragenRna`, `DragenFqc`, `DragenTso`.
 
-- Pipelines produce different subsets. A germline-only run has no
-  somatic SV or RNA fusion outputs; an RNA-only run has no variant
-  calling. The `Dragen` workflow registers all six and tolerates absent
-  files, so each pipeline simply yields the tables it has, with no
-  all-or-nothing coupling.
-- One tool, one `schema.yaml`, one output category. Each tool owns a
-  single, focused schema scoped to its group; the tool name becomes the
-  category token in every output name
-  (e.g. `<prefix>_dragencov_finehist`), so a table’s origin is
-  self-documenting.
-- Independent evolution. Adding, versioning, or fixing one group’s
-  schema touches only that tool, keeping the shared metrics logic on the
-  `DragenTool` base untouched.
-
-The shared machinery still lives in one place. Everything common (the
-`dragen-metrics`/`csv-nohead` filetypes, the `refine_files` prefix
-logic, the fail-loud policies) sits on the `DragenTool` base and is
-inherited by all, so splitting the tools costs no duplication.
+- Pipelines produce different subsets; `Dragen` skips absent tools
+- One tool = one `schema.yaml` = one output token (e.g.
+  `<prefix>_dragencov_finehist`)
+- Schemas evolve independently
+- Shared logic (`dragen-metrics`/`csv-nohead` ftypes, `refine_files`,
+  fail-loud policies) lives on `DragenTool`, so no duplication

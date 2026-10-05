@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9004</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9004/vignettes/postgresql.qmd" class="external-link"><code>vignettes/postgresql.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9005/vignettes/postgresql.qmd" class="external-link"><code>vignettes/postgresql.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -80,7 +80,7 @@
 
 
 
-    <p>Besides parquet/TSV/CSV/RDS, tidydragen can write tidy tables straight into a relational database by passing <code>format = "db"</code> and a live DBI connection. This example uses PostgreSQL via <a href="https://rpostgres.r-dbi.org/" class="external-link">RPostgres</a>, but any DBI-compatible backend works.</p>
+    <p><code>format = "db"</code> + a DBI connection. Example uses <a href="https://rpostgres.r-dbi.org/" class="external-link">RPostgres</a>; any DBI backend works.</p>
 <section class="level2"><h2 id="writing-a-run-to-the-database">Writing a run to the database<a class="anchor" aria-label="anchor" href="#writing-a-run-to-the-database"></a>
 </h2>
 <div class="cell">
@@ -103,12 +103,12 @@
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">dbconn</span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>Each tidy table becomes a database table named <code>&lt;tool&gt;_&lt;table&gt;</code> (e.g. <code>dragenmap_metrics</code>, <code>dragenvar_vc</code>). The optional <a href="quickstart.html#id-columns">ID columns</a> — <code>input_id</code>, <code>output_id</code>, <code>input_prefix</code> — let you stack many samples/runs into the same table and still trace each row back to its source.</p>
+<p>Tables are named <code>&lt;tool&gt;_&lt;table&gt;</code> (e.g. <code>dragenmap_metrics</code>). Use the <a href="quickstart.html#id-columns">ID columns</a> to trace rows across samples/runs.</p>
 </section><section class="level2"><h2 id="schema-generation">Schema generation<a class="anchor" aria-label="anchor" href="#schema-generation"></a>
 </h2>
-<p>The database schema is derived from the tool <code>schema.yaml</code> files. To capture a canonical schema for a fixed set of inputs, write the tables once and dump the schema:</p>
+<p>Write once, then dump:</p>
 <pre class="shell"><code>pg_dump --schema-only tidydragen &gt; schema.sql</code></pre>
-<p>New tool/column versions are merged into the schema over time; diff successive dumps to review changes before applying them to a shared database.</p>
+<p>Diff successive dumps before applying to a shared database.</p>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);

@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9004</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9004/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9005/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -80,16 +80,14 @@
 
 
 
-    <p>tidydragen turns raw <a href="https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html" class="external-link">Illumina DRAGEN</a> output directories into versioned, analysis-ready tables.</p>
-<section class="level2"><h2 id="test-data">Test data<a class="anchor" aria-label="anchor" href="#test-data"></a>
+    <section class="level2"><h2 id="test-data">Test data<a class="anchor" aria-label="anchor" href="#test-data"></a>
 </h2>
-<p>Example inputs live in <code>inst/extdata/</code>, one subdirectory per tool. Larger files are tracked via <a href="https://dvc.org/" class="external-link">DVC</a> on a public Cloudflare R2 bucket (no credentials). Fetch them with <code>dvc pull</code> from a cloned repo, or from R with <code><a href="https://tidywf.github.io/nemo/reference/dvc_download_all.html" class="external-link">nemo::dvc_download_all()</a></code>:</p>
+<p><code>inst/extdata/&lt;tool&gt;/</code>; larger files tracked with <a href="https://dvc.org/" class="external-link">DVC</a> on a public R2 bucket. <code>dvc pull</code> in a clone, or from R:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/dragencov"</span>, package <span class="op">=</span> <span class="st">"tidydragen"</span><span class="op">)</span></span>
 <span><span class="fu">nemo</span><span class="fu">::</span><span class="fu"><a href="https://tidywf.github.io/nemo/reference/dvc_download_all.html" class="external-link">dvc_download_all</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"dvc_test"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </section><section class="level2"><h2 id="input">Input<a class="anchor" aria-label="anchor" href="#input"></a>
 </h2>
-<p>Example DRAGEN results (one subdirectory per tool):</p>
 <div class="cell">
 <details class="code-fold"><summary>View input files</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">indir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"tidydragen"</span><span class="op">)</span></span>
@@ -194,7 +192,7 @@
 </div>
 <section class="level3"><h3 id="file-naming">File naming<a class="anchor" aria-label="anchor" href="#file-naming"></a>
 </h3>
-<p>Output files follow <code>{prefix}_{tool}_{table}.parquet</code>, where <code>prefix</code> comes from the input filenames (here <code>sampleA</code>). One input file can fan out into several tables. See <a href="output_naming.html">Output Naming</a> for region/phenotype prefixes and collision handling.</p>
+<p><code>{prefix}_{tool}_{table}.parquet</code>, prefix from input filename (<code>sampleA</code>). One file can fan out to several tables. See <a href="output_naming.html">Output Naming</a>.</p>
 </section><section class="level3"><h3 id="reading-a-table-back">Reading a table back<a class="anchor" aria-label="anchor" href="#reading-a-table-back"></a>
 </h3>
 <div class="cell">
@@ -216,7 +214,7 @@
 </div>
 </section></section><section class="level2"><h2 id="output---full-dragen-run">Output - Full DRAGEN run<a class="anchor" aria-label="anchor" href="#output---full-dragen-run"></a>
 </h2>
-<p><code>Dragen</code> runs all supported tools on a parent directory. Tools whose files are absent contribute nothing, so the same call works across the germline, somatic, RNA and ctTSO500 pipelines:</p>
+<p><code>Dragen</code> runs all tools on a parent directory; absent tools are skipped, so it works for germline, somatic, RNA and ctTSO500:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"qs_dragen"</span><span class="op">)</span></span>
@@ -230,7 +228,7 @@
 </div>
 </section><section class="level2"><h2 id="id-columns">ID columns<a class="anchor" aria-label="anchor" href="#id-columns"></a>
 </h2>
-<p>Optional columns prepended to every written table (all off by default), useful when combining samples into one table:</p>
+<p>Optional, off by default:</p>
 <table class="table caption-top">
 <colgroup>
 <col style="width: 29%">
@@ -297,7 +295,7 @@
 <span><span class="co">#&gt;  $ input_dirs  : list&lt;character&gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: chr(0) </span></span>
-<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/Rtmp3bMAO2/qs_dragen"</span></span>
+<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/Rtmps9RmmL/qs_dragen"</span></span>
 <span><span class="co">#&gt;  $ pkg_versions: list&lt;</span></span>
 <span><span class="co">#&gt;   tbl_df&lt;</span></span>
 <span><span class="co">#&gt;     name   : character</span></span>
@@ -306,7 +304,7 @@
 <span><span class="co">#&gt; &gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr [1:2] "nemo" "tidydragen"</span></span>
-<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9006" "0.0.0.9004"</span></span>
+<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9007" "0.0.0.9005"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr(0) </span></span>
 <span><span class="co">#&gt;   .. ..$ version: chr(0) </span></span>
@@ -329,15 +327,14 @@
 <span><span class="co">#&gt;   .. ..$ fout  : chr(0) </span></span>
 <span><span class="co">#&gt;   .. ..$ fin   : chr(0)</span></span></code></pre></div>
 </div>
-</section><section class="level2"><h2 id="other-useful-articles">Other useful articles<a class="anchor" aria-label="anchor" href="#other-useful-articles"></a>
+</section><section class="level2"><h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>
 <li>
-<a href="schema_table.html">Schema table</a>: browse every table and column for all supported DRAGEN tools</li>
+<a href="schema_table.html">Schema table</a>: all tables and columns</li>
 <li>
-<a href="structure.html">Structure</a>: schemas, versioning, and the Tool/Workflow class hierarchy (nemo)</li>
-<li>
-<a href="postgresql.html">PostgreSQL</a>: writing results to a database</li>
+<a href="structure.html">Structure</a>: schemas, versioning, class hierarchy</li>
+<li><a href="postgresql.html">PostgreSQL</a></li>
 </ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);

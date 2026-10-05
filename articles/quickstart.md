@@ -1,16 +1,10 @@
 # Quickstart
 
-tidydragen turns raw [Illumina
-DRAGEN](https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html)
-output directories into versioned, analysis-ready tables.
-
 ## Test data
 
-Example inputs live in `inst/extdata/`, one subdirectory per tool.
-Larger files are tracked via [DVC](https://dvc.org/) on a public
-Cloudflare R2 bucket (no credentials). Fetch them with `dvc pull` from a
-cloned repo, or from R with
-[`nemo::dvc_download_all()`](https://tidywf.github.io/nemo/reference/dvc_download_all.html):
+`inst/extdata/<tool>/`; larger files tracked with
+[DVC](https://dvc.org/) on a public R2 bucket. `dvc pull` in a clone, or
+from R:
 
 ``` r
 
@@ -19,8 +13,6 @@ nemo::dvc_download_all(input_dir, file.path(tempdir(), "dvc_test"))
 ```
 
 ## Input
-
-Example DRAGEN results (one subdirectory per tool):
 
 View input files
 
@@ -131,11 +123,9 @@ list.files(outdir, pattern = "\\.parquet$")
 
 ### File naming
 
-Output files follow `{prefix}_{tool}_{table}.parquet`, where `prefix`
-comes from the input filenames (here `sampleA`). One input file can fan
-out into several tables. See [Output
-Naming](https://tidywf.github.io/tidydragen/articles/output_naming.md)
-for region/phenotype prefixes and collision handling.
+`{prefix}_{tool}_{table}.parquet`, prefix from input filename
+(`sampleA`). One file can fan out to several tables. See [Output
+Naming](https://tidywf.github.io/tidydragen/articles/output_naming.md).
 
 ### Reading a table back
 
@@ -159,9 +149,8 @@ m |> str(list.len = 10)
 
 ## Output - Full DRAGEN run
 
-`Dragen` runs all supported tools on a parent directory. Tools whose
-files are absent contribute nothing, so the same call works across the
-germline, somatic, RNA and ctTSO500 pipelines:
+`Dragen` runs all tools on a parent directory; absent tools are skipped,
+so it works for germline, somatic, RNA and ctTSO500:
 
 ``` r
 
@@ -177,8 +166,7 @@ list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 
 ## ID columns
 
-Optional columns prepended to every written table (all off by default),
-useful when combining samples into one table:
+Optional, off by default:
 
 | Argument | Column added | Contains |
 |----|----|----|
@@ -227,7 +215,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>  $ input_dirs  : list<character> [1:1] 
 #>   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"
 #>   ..@ ptype: chr(0) 
-#>  $ output_dir  : chr "/tmp/Rtmp3bMAO2/qs_dragen"
+#>  $ output_dir  : chr "/tmp/Rtmps9RmmL/qs_dragen"
 #>  $ pkg_versions: list<
 #>   tbl_df<
 #>     name   : character
@@ -236,7 +224,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #> > [1:1] 
 #>   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr [1:2] "nemo" "tidydragen"
-#>   .. ..$ version: chr [1:2] "0.1.0.9006" "0.0.0.9004"
+#>   .. ..$ version: chr [1:2] "0.1.0.9007" "0.0.0.9005"
 #>   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr(0) 
 #>   .. ..$ version: chr(0) 
@@ -260,12 +248,11 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>   .. ..$ fin   : chr(0)
 ```
 
-## Other useful articles
+## See also
 
 - [Schema
   table](https://tidywf.github.io/tidydragen/articles/schema_table.md):
-  browse every table and column for all supported DRAGEN tools
+  all tables and columns
 - [Structure](https://tidywf.github.io/tidydragen/articles/structure.md):
-  schemas, versioning, and the Tool/Workflow class hierarchy (nemo)
-- [PostgreSQL](https://tidywf.github.io/tidydragen/articles/postgresql.md):
-  writing results to a database
+  schemas, versioning, class hierarchy
+- [PostgreSQL](https://tidywf.github.io/tidydragen/articles/postgresql.md)
