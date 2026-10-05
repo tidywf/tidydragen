@@ -3,4 +3,4 @@ channels:
   - tidywf
   - conda-forge
 dependencies:
-  - r-tidydragen ==0.0.0.9004 # bump
+  - r-tidydragen ==0.0.0.9005 # bump

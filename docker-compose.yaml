@@ -23,7 +23,7 @@
 
 services:
   tidydragen:
-    image: ghcr.io/tidywf/tidydragen:${IMAGE_TAG:-0.0.0.9004}
+    image: ghcr.io/tidywf/tidydragen:${IMAGE_TAG:-0.0.0.9005}
     build:
       context: .
     volumes:
