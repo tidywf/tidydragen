@@ -57,7 +57,9 @@ list.files(outdir, pattern = "\\.parquet$")
 ### File naming
 
 `{prefix}_{tool}_{table}.parquet`, prefix from input filename (`sampleA`). One
-file can fan out to several tables. See [Output Naming](output_naming.html).
+file can fan out to several tables, declared under `outputs:` in the tool's
+`schema.yaml` (e.g. `umi_metrics.csv` => `umimain` + `umihist`). See [Output
+Naming](output_naming.html) and [Structure](structure.html).
 
 ### Reading a table back
 

@@ -34,4 +34,33 @@ TSV, CSV, RDS, or PostgreSQL.
 - `s3sync()` for pulling DRAGEN run outputs from S3.
 - CLI (`tidydragen.R`), conda package, and multi-arch Docker image.
 
+### Schema outputs
+
+Fan-out files declare their outputs under `outputs:` in `schema.yaml`, replacing
+the `__no_file_match__` sentinel tables. Output table names are unchanged; the
+file tables, and so the `tool_parser` names used by `include`/`exclude`, are
+renamed:
+
+| Old                        | New                    |
+| -------------------------- | ---------------------- |
+| `dragenmap_umimain`        | `dragenmap_umi`        |
+| `dragenmap_gcmain`         | `dragenmap_gc`         |
+| `dragenmap_replaymain`     | `dragenmap_replay`     |
+| `dragenfqc_posbasecontent` | `dragenfqc_fastqc`     |
+| `dragencov_metricsmain`    | `dragencov_covmetrics` |
+| `dragencov_reportbedmain`  | `dragencov_reportbed`  |
+| `dragenvar_ploidymain`     | `dragenvar_ploidy`     |
+| `dragentso_sarmain`        | `dragentso_sar`        |
+| `interop_summarymain`      | `interop_summary`      |
+| `interop_indexsummarymain` | `interop_indexsummary` |
+
+- Columns the schema never declared are now declared: the `<metric>_pct` twins
+  of `dragenmap_umimain` and `dragencov_metricsmain`, `cov_lo`/`cov_hi`
+  (`dragencov_metricsbins`), `cov_min` (`dragencov_metricscumu`) and `chrom`
+  (`dragenvar_ploidyratio`).
+- `dragentso_sarmain.analysis_completed` and the `dragentso_sarsnv` flags (e.g.
+  `iscanonical`) are now character (`"TRUE"`/`"FALSE"`), matching their `char`
+  schema type. An empty `dragentso_sarcnv` now has numeric
+  `foldchange`/`qual`/`start`/`end`.
+
 [nemo]: https://github.com/tidywf/nemo
