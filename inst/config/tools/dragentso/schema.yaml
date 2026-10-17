@@ -530,8 +530,8 @@ tables:
         type: 'float'
         description: 'maximum coverage over the gene'
         versions: ['latest']
-  sarmain:
-    description: 'TSO500 SampleAnalysisResults sample information. Fan-out primary; derived: sarqc, sarqcthr, sarswds, sarsw, sarsnv, sarcnv.'
+  sar:
+    description: 'TSO500 SampleAnalysisResults sample information.'
     pattern: "_SampleAnalysisResults\\.json$"
     glob: ["*_SampleAnalysisResults.json"]
     ftype: 'json'
@@ -581,448 +581,396 @@ tables:
         type: 'char'
         description: 'library analysis completed (logical)'
         versions: ['latest']
-  sarqc:
-    description: 'TSO500 SampleAnalysisResults QC, expanded metrics, and TMB/MSI biomarkers (one wide row). Fan-out of sarmain.'
-    pattern: '__no_file_match__sarqc'
-    ftype: 'csv'
-    columns:
-      - raw: 'contamination_score'
-        tidy: 'contamination_score'
-        type: 'float'
-        description: 'DNA library contamination score'
-        versions: ['latest']
-      - raw: 'median_exon_coverage'
-        tidy: 'median_exon_coverage'
-        type: 'float'
-        description: 'median exon coverage'
-        versions: ['latest']
-      - raw: 'pct_exon_1000x'
-        tidy: 'pct_exon_1000x'
-        type: 'float'
-        description: 'percent of exon bases at >=1000x'
-        versions: ['latest']
-      - raw: 'gene_scaled_mad'
-        tidy: 'gene_scaled_mad'
-        type: 'float'
-        description: 'gene-scaled median absolute deviation (CNV)'
-        versions: ['latest']
-      - raw: 'median_bin_count_cnv_target'
-        tidy: 'median_bin_count_cnv_target'
-        type: 'float'
-        description: 'median bin count over CNV target'
-        versions: ['latest']
-      - raw: 'total_pf_reads'
-        tidy: 'total_pf_reads'
-        type: 'float'
-        description: 'total passing-filter reads'
-        versions: ['latest']
-      - raw: 'mean_target_coverage'
-        tidy: 'mean_target_coverage'
-        type: 'float'
-        description: 'mean target coverage'
-        versions: ['latest']
-      - raw: 'pct_contamination_est'
-        tidy: 'pct_contamination_est'
-        type: 'float'
-        description: 'estimated percent contamination'
-        versions: ['latest']
-      - raw: 'max_somatic_af'
-        tidy: 'max_somatic_af'
-        type: 'float'
-        description: 'maximum somatic allele frequency'
-        versions: ['latest']
-      - raw: 'tmb_per_mb'
-        tidy: 'tmb_per_mb'
-        type: 'float'
-        description: 'tumor mutational burden per megabase'
-        versions: ['latest']
-      - raw: 'tmb_coding_region_size_mb'
-        tidy: 'tmb_coding_region_size_mb'
-        type: 'float'
-        description: 'TMB coding region size (Mb)'
-        versions: ['latest']
-      - raw: 'tmb_somatic_coding_variants_count'
-        tidy: 'tmb_somatic_coding_variants_count'
-        type: 'float'
-        description: 'somatic coding variants counted for TMB'
-        versions: ['latest']
-      - raw: 'msi_pct_unstable_sites'
-        tidy: 'msi_pct_unstable_sites'
-        type: 'float'
-        description: 'MSI percent unstable sites'
-        versions: ['latest']
-      - raw: 'msi_sum_jsd'
-        tidy: 'msi_sum_jsd'
-        type: 'float'
-        description: 'MSI sum of Jensen-Shannon distances'
-        versions: ['latest']
-      - raw: 'mean_family_size'
-        tidy: 'mean_family_size'
-        type: 'float'
-        description: 'mean UMI read family size'
-        versions: ['latest']
-      - raw: 'median_target_coverage'
-        tidy: 'median_target_coverage'
-        type: 'float'
-        description: 'median depth across unique manifest target loci'
-        versions: ['latest']
-      - raw: 'pct_chimeric_reads'
-        tidy: 'pct_chimeric_reads'
-        type: 'float'
-        description: 'percent of passing-QC reads aligned as chimeric'
-        versions: ['latest']
-      - raw: 'pct_exon_500x'
-        tidy: 'pct_exon_500x'
-        type: 'float'
-        description: 'percent of exon bases at >=500x fragment coverage'
-        versions: ['latest']
-      - raw: 'pct_exon_1500x'
-        tidy: 'pct_exon_1500x'
-        type: 'float'
-        description: 'percent of exon bases at >=1500x fragment coverage'
-        versions: ['latest']
-      - raw: 'pct_read_enrichment'
-        tidy: 'pct_read_enrichment'
-        type: 'float'
-        description: 'percent of reads overlapping manifest target regions'
-        versions: ['latest']
-      - raw: 'pct_usable_umi_reads'
-        tidy: 'pct_usable_umi_reads'
-        type: 'float'
-        description: 'percent of reads with valid UMI sequences'
-        versions: ['latest']
-      - raw: 'pct_aligned_reads'
-        tidy: 'pct_aligned_reads'
-        type: 'float'
-        description: 'percent of reads aligned (non-supplementary, non-secondary, passing QC)'
-        versions: ['latest']
-      - raw: 'pct_target_04x_mean'
-        tidy: 'pct_target_04x_mean'
-        type: 'float'
-        description: 'percent of target bases at >=0.4x mean target coverage'
-        versions: ['latest']
-      - raw: 'pct_target_500x'
-        tidy: 'pct_target_500x'
-        type: 'float'
-        description: 'percent of target bases at >=500x fragment coverage'
-        versions: ['latest']
-      - raw: 'pct_target_1000x'
-        tidy: 'pct_target_1000x'
-        type: 'float'
-        description: 'percent of target bases at >=1000x fragment coverage'
-        versions: ['latest']
-      - raw: 'pct_target_1500x'
-        tidy: 'pct_target_1500x'
-        type: 'float'
-        description: 'percent of target bases at >=1500x fragment coverage'
-        versions: ['latest']
-      - raw: 'pct_duplexfamilies'
-        tidy: 'pct_duplexfamilies'
-        type: 'float'
-        description: 'percent of UMI families that are duplex'
-        versions: ['latest']
-      - raw: 'median_insert_size'
-        tidy: 'median_insert_size'
-        type: 'float'
-        description: 'median fragment (insert) size (bp)'
-        versions: ['latest']
-      - raw: 'pct_soft_clipped_bases'
-        tidy: 'pct_soft_clipped_bases'
-        type: 'float'
-        description: 'percent of soft-clipped bases'
-        versions: ['latest']
-      - raw: 'pct_q30_bases'
-        tidy: 'pct_q30_bases'
-        type: 'float'
-        description: 'percent of bases with quality >=Q30'
-        versions: ['latest']
-  sarqcthr:
-    description: 'TSO500 SampleAnalysisResults QC metrics with lower/upper spec limits (one row per QC group x metric). Fan-out of sarmain.'
-    pattern: '__no_file_match__sarqcthr'
-    ftype: 'csv'
-    columns:
-      - raw: 'group'
-        tidy: 'group'
-        type: 'char'
-        description: 'QC metric group name'
-        versions: ['latest']
-      - raw: 'metric'
-        tidy: 'metric'
-        type: 'char'
-        description: 'QC metric name (lowercased, as in sarqc)'
-        versions: ['latest']
-      - raw: 'value'
-        tidy: 'value'
-        type: 'float'
-        description: 'QC metric value'
-        versions: ['latest']
-      - raw: 'uom'
-        tidy: 'uom'
-        type: 'char'
-        description: 'unit of measure'
-        versions: ['latest']
-      - raw: 'lsl'
-        tidy: 'lsl'
-        type: 'float'
-        description: 'lower spec limit (NA = none)'
-        versions: ['latest']
-      - raw: 'usl'
-        tidy: 'usl'
-        type: 'float'
-        description: 'upper spec limit (NA = none)'
-        versions: ['latest']
-  sarswds:
-    description: 'TSO500 SampleAnalysisResults Nirvana annotation data sources. Fan-out of sarmain.'
-    pattern: '__no_file_match__sarswds'
-    ftype: 'csv'
-    columns:
-      - raw: 'name'
-        tidy: 'name'
-        type: 'char'
-        description: 'data source name'
-        versions: ['latest']
-      - raw: 'version'
-        tidy: 'version'
-        type: 'char'
-        description: 'data source version'
-        versions: ['latest']
-      - raw: 'description'
-        tidy: 'description'
-        type: 'char'
-        description: 'data source description'
-        versions: ['latest']
-      - raw: 'releaseDate'
-        tidy: 'release_date'
-        type: 'char'
-        description: 'data source release date'
-        versions: ['latest']
-  sarsw:
-    description: 'TSO500 SampleAnalysisResults software and Nirvana configuration. Fan-out of sarmain.'
-    pattern: '__no_file_match__sarsw'
-    ftype: 'csv'
-    columns:
-      - raw: 'analysisSoftwareDisplayName'
-        tidy: 'software_display_name'
-        type: 'char'
-        description: 'analysis software display name'
-        versions: ['latest']
-      - raw: 'analysisSoftwareName'
-        tidy: 'software_name'
-        type: 'char'
-        description: 'analysis software name'
-        versions: ['latest']
-      - raw: 'analysisSoftwareVersion'
-        tidy: 'software_version'
-        type: 'char'
-        description: 'analysis software version'
-        versions: ['latest']
-      - raw: 'genomeBuild'
-        tidy: 'genome_build'
-        type: 'char'
-        description: 'genome build'
-        versions: ['latest']
-      - raw: 'instanceName'
-        tidy: 'instance_name'
-        type: 'char'
-        description: 'Nirvana instance name'
-        versions: ['latest']
-      - raw: 'nirvanaSoftwareVersion'
-        tidy: 'nirvana_software_version'
-        type: 'char'
-        description: 'Nirvana software version'
-        versions: ['latest']
-      - raw: 'genomeAssembly'
-        tidy: 'genome_assembly'
-        type: 'char'
-        description: 'Nirvana genome assembly'
-        versions: ['latest']
-      - raw: 'refseqVersion'
-        tidy: 'refseq_version'
-        type: 'char'
-        description: 'RefSeq version'
-        versions: ['latest']
-  sarsnv:
-    description: 'TSO500 SampleAnalysisResults small variants (one row per variant x Nirvana transcript). Fan-out of sarmain.'
-    pattern: '__no_file_match__sarsnv'
-    ftype: 'csv'
-    columns:
-      - raw: 'chrom'
-        tidy: 'chrom'
-        type: 'char'
-        description: 'chromosome (VCF)'
-        versions: ['latest']
-      - raw: 'pos'
-        tidy: 'pos'
-        type: 'float'
-        description: 'position (VCF)'
-        versions: ['latest']
-      - raw: 'ref'
-        tidy: 'ref'
-        type: 'char'
-        description: 'reference allele'
-        versions: ['latest']
-      - raw: 'alt'
-        tidy: 'alt'
-        type: 'char'
-        description: 'alternative allele'
-        versions: ['latest']
-      - raw: 'af'
-        tidy: 'af'
-        type: 'float'
-        description: 'variant allele frequency'
-        versions: ['latest']
-      - raw: 'qual'
-        tidy: 'qual'
-        type: 'float'
-        description: 'variant quality'
-        versions: ['latest']
-      - raw: 'dp_tot'
-        tidy: 'dp_tot'
-        type: 'float'
-        description: 'total read depth'
-        versions: ['latest']
-      - raw: 'dp_alt'
-        tidy: 'dp_alt'
-        type: 'float'
-        description: 'alternative allele depth'
-        versions: ['latest']
-      - raw: 'variant_type'
-        tidy: 'variant_type'
-        type: 'char'
-        description: 'Nirvana variant type (SNV/MNV/insertion/deletion/indel)'
-        versions: ['latest']
-      - raw: 'hgvsg'
-        tidy: 'hgvsg'
-        type: 'char'
-        description: 'HGVS genomic notation'
-        versions: ['latest']
-      - raw: 'transcript'
-        tidy: 'transcript'
-        type: 'char'
-        description: 'transcript ID'
-        versions: ['latest']
-      - raw: 'hgnc'
-        tidy: 'hgnc'
-        type: 'char'
-        description: 'HGNC gene symbol'
-        versions: ['latest']
-      - raw: 'consequence'
-        tidy: 'consequence'
-        type: 'char'
-        description: 'variant consequence(s), comma-joined'
-        versions: ['latest']
-      - raw: 'hgvsc'
-        tidy: 'hgvsc'
-        type: 'char'
-        description: 'HGVS coding notation'
-        versions: ['latest']
-      - raw: 'hgvsp'
-        tidy: 'hgvsp'
-        type: 'char'
-        description: 'HGVS protein notation'
-        versions: ['latest']
-      - raw: 'source'
-        tidy: 'source'
-        type: 'char'
-        description: 'transcript source (RefSeq/Ensembl)'
-        versions: ['latest']
-      - raw: 'biotype'
-        tidy: 'biotype'
-        type: 'char'
-        description: 'transcript biotype'
-        versions: ['latest']
-      - raw: 'codons'
-        tidy: 'codons'
-        type: 'char'
-        description: 'reference/alternate codons'
-        versions: ['latest']
-      - raw: 'aminoacids'
-        tidy: 'aminoacids'
-        type: 'char'
-        description: 'reference/alternate amino acids'
-        versions: ['latest']
-      - raw: 'cdnapos'
-        tidy: 'cdnapos'
-        type: 'char'
-        description: 'cDNA position (may be a range)'
-        versions: ['latest']
-      - raw: 'cdspos'
-        tidy: 'cdspos'
-        type: 'char'
-        description: 'CDS position (may be a range)'
-        versions: ['latest']
-      - raw: 'exons'
-        tidy: 'exons'
-        type: 'char'
-        description: 'affected exon(s), as n/total'
-        versions: ['latest']
-      - raw: 'introns'
-        tidy: 'introns'
-        type: 'char'
-        description: 'affected intron(s), as n/total'
-        versions: ['latest']
-      - raw: 'isjunctionpreserving'
-        tidy: 'isjunctionpreserving'
-        type: 'char'
-        description: 'splice-junction-preserving flag (logical; sparse)'
-        versions: ['latest']
-      - raw: 'proteinpos'
-        tidy: 'proteinpos'
-        type: 'char'
-        description: 'protein position (may be a range)'
-        versions: ['latest']
-      - raw: 'geneid'
-        tidy: 'geneid'
-        type: 'char'
-        description: 'gene ID (Entrez/Ensembl)'
-        versions: ['latest']
-      - raw: 'iscanonical'
-        tidy: 'iscanonical'
-        type: 'char'
-        description: 'canonical transcript flag (logical)'
-        versions: ['latest']
-      - raw: 'proteinid'
-        tidy: 'proteinid'
-        type: 'char'
-        description: 'protein ID'
-        versions: ['latest']
-  sarcnv:
-    description: 'TSO500 SampleAnalysisResults copy-number variants. Fan-out of sarmain.'
-    pattern: '__no_file_match__sarcnv'
-    ftype: 'csv'
-    columns:
-      - raw: 'foldchange'
-        tidy: 'foldchange'
-        type: 'float'
-        description: 'copy-number fold change'
-        versions: ['latest']
-      - raw: 'qual'
-        tidy: 'qual'
-        type: 'float'
-        description: 'CNV quality'
-        versions: ['latest']
-      - raw: 'copynumbertype'
-        tidy: 'cn_type'
-        type: 'char'
-        description: 'copy-number type (amplification/deletion)'
-        versions: ['latest']
-      - raw: 'gene'
-        tidy: 'gene'
-        type: 'char'
-        description: 'gene symbol'
-        versions: ['latest']
-      - raw: 'chromosome'
-        tidy: 'chrom'
-        type: 'char'
-        description: 'chromosome'
-        versions: ['latest']
-      - raw: 'startposition'
-        tidy: 'start'
-        type: 'float'
-        description: 'CNV start position'
-        versions: ['latest']
-      - raw: 'endposition'
-        tidy: 'end'
-        type: 'float'
-        description: 'CNV end position'
-        versions: ['latest']
+    outputs:
+      sarmain:
+        description: 'TSO500 SampleAnalysisResults sample information.'
+        columns:
+          - tidy: 'sample_id'
+            type: 'char'
+            description: 'sample ID'
+            versions: ['latest']
+          - tidy: 'analysis_date'
+            type: 'char'
+            description: 'analysis date (YYYY-MM-DD)'
+            versions: ['latest']
+          - tidy: 'analysis_time'
+            type: 'char'
+            description: 'analysis time (HH:MM:SS)'
+            versions: ['latest']
+          - tidy: 'analysis_run_name'
+            type: 'char'
+            description: 'analysis run name'
+            versions: ['latest']
+          - tidy: 'analysis_name'
+            type: 'char'
+            description: 'analysis name'
+            versions: ['latest']
+          - tidy: 'schema_version'
+            type: 'char'
+            description: 'SampleAnalysisResults JSON schema version'
+            versions: ['latest']
+          - tidy: 'library_type'
+            type: 'char'
+            description: 'sequencing library type (DNA)'
+            versions: ['latest']
+          - tidy: 'library_id'
+            type: 'char'
+            description: 'sequencing library ID'
+            versions: ['latest']
+          - tidy: 'analysis_completed'
+            type: 'char'
+            description: 'library analysis completed (logical)'
+            versions: ['latest']
+      sarqc:
+        description: 'TSO500 SampleAnalysisResults QC, expanded metrics, and TMB/MSI biomarkers (one wide row).'
+        shape: 'subset'
+        columns:
+          - tidy: 'contamination_score'
+            type: 'float'
+            description: 'DNA library contamination score'
+            versions: ['latest']
+          - tidy: 'median_exon_coverage'
+            type: 'float'
+            description: 'median exon coverage'
+            versions: ['latest']
+          - tidy: 'pct_exon_1000x'
+            type: 'float'
+            description: 'percent of exon bases at >=1000x'
+            versions: ['latest']
+          - tidy: 'gene_scaled_mad'
+            type: 'float'
+            description: 'gene-scaled median absolute deviation (CNV)'
+            versions: ['latest']
+          - tidy: 'median_bin_count_cnv_target'
+            type: 'float'
+            description: 'median bin count over CNV target'
+            versions: ['latest']
+          - tidy: 'total_pf_reads'
+            type: 'float'
+            description: 'total passing-filter reads'
+            versions: ['latest']
+          - tidy: 'mean_target_coverage'
+            type: 'float'
+            description: 'mean target coverage'
+            versions: ['latest']
+          - tidy: 'pct_contamination_est'
+            type: 'float'
+            description: 'estimated percent contamination'
+            versions: ['latest']
+          - tidy: 'max_somatic_af'
+            type: 'float'
+            description: 'maximum somatic allele frequency'
+            versions: ['latest']
+          - tidy: 'tmb_per_mb'
+            type: 'float'
+            description: 'tumor mutational burden per megabase'
+            versions: ['latest']
+          - tidy: 'tmb_coding_region_size_mb'
+            type: 'float'
+            description: 'TMB coding region size (Mb)'
+            versions: ['latest']
+          - tidy: 'tmb_somatic_coding_variants_count'
+            type: 'float'
+            description: 'somatic coding variants counted for TMB'
+            versions: ['latest']
+          - tidy: 'msi_pct_unstable_sites'
+            type: 'float'
+            description: 'MSI percent unstable sites'
+            versions: ['latest']
+          - tidy: 'msi_sum_jsd'
+            type: 'float'
+            description: 'MSI sum of Jensen-Shannon distances'
+            versions: ['latest']
+          - tidy: 'mean_family_size'
+            type: 'float'
+            description: 'mean UMI read family size'
+            versions: ['latest']
+          - tidy: 'median_target_coverage'
+            type: 'float'
+            description: 'median depth across unique manifest target loci'
+            versions: ['latest']
+          - tidy: 'pct_chimeric_reads'
+            type: 'float'
+            description: 'percent of passing-QC reads aligned as chimeric'
+            versions: ['latest']
+          - tidy: 'pct_exon_500x'
+            type: 'float'
+            description: 'percent of exon bases at >=500x fragment coverage'
+            versions: ['latest']
+          - tidy: 'pct_exon_1500x'
+            type: 'float'
+            description: 'percent of exon bases at >=1500x fragment coverage'
+            versions: ['latest']
+          - tidy: 'pct_read_enrichment'
+            type: 'float'
+            description: 'percent of reads overlapping manifest target regions'
+            versions: ['latest']
+          - tidy: 'pct_usable_umi_reads'
+            type: 'float'
+            description: 'percent of reads with valid UMI sequences'
+            versions: ['latest']
+          - tidy: 'pct_aligned_reads'
+            type: 'float'
+            description: 'percent of reads aligned (non-supplementary, non-secondary, passing QC)'
+            versions: ['latest']
+          - tidy: 'pct_target_04x_mean'
+            type: 'float'
+            description: 'percent of target bases at >=0.4x mean target coverage'
+            versions: ['latest']
+          - tidy: 'pct_target_500x'
+            type: 'float'
+            description: 'percent of target bases at >=500x fragment coverage'
+            versions: ['latest']
+          - tidy: 'pct_target_1000x'
+            type: 'float'
+            description: 'percent of target bases at >=1000x fragment coverage'
+            versions: ['latest']
+          - tidy: 'pct_target_1500x'
+            type: 'float'
+            description: 'percent of target bases at >=1500x fragment coverage'
+            versions: ['latest']
+          - tidy: 'pct_duplexfamilies'
+            type: 'float'
+            description: 'percent of UMI families that are duplex'
+            versions: ['latest']
+          - tidy: 'median_insert_size'
+            type: 'float'
+            description: 'median fragment (insert) size (bp)'
+            versions: ['latest']
+          - tidy: 'pct_soft_clipped_bases'
+            type: 'float'
+            description: 'percent of soft-clipped bases'
+            versions: ['latest']
+          - tidy: 'pct_q30_bases'
+            type: 'float'
+            description: 'percent of bases with quality >=Q30'
+            versions: ['latest']
+      sarqcthr:
+        description: 'TSO500 SampleAnalysisResults QC metrics with lower/upper spec limits (one row per QC group x metric).'
+        columns:
+          - tidy: 'group'
+            type: 'char'
+            description: 'QC metric group name'
+            versions: ['latest']
+          - tidy: 'metric'
+            type: 'char'
+            description: 'QC metric name (lowercased, as in sarqc)'
+            versions: ['latest']
+          - tidy: 'value'
+            type: 'float'
+            description: 'QC metric value'
+            versions: ['latest']
+          - tidy: 'uom'
+            type: 'char'
+            description: 'unit of measure'
+            versions: ['latest']
+          - tidy: 'lsl'
+            type: 'float'
+            description: 'lower spec limit (NA = none)'
+            versions: ['latest']
+          - tidy: 'usl'
+            type: 'float'
+            description: 'upper spec limit (NA = none)'
+            versions: ['latest']
+      sarswds:
+        description: 'TSO500 SampleAnalysisResults Nirvana annotation data sources.'
+        columns:
+          - tidy: 'name'
+            type: 'char'
+            description: 'data source name'
+            versions: ['latest']
+          - tidy: 'version'
+            type: 'char'
+            description: 'data source version'
+            versions: ['latest']
+          - tidy: 'description'
+            type: 'char'
+            description: 'data source description'
+            versions: ['latest']
+          - tidy: 'release_date'
+            type: 'char'
+            description: 'data source release date'
+            versions: ['latest']
+      sarsw:
+        description: 'TSO500 SampleAnalysisResults software and Nirvana configuration.'
+        columns:
+          - tidy: 'software_display_name'
+            type: 'char'
+            description: 'analysis software display name'
+            versions: ['latest']
+          - tidy: 'software_name'
+            type: 'char'
+            description: 'analysis software name'
+            versions: ['latest']
+          - tidy: 'software_version'
+            type: 'char'
+            description: 'analysis software version'
+            versions: ['latest']
+          - tidy: 'genome_build'
+            type: 'char'
+            description: 'genome build'
+            versions: ['latest']
+          - tidy: 'instance_name'
+            type: 'char'
+            description: 'Nirvana instance name'
+            versions: ['latest']
+          - tidy: 'nirvana_software_version'
+            type: 'char'
+            description: 'Nirvana software version'
+            versions: ['latest']
+          - tidy: 'genome_assembly'
+            type: 'char'
+            description: 'Nirvana genome assembly'
+            versions: ['latest']
+          - tidy: 'refseq_version'
+            type: 'char'
+            description: 'RefSeq version'
+            versions: ['latest']
+      sarsnv:
+        description: 'TSO500 SampleAnalysisResults small variants (one row per variant x Nirvana transcript).'
+        shape: 'subset'
+        columns:
+          - tidy: 'chrom'
+            type: 'char'
+            description: 'chromosome (VCF)'
+            versions: ['latest']
+          - tidy: 'pos'
+            type: 'float'
+            description: 'position (VCF)'
+            versions: ['latest']
+          - tidy: 'ref'
+            type: 'char'
+            description: 'reference allele'
+            versions: ['latest']
+          - tidy: 'alt'
+            type: 'char'
+            description: 'alternative allele'
+            versions: ['latest']
+          - tidy: 'af'
+            type: 'float'
+            description: 'variant allele frequency'
+            versions: ['latest']
+          - tidy: 'qual'
+            type: 'float'
+            description: 'variant quality'
+            versions: ['latest']
+          - tidy: 'dp_tot'
+            type: 'float'
+            description: 'total read depth'
+            versions: ['latest']
+          - tidy: 'dp_alt'
+            type: 'float'
+            description: 'alternative allele depth'
+            versions: ['latest']
+          - tidy: 'variant_type'
+            type: 'char'
+            description: 'Nirvana variant type (SNV/MNV/insertion/deletion/indel)'
+            versions: ['latest']
+          - tidy: 'hgvsg'
+            type: 'char'
+            description: 'HGVS genomic notation'
+            versions: ['latest']
+          - tidy: 'transcript'
+            type: 'char'
+            description: 'transcript ID'
+            versions: ['latest']
+          - tidy: 'hgnc'
+            type: 'char'
+            description: 'HGNC gene symbol'
+            versions: ['latest']
+          - tidy: 'consequence'
+            type: 'char'
+            description: 'variant consequence(s), comma-joined'
+            versions: ['latest']
+          - tidy: 'hgvsc'
+            type: 'char'
+            description: 'HGVS coding notation'
+            versions: ['latest']
+          - tidy: 'hgvsp'
+            type: 'char'
+            description: 'HGVS protein notation'
+            versions: ['latest']
+          - tidy: 'source'
+            type: 'char'
+            description: 'transcript source (RefSeq/Ensembl)'
+            versions: ['latest']
+          - tidy: 'biotype'
+            type: 'char'
+            description: 'transcript biotype'
+            versions: ['latest']
+          - tidy: 'codons'
+            type: 'char'
+            description: 'reference/alternate codons'
+            versions: ['latest']
+          - tidy: 'aminoacids'
+            type: 'char'
+            description: 'reference/alternate amino acids'
+            versions: ['latest']
+          - tidy: 'cdnapos'
+            type: 'char'
+            description: 'cDNA position (may be a range)'
+            versions: ['latest']
+          - tidy: 'cdspos'
+            type: 'char'
+            description: 'CDS position (may be a range)'
+            versions: ['latest']
+          - tidy: 'exons'
+            type: 'char'
+            description: 'affected exon(s), as n/total'
+            versions: ['latest']
+          - tidy: 'introns'
+            type: 'char'
+            description: 'affected intron(s), as n/total'
+            versions: ['latest']
+          - tidy: 'isjunctionpreserving'
+            type: 'char'
+            description: 'splice-junction-preserving flag (logical; sparse)'
+            versions: ['latest']
+          - tidy: 'proteinpos'
+            type: 'char'
+            description: 'protein position (may be a range)'
+            versions: ['latest']
+          - tidy: 'geneid'
+            type: 'char'
+            description: 'gene ID (Entrez/Ensembl)'
+            versions: ['latest']
+          - tidy: 'iscanonical'
+            type: 'char'
+            description: 'canonical transcript flag (logical)'
+            versions: ['latest']
+          - tidy: 'proteinid'
+            type: 'char'
+            description: 'protein ID'
+            versions: ['latest']
+      sarcnv:
+        description: 'TSO500 SampleAnalysisResults copy-number variants.'
+        shape: 'subset'
+        columns:
+          - tidy: 'foldchange'
+            type: 'float'
+            description: 'copy-number fold change'
+            versions: ['latest']
+          - tidy: 'qual'
+            type: 'float'
+            description: 'CNV quality'
+            versions: ['latest']
+          - tidy: 'cn_type'
+            type: 'char'
+            description: 'copy-number type (amplification/deletion)'
+            versions: ['latest']
+          - tidy: 'gene'
+            type: 'char'
+            description: 'gene symbol'
+            versions: ['latest']
+          - tidy: 'chrom'
+            type: 'char'
+            description: 'chromosome'
+            versions: ['latest']
+          - tidy: 'start'
+            type: 'float'
+            description: 'CNV start position'
+            versions: ['latest']
+          - tidy: 'end'
+            type: 'float'
+            description: 'CNV end position'
+            versions: ['latest']

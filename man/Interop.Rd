@@ -34,24 +34,14 @@ obj_it$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super class}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{Interop}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
-dropped). Needed for the \code{summarymain}/\code{summaryreadlane} and
-\code{indexsummarymain}/\code{indexsummarydetail} splits.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Interop-new}{\code{Interop$new()}}
-\item \href{#method-Interop-parse_summarymain}{\code{Interop$parse_summarymain()}}
-\item \href{#method-Interop-tidy_summarymain}{\code{Interop$tidy_summarymain()}}
-\item \href{#method-Interop-parse_indexsummarymain}{\code{Interop$parse_indexsummarymain()}}
-\item \href{#method-Interop-tidy_indexsummarymain}{\code{Interop$tidy_indexsummarymain()}}
+\item \href{#method-Interop-parse_summary}{\code{Interop$parse_summary()}}
+\item \href{#method-Interop-tidy_summary}{\code{Interop$tidy_summary()}}
+\item \href{#method-Interop-parse_indexsummary}{\code{Interop$parse_indexsummary()}}
+\item \href{#method-Interop-tidy_indexsummary}{\code{Interop$tidy_indexsummary()}}
 \item \href{#method-Interop-parse_imagingtable}{\code{Interop$parse_imagingtable()}}
 \item \href{#method-Interop-tidy_imagingtable}{\code{Interop$tidy_imagingtable()}}
 }
@@ -93,14 +83,14 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-parse_summarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-parse_summarymain}{}}}
-\subsection{Method \code{parse_summarymain()}}{
+\if{html}{\out{<a id="method-Interop-parse_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-parse_summary}{}}}
+\subsection{Method \code{parse_summary()}}{
 Parse \verb{<run>_summary.csv}; returns the raw level table and
 the raw per-read/lane/surface table (both still character), wrapped in a
-one-row tibble list-column. \code{tidy_summarymain()} types and splits them.
+one-row tibble list-column. \code{tidy_summary()} types and splits them.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_summarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_summary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -112,15 +102,15 @@ one-row tibble list-column. \code{tidy_summarymain()} types and splits them.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-tidy_summarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-tidy_summarymain}{}}}
-\subsection{Method \code{tidy_summarymain()}}{
+\if{html}{\out{<a id="method-Interop-tidy_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-tidy_summary}{}}}
+\subsection{Method \code{tidy_summary()}}{
 Fan \verb{<run>_summary.csv} into \code{summarymain} (level table, wide,
 6 rows) and \code{summaryreadlane} (per-read/lane/surface detail, long).
 \code{"nan"}/\code{"-"} sentinel values -> NA throughout; \code{"mean +/- sd"} and
 \code{"a / b"} cells are split into paired columns.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_summarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_summary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -132,14 +122,14 @@ Fan \verb{<run>_summary.csv} into \code{summarymain} (level table, wide,
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-parse_indexsummarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-parse_indexsummarymain}{}}}
-\subsection{Method \code{parse_indexsummarymain()}}{
+\if{html}{\out{<a id="method-Interop-parse_indexsummary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-parse_indexsummary}{}}}
+\subsection{Method \code{parse_indexsummary()}}{
 Parse \verb{<run>-index_summary.csv}; returns the raw per-lane
 totals and the raw per-index table (both still character), wrapped in a
-one-row tibble list-column. \code{tidy_indexsummarymain()} types them.
+one-row tibble list-column. \code{tidy_indexsummary()} types them.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_indexsummarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_indexsummary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -151,13 +141,13 @@ one-row tibble list-column. \code{tidy_indexsummarymain()} types them.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-tidy_indexsummarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-tidy_indexsummarymain}{}}}
-\subsection{Method \code{tidy_indexsummarymain()}}{
+\if{html}{\out{<a id="method-Interop-tidy_indexsummary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-tidy_indexsummary}{}}}
+\subsection{Method \code{tidy_indexsummary()}}{
 Fan \verb{<run>-index_summary.csv} into \code{indexsummarymain} (per-lane
 totals, wide) and \code{indexsummarydetail} (per-index rows, long).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_indexsummarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_indexsummary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -1,6 +1,6 @@
 tables:
-  summarymain:
-    description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total). Fan-out primary; derived: summaryreadlane.'
+  summary:
+    description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
     pattern: "(?<!-index)_summary\\.csv$"
     glob: ["*_summary.csv"]
     ftype: 'csv'
@@ -45,176 +45,177 @@ tables:
         type: 'float'
         description: 'percent of nanowells occupied (occupancy-enabled instruments)'
         versions: ['latest']
-  summaryreadlane:
-    description: 'InterOp per-read x lane x surface detail. "mean +/- sd" and "a / b" source cells split into paired columns; surface NA = whole-lane aggregate row. Fan-out of summarymain.'
-    pattern: '__no_file_match__summaryreadlane'
-    ftype: 'csv'
-    columns:
-      - raw: 'read'
-        tidy: 'read'
-        type: 'char'
-        description: 'read grouping this row belongs to (from the summary.csv block label)'
-        versions: ['latest']
-      - raw: 'Lane'
-        tidy: 'lane'
-        type: 'int'
-        description: 'lane number'
-        versions: ['latest']
-      - raw: 'Surface'
-        tidy: 'surface'
-        type: 'int'
-        description: 'surface (1 top / 2 bottom); NA for the whole-lane aggregate row (raw "-")'
-        versions: ['latest']
-      - raw: 'Tiles'
-        tidy: 'tiles'
-        type: 'int'
-        description: 'number of tiles'
-        versions: ['latest']
-      - raw: 'Density'
-        tidy: 'density'
-        type: 'float'
-        description: 'cluster density (k/mm2), mean across tiles'
-        versions: ['latest']
-      - raw: 'Density'
-        tidy: 'density_sd'
-        type: 'float'
-        description: 'cluster density (k/mm2), sd across tiles'
-        versions: ['latest']
-      - raw: 'Cluster PF'
-        tidy: 'cluster_pf_pct'
-        type: 'float'
-        description: 'percent clusters passing filter, mean'
-        versions: ['latest']
-      - raw: 'Cluster PF'
-        tidy: 'cluster_pf_pct_sd'
-        type: 'float'
-        description: 'percent clusters passing filter, sd'
-        versions: ['latest']
-      - raw: 'Legacy Phasing/Prephasing Rate'
-        tidy: 'legacy_phasing_rate'
-        type: 'float'
-        description: 'legacy phasing rate; NA for non-PhiX-spiked reads'
-        versions: ['latest']
-      - raw: 'Legacy Phasing/Prephasing Rate'
-        tidy: 'legacy_prephasing_rate'
-        type: 'float'
-        description: 'legacy prephasing rate; NA for non-PhiX-spiked reads'
-        versions: ['latest']
-      - raw: 'Phasing  slope/offset'
-        tidy: 'phasing_slope'
-        type: 'float'
-        description: 'empirical phasing slope'
-        versions: ['latest']
-      - raw: 'Phasing  slope/offset'
-        tidy: 'phasing_offset'
-        type: 'float'
-        description: 'empirical phasing offset'
-        versions: ['latest']
-      - raw: 'Prephasing slope/offset'
-        tidy: 'prephasing_slope'
-        type: 'float'
-        description: 'empirical prephasing slope'
-        versions: ['latest']
-      - raw: 'Prephasing slope/offset'
-        tidy: 'prephasing_offset'
-        type: 'float'
-        description: 'empirical prephasing offset'
-        versions: ['latest']
-      - raw: 'Reads'
-        tidy: 'reads'
-        type: 'float'
-        description: 'number of reads (millions)'
-        versions: ['latest']
-      - raw: 'Reads PF'
-        tidy: 'reads_pf'
-        type: 'float'
-        description: 'number of reads passing filter (millions)'
-        versions: ['latest']
-      - raw: '%>=Q30'
-        tidy: 'pct_q30'
-        type: 'float'
-        description: 'percent of bases >= Q30'
-        versions: ['latest']
-      - raw: 'Yield'
-        tidy: 'yield'
-        type: 'float'
-        description: 'yield (Gb)'
-        versions: ['latest']
-      - raw: 'Cycles Error'
-        tidy: 'cycles_error'
-        type: 'char'
-        description: 'cycle range PhiX error was computed over (e.g. "0 - 151"); "-" when not applicable. Kept raw, not coerced.'
-        versions: ['latest']
-      - raw: 'Aligned'
-        tidy: 'aligned_pct'
-        type: 'float'
-        description: 'percent aligned to PhiX, mean'
-        versions: ['latest']
-      - raw: 'Aligned'
-        tidy: 'aligned_pct_sd'
-        type: 'float'
-        description: 'percent aligned to PhiX, sd'
-        versions: ['latest']
-      - raw: 'Error'
-        tidy: 'error_pct'
-        type: 'float'
-        description: 'PhiX error rate, mean'
-        versions: ['latest']
-      - raw: 'Error'
-        tidy: 'error_pct_sd'
-        type: 'float'
-        description: 'PhiX error rate, sd'
-        versions: ['latest']
-      - raw: 'Error (35)'
-        tidy: 'error35_pct'
-        type: 'float'
-        description: 'PhiX error rate at cycle 35, mean'
-        versions: ['latest']
-      - raw: 'Error (35)'
-        tidy: 'error35_pct_sd'
-        type: 'float'
-        description: 'PhiX error rate at cycle 35, sd'
-        versions: ['latest']
-      - raw: 'Error (75)'
-        tidy: 'error75_pct'
-        type: 'float'
-        description: 'PhiX error rate at cycle 75, mean'
-        versions: ['latest']
-      - raw: 'Error (75)'
-        tidy: 'error75_pct_sd'
-        type: 'float'
-        description: 'PhiX error rate at cycle 75, sd'
-        versions: ['latest']
-      - raw: 'Error (100)'
-        tidy: 'error100_pct'
-        type: 'float'
-        description: 'PhiX error rate at cycle 100, mean'
-        versions: ['latest']
-      - raw: 'Error (100)'
-        tidy: 'error100_pct_sd'
-        type: 'float'
-        description: 'PhiX error rate at cycle 100, sd'
-        versions: ['latest']
-      - raw: '% Occupied'
-        tidy: 'pct_occupied'
-        type: 'float'
-        description: 'percent of nanowells occupied, mean'
-        versions: ['latest']
-      - raw: '% Occupied'
-        tidy: 'pct_occupied_sd'
-        type: 'float'
-        description: 'percent of nanowells occupied, sd'
-        versions: ['latest']
-      - raw: 'Intensity C1'
-        tidy: 'intensity_c1'
-        type: 'float'
-        description: 'intensity at cycle 1, mean'
-        versions: ['latest']
-      - raw: 'Intensity C1'
-        tidy: 'intensity_c1_sd'
-        type: 'float'
-        description: 'intensity at cycle 1, sd'
-        versions: ['latest']
+    outputs:
+      summarymain:
+        description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
+        columns:
+          - tidy: 'level'
+            type: 'char'
+            description: 'read grouping (Read 1, Read 2 (I), ..., Non-indexed, Total)'
+            versions: ['latest']
+          - tidy: 'yield'
+            type: 'float'
+            description: 'yield (Gb)'
+            versions: ['latest']
+          - tidy: 'yield_projected'
+            type: 'float'
+            description: 'projected yield (Gb)'
+            versions: ['latest']
+          - tidy: 'aligned_pct'
+            type: 'float'
+            description: 'percent aligned to PhiX'
+            versions: ['latest']
+          - tidy: 'error_rate'
+            type: 'float'
+            description: 'PhiX error rate; NA for non-PhiX-spiked (e.g. index) reads'
+            versions: ['latest']
+          - tidy: 'intensity_c1'
+            type: 'float'
+            description: 'intensity at cycle 1'
+            versions: ['latest']
+          - tidy: 'pct_q30'
+            type: 'float'
+            description: 'percent of bases >= Q30'
+            versions: ['latest']
+          - tidy: 'pct_occupied'
+            type: 'float'
+            description: 'percent of nanowells occupied (occupancy-enabled instruments)'
+            versions: ['latest']
+      summaryreadlane:
+        description: 'InterOp per-read x lane x surface detail. "mean +/- sd" and "a / b" source cells split into paired columns; surface NA = whole-lane aggregate row.'
+        columns:
+          - tidy: 'read'
+            type: 'char'
+            description: 'read grouping this row belongs to (from the summary.csv block label)'
+            versions: ['latest']
+          - tidy: 'lane'
+            type: 'int'
+            description: 'lane number'
+            versions: ['latest']
+          - tidy: 'surface'
+            type: 'int'
+            description: 'surface (1 top / 2 bottom); NA for the whole-lane aggregate row (raw "-")'
+            versions: ['latest']
+          - tidy: 'tiles'
+            type: 'int'
+            description: 'number of tiles'
+            versions: ['latest']
+          - tidy: 'density'
+            type: 'float'
+            description: 'cluster density (k/mm2), mean across tiles'
+            versions: ['latest']
+          - tidy: 'density_sd'
+            type: 'float'
+            description: 'cluster density (k/mm2), sd across tiles'
+            versions: ['latest']
+          - tidy: 'cluster_pf_pct'
+            type: 'float'
+            description: 'percent clusters passing filter, mean'
+            versions: ['latest']
+          - tidy: 'cluster_pf_pct_sd'
+            type: 'float'
+            description: 'percent clusters passing filter, sd'
+            versions: ['latest']
+          - tidy: 'legacy_phasing_rate'
+            type: 'float'
+            description: 'legacy phasing rate; NA for non-PhiX-spiked reads'
+            versions: ['latest']
+          - tidy: 'legacy_prephasing_rate'
+            type: 'float'
+            description: 'legacy prephasing rate; NA for non-PhiX-spiked reads'
+            versions: ['latest']
+          - tidy: 'phasing_slope'
+            type: 'float'
+            description: 'empirical phasing slope'
+            versions: ['latest']
+          - tidy: 'phasing_offset'
+            type: 'float'
+            description: 'empirical phasing offset'
+            versions: ['latest']
+          - tidy: 'prephasing_slope'
+            type: 'float'
+            description: 'empirical prephasing slope'
+            versions: ['latest']
+          - tidy: 'prephasing_offset'
+            type: 'float'
+            description: 'empirical prephasing offset'
+            versions: ['latest']
+          - tidy: 'reads'
+            type: 'float'
+            description: 'number of reads (millions)'
+            versions: ['latest']
+          - tidy: 'reads_pf'
+            type: 'float'
+            description: 'number of reads passing filter (millions)'
+            versions: ['latest']
+          - tidy: 'pct_q30'
+            type: 'float'
+            description: 'percent of bases >= Q30'
+            versions: ['latest']
+          - tidy: 'yield'
+            type: 'float'
+            description: 'yield (Gb)'
+            versions: ['latest']
+          - tidy: 'cycles_error'
+            type: 'char'
+            description: 'cycle range PhiX error was computed over (e.g. "0 - 151"); "-" when not applicable. Kept raw, not coerced.'
+            versions: ['latest']
+          - tidy: 'aligned_pct'
+            type: 'float'
+            description: 'percent aligned to PhiX, mean'
+            versions: ['latest']
+          - tidy: 'aligned_pct_sd'
+            type: 'float'
+            description: 'percent aligned to PhiX, sd'
+            versions: ['latest']
+          - tidy: 'error_pct'
+            type: 'float'
+            description: 'PhiX error rate, mean'
+            versions: ['latest']
+          - tidy: 'error_pct_sd'
+            type: 'float'
+            description: 'PhiX error rate, sd'
+            versions: ['latest']
+          - tidy: 'error35_pct'
+            type: 'float'
+            description: 'PhiX error rate at cycle 35, mean'
+            versions: ['latest']
+          - tidy: 'error35_pct_sd'
+            type: 'float'
+            description: 'PhiX error rate at cycle 35, sd'
+            versions: ['latest']
+          - tidy: 'error75_pct'
+            type: 'float'
+            description: 'PhiX error rate at cycle 75, mean'
+            versions: ['latest']
+          - tidy: 'error75_pct_sd'
+            type: 'float'
+            description: 'PhiX error rate at cycle 75, sd'
+            versions: ['latest']
+          - tidy: 'error100_pct'
+            type: 'float'
+            description: 'PhiX error rate at cycle 100, mean'
+            versions: ['latest']
+          - tidy: 'error100_pct_sd'
+            type: 'float'
+            description: 'PhiX error rate at cycle 100, sd'
+            versions: ['latest']
+          - tidy: 'pct_occupied'
+            type: 'float'
+            description: 'percent of nanowells occupied, mean'
+            versions: ['latest']
+          - tidy: 'pct_occupied_sd'
+            type: 'float'
+            description: 'percent of nanowells occupied, sd'
+            versions: ['latest']
+          - tidy: 'intensity_c1'
+            type: 'float'
+            description: 'intensity at cycle 1, mean'
+            versions: ['latest']
+          - tidy: 'intensity_c1_sd'
+            type: 'float'
+            description: 'intensity at cycle 1, sd'
+            versions: ['latest']
   imagingtable:
     description: 'InterOp per-lane x tile x cycle imaging metrics (imaging_table.csv, gzipped or not).'
     pattern: "imaging_table\\.csv(\\.gz)?$"
@@ -466,8 +467,8 @@ tables:
         type: 'float'
         description: 'percent of nanowells occupied (occupancy-enabled instruments)'
         versions: ['latest']
-  indexsummarymain:
-    description: 'InterOp per-lane index-demux totals. Fan-out primary; derived: indexsummarydetail.'
+  indexsummary:
+    description: 'InterOp per-lane index-demux totals.'
     pattern: "-index_summary\\.csv$"
     glob: ["*-index_summary.csv"]
     ftype: 'csv'
@@ -507,43 +508,66 @@ tables:
         type: 'float'
         description: 'maximum per-index %identified in the lane'
         versions: ['latest']
-  indexsummarydetail:
-    description: 'InterOp per-index demux rows. Fan-out of indexsummarymain.'
-    pattern: '__no_file_match__indexsummarydetail'
-    ftype: 'csv'
-    columns:
-      - raw: 'lane'
-        tidy: 'lane'
-        type: 'int'
-        description: 'lane number'
-        versions: ['latest']
-      - raw: 'Index Number'
-        tidy: 'index_number'
-        type: 'int'
-        description: 'index number (unique across the run, not per-lane)'
-        versions: ['latest']
-      - raw: 'Sample Id'
-        tidy: 'sample_id'
-        type: 'char'
-        description: 'sample id'
-        versions: ['latest']
-      - raw: 'Project'
-        tidy: 'project'
-        type: 'char'
-        description: 'project name'
-        versions: ['latest']
-      - raw: 'Index 1 (I7)'
-        tidy: 'index1'
-        type: 'char'
-        description: 'i7 index sequence'
-        versions: ['latest']
-      - raw: 'Index 2 (I5)'
-        tidy: 'index2'
-        type: 'char'
-        description: 'i5 index sequence'
-        versions: ['latest']
-      - raw: '% Read Identified (PF)'
-        tidy: 'pct_identified'
-        type: 'float'
-        description: 'percent of PF reads identified to this index'
-        versions: ['latest']
+    outputs:
+      indexsummarymain:
+        description: 'InterOp per-lane index-demux totals.'
+        columns:
+          - tidy: 'lane'
+            type: 'int'
+            description: 'lane number (from the index_summary.csv block label)'
+            versions: ['latest']
+          - tidy: 'reads_tot'
+            type: 'float'
+            description: 'total reads in the lane'
+            versions: ['latest']
+          - tidy: 'reads_pf'
+            type: 'float'
+            description: 'reads passing filter in the lane'
+            versions: ['latest']
+          - tidy: 'pct_identified'
+            type: 'float'
+            description: 'mean percent of PF reads identified to an index across the lane'
+            versions: ['latest']
+          - tidy: 'cv'
+            type: 'float'
+            description: 'coefficient of variation of per-index %identified across the lane'
+            versions: ['latest']
+          - tidy: 'pct_identified_min'
+            type: 'float'
+            description: 'minimum per-index %identified in the lane'
+            versions: ['latest']
+          - tidy: 'pct_identified_max'
+            type: 'float'
+            description: 'maximum per-index %identified in the lane'
+            versions: ['latest']
+      indexsummarydetail:
+        description: 'InterOp per-index demux rows.'
+        columns:
+          - tidy: 'lane'
+            type: 'int'
+            description: 'lane number'
+            versions: ['latest']
+          - tidy: 'index_number'
+            type: 'int'
+            description: 'index number (unique across the run, not per-lane)'
+            versions: ['latest']
+          - tidy: 'sample_id'
+            type: 'char'
+            description: 'sample id'
+            versions: ['latest']
+          - tidy: 'project'
+            type: 'char'
+            description: 'project name'
+            versions: ['latest']
+          - tidy: 'index1'
+            type: 'char'
+            description: 'i7 index sequence'
+            versions: ['latest']
+          - tidy: 'index2'
+            type: 'char'
+            description: 'i5 index sequence'
+            versions: ['latest']
+          - tidy: 'pct_identified'
+            type: 'float'
+            description: 'percent of PF reads identified to this index'
+            versions: ['latest']

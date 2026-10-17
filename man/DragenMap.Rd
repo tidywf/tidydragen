@@ -18,26 +18,17 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super classes}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{\link[tidydragen:DragenTool]{tidydragen::DragenTool}} -> \code{DragenMap}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
-dropped). Needed for the \code{umimain}/\code{umihist} and \code{gcmain}/\code{gcbias} splits.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DragenMap-new}{\code{DragenMap$new()}}
 \item \href{#method-DragenMap-tidy_metrics}{\code{DragenMap$tidy_metrics()}}
-\item \href{#method-DragenMap-tidy_umimain}{\code{DragenMap$tidy_umimain()}}
-\item \href{#method-DragenMap-tidy_gcmain}{\code{DragenMap$tidy_gcmain()}}
+\item \href{#method-DragenMap-tidy_umi}{\code{DragenMap$tidy_umi()}}
+\item \href{#method-DragenMap-tidy_gc}{\code{DragenMap$tidy_gc()}}
 \item \href{#method-DragenMap-tidy_time}{\code{DragenMap$tidy_time()}}
 \item \href{#method-DragenMap-parse_fraglenhist}{\code{DragenMap$parse_fraglenhist()}}
-\item \href{#method-DragenMap-parse_replaymain}{\code{DragenMap$parse_replaymain()}}
-\item \href{#method-DragenMap-tidy_replaymain}{\code{DragenMap$tidy_replaymain()}}
+\item \href{#method-DragenMap-parse_replay}{\code{DragenMap$parse_replay()}}
+\item \href{#method-DragenMap-tidy_replay}{\code{DragenMap$tidy_replay()}}
 }
 }
 \if{html}{\out{
@@ -95,13 +86,13 @@ Tidy \code{mapping_metrics.csv}. Both id columns retained
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-tidy_umimain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-tidy_umimain}{}}}
-\subsection{Method \code{tidy_umimain()}}{
+\if{html}{\out{<a id="method-DragenMap-tidy_umi"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-tidy_umi}{}}}
+\subsection{Method \code{tidy_umi()}}{
 Tidy \code{umi_metrics.csv} into \code{umimain} (summary, wide) and
 \code{umihist} (the \code{{a|b|c}} histograms, long).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_umimain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_umi(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -113,13 +104,13 @@ Tidy \code{umi_metrics.csv} into \code{umimain} (summary, wide) and
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-tidy_gcmain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-tidy_gcmain}{}}}
-\subsection{Method \code{tidy_gcmain()}}{
+\if{html}{\out{<a id="method-DragenMap-tidy_gc"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-tidy_gc}{}}}
+\subsection{Method \code{tidy_gc()}}{
 Tidy \code{gc_metrics.csv} into \code{gcmain} (GC METRICS SUMMARY, wide)
 and \code{gcbias} (per-GC-window GC BIAS DETAILS, long — GC 0-100).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_gcmain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_gc(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -166,14 +157,14 @@ Parse \code{fragment_length_hist.csv} into a long tibble.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-parse_replaymain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-parse_replaymain}{}}}
-\subsection{Method \code{parse_replaymain()}}{
+\if{html}{\out{<a id="method-DragenMap-parse_replay"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-parse_replay}{}}}
+\subsection{Method \code{parse_replay()}}{
 Parse a \code{replay.json} file; returns the whole
-parsed JSON wrapped in a one-row tibble list-column. \code{tidy_replaymain()}
+parsed JSON wrapped in a one-row tibble list-column. \code{tidy_replay()}
 fans it out.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_replaymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_replay(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -185,14 +176,14 @@ fans it out.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenMap-tidy_replaymain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenMap-tidy_replaymain}{}}}
-\subsection{Method \code{tidy_replaymain()}}{
+\if{html}{\out{<a id="method-DragenMap-tidy_replay"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenMap-tidy_replay}{}}}
+\subsection{Method \code{tidy_replay()}}{
 Fan a \code{replay.json} file into \code{replaymain} (run
 provenance, 1 row) and \code{replayconfig} (the full \code{dragen_config} dump,
 long).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_replaymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_replay(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

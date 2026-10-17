@@ -122,10 +122,6 @@ DragenVar <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
-    #' dropped). Needed for the `ploidymain`/`ploidyratio` split.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenVar object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -200,13 +196,13 @@ DragenVar <- R6::R6Class(
     #' @description Tidy `ploidy_estimation_metrics.csv` into `ploidymain` (sample
     #' scalars) and `ploidyratio` (long, one row per chromosome ratio).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_ploidymain = function(x) {
+    tidy_ploidy = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_ratio <- grepl("/", x$variable)
       # scalars -> ploidymain table; per-chrom ratios -> ploidyratio sentinel
-      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidymain")
+      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidy")
       ratio <- private$tidy_metrics(
         x[is_ratio, , drop = FALSE],
         "ploidyratio",

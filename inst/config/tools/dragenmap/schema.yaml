@@ -838,8 +838,8 @@ tables:
         type: 'float'
         description: 'reads filtered for minimum read length r2'
         versions: ['latest']
-  umimain:
-    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants). Fan-out primary; derived: umihist.'
+  umi:
+    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
     pattern: "\\.umi_metrics\\.csv$"
     glob: ["*.umi_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -994,28 +994,224 @@ tables:
         type: 'float'
         description: 'total number of families'
         versions: ['latest']
-  umihist:
-    description: 'DRAGEN UMI histograms: num-supporting-fragments (+ on-target variant) and unique-UMIs-per-fragment-position. Fan-out of umimain.'
-    pattern: '__no_file_match__umihist'
-    ftype: 'dragen-metrics'
-    columns:
-      - raw: 'hist_type'
-        tidy: 'hist_type'
-        type: 'char'
-        description: 'histogram id: num_supporting_fragments, num_supporting_fragments_ontarget, or unique_umis_per_fragpos'
-        versions: ['latest']
-      - raw: 'bin'
-        tidy: 'bin'
-        type: 'int'
-        description: 'histogram bin index (0-based)'
-        versions: ['latest']
-      - raw: 'count'
-        tidy: 'count'
-        type: 'float'
-        description: 'count in this bin'
-        versions: ['latest']
-  gcmain:
-    description: 'DRAGEN GC bias summary metrics. Fan-out primary; derived: gcbias.'
+    outputs:
+      umimain:
+        description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
+        shape: 'subset'
+        columns:
+          - tidy: 'collapsible_region_size_sd'
+            type: 'float'
+            description: 'collapsible region size standard deviation'
+            versions: ['latest']
+          - tidy: 'consensus_pairs_emitted'
+            type: 'float'
+            description: 'consensus pairs emitted'
+            versions: ['latest']
+          - tidy: 'duplex_families'
+            type: 'float'
+            description: 'duplex families'
+            versions: ['latest']
+          - tidy: 'duplex_families_pct'
+            type: 'float'
+            description: 'duplex families (%)'
+            versions: ['latest']
+          - tidy: 'families_contextually_corrected'
+            type: 'float'
+            description: 'families contextually corrected'
+            versions: ['latest']
+          - tidy: 'families_contextually_corrected_pct'
+            type: 'float'
+            description: 'families contextually corrected (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_tot'
+            type: 'float'
+            description: 'families discarded'
+            versions: ['latest']
+          - tidy: 'families_discarded_tot_pct'
+            type: 'float'
+            description: 'families discarded (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_duplexsimplex'
+            type: 'float'
+            description: 'families discarded by duplex/simplex'
+            versions: ['latest']
+          - tidy: 'families_discarded_duplexsimplex_pct'
+            type: 'float'
+            description: 'families discarded by duplex/simplex (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_minsupportreads'
+            type: 'float'
+            description: 'families discarded by min-support-reads'
+            versions: ['latest']
+          - tidy: 'families_discarded_minsupportreads_pct'
+            type: 'float'
+            description: 'families discarded by min-support-reads (%)'
+            versions: ['latest']
+          - tidy: 'families_shifted'
+            type: 'float'
+            description: 'families shifted'
+            versions: ['latest']
+          - tidy: 'families_shifted_pct'
+            type: 'float'
+            description: 'families shifted (%)'
+            versions: ['latest']
+          - tidy: 'families_ambiguous_correction'
+            type: 'float'
+            description: 'families with ambiguous correction'
+            versions: ['latest']
+          - tidy: 'families_ambiguous_correction_pct'
+            type: 'float'
+            description: 'families with ambiguous correction (%)'
+            versions: ['latest']
+          - tidy: 'collapsible_region_size_max'
+            type: 'float'
+            description: 'max collapsible region size (num reads)'
+            versions: ['latest']
+          - tidy: 'collapsible_region_size_mean'
+            type: 'float'
+            description: 'mean collapsible region size (num reads)'
+            versions: ['latest']
+          - tidy: 'avg_family_depth'
+            type: 'float'
+            description: 'mean family depth'
+            versions: ['latest']
+          - tidy: 'collapsible_region_size_min'
+            type: 'float'
+            description: 'min collapsible region size (num reads)'
+            versions: ['latest']
+          - tidy: 'collapsible_regions_tot'
+            type: 'float'
+            description: 'number of collapsible regions'
+            versions: ['latest']
+          - tidy: 'reads_tot'
+            type: 'float'
+            description: 'number of reads'
+            versions: ['latest']
+          - tidy: 'reads_discarded_families'
+            type: 'float'
+            description: 'number of reads in discarded families'
+            versions: ['latest']
+          - tidy: 'reads_discarded_families_pct'
+            type: 'float'
+            description: 'number of reads in discarded families (%)'
+            versions: ['latest']
+          - tidy: 'reads_umi_valid_correctable'
+            type: 'float'
+            description: 'number of reads with valid or correctable umis'
+            versions: ['latest']
+          - tidy: 'reads_umi_valid_correctable_pct'
+            type: 'float'
+            description: 'number of reads with valid or correctable umis (%)'
+            versions: ['latest']
+          - tidy: 'duplex_families_ontarget'
+            type: 'float'
+            description: 'on target duplex families'
+            versions: ['latest']
+          - tidy: 'duplex_families_ontarget_pct'
+            type: 'float'
+            description: 'on target duplex families (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_tot_ontarget'
+            type: 'float'
+            description: 'on target families discarded'
+            versions: ['latest']
+          - tidy: 'families_discarded_tot_ontarget_pct'
+            type: 'float'
+            description: 'on target families discarded (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_duplexsimplex_ontarget'
+            type: 'float'
+            description: 'on target families discarded by duplex/simplex'
+            versions: ['latest']
+          - tidy: 'families_discarded_duplexsimplex_ontarget_pct'
+            type: 'float'
+            description: 'on target families discarded by duplex/simplex (%)'
+            versions: ['latest']
+          - tidy: 'families_discarded_minsupportreads_ontarget'
+            type: 'float'
+            description: 'on target families discarded by min-support-reads'
+            versions: ['latest']
+          - tidy: 'families_discarded_minsupportreads_ontarget_pct'
+            type: 'float'
+            description: 'on target families discarded by min-support-reads (%)'
+            versions: ['latest']
+          - tidy: 'families_ambiguous_correction_ontarget'
+            type: 'float'
+            description: 'on target families with ambiguous correction'
+            versions: ['latest']
+          - tidy: 'families_ambiguous_correction_ontarget_pct'
+            type: 'float'
+            description: 'on target families with ambiguous correction (%)'
+            versions: ['latest']
+          - tidy: 'avg_family_depth_ontarget'
+            type: 'float'
+            description: 'on target mean family depth'
+            versions: ['latest']
+          - tidy: 'reads_tot_ontarget'
+            type: 'float'
+            description: 'on target number of reads'
+            versions: ['latest']
+          - tidy: 'reads_discarded_families_ontarget'
+            type: 'float'
+            description: 'on target number of reads in discarded families'
+            versions: ['latest']
+          - tidy: 'reads_discarded_families_ontarget_pct'
+            type: 'float'
+            description: 'on target number of reads in discarded families (%)'
+            versions: ['latest']
+          - tidy: 'reads_umi_valid_correctable_ontarget'
+            type: 'float'
+            description: 'on target number of reads with valid or correctable umis'
+            versions: ['latest']
+          - tidy: 'reads_umi_valid_correctable_ontarget_pct'
+            type: 'float'
+            description: 'on target number of reads with valid or correctable umis (%)'
+            versions: ['latest']
+          - tidy: 'reads_filtered_out'
+            type: 'float'
+            description: 'reads filtered out'
+            versions: ['latest']
+          - tidy: 'reads_filtered_out_pct'
+            type: 'float'
+            description: 'reads filtered out (%)'
+            versions: ['latest']
+          - tidy: 'reads_filtered_out_all_g_umis'
+            type: 'float'
+            description: 'reads with all-g umis filtered out'
+            versions: ['latest']
+          - tidy: 'reads_filtered_out_all_g_umis_pct'
+            type: 'float'
+            description: 'reads with all-g umis filtered out (%)'
+            versions: ['latest']
+          - tidy: 'reads_uncorrectable_umis'
+            type: 'float'
+            description: 'reads with uncorrectable umis'
+            versions: ['latest']
+          - tidy: 'reads_uncorrectable_umis_pct'
+            type: 'float'
+            description: 'reads with uncorrectable umis (%)'
+            versions: ['latest']
+          - tidy: 'families_tot'
+            type: 'float'
+            description: 'total number of families'
+            versions: ['latest']
+      umihist:
+        description: 'DRAGEN UMI histograms: num-supporting-fragments (+ on-target variant) and unique-UMIs-per-fragment-position.'
+        columns:
+          - tidy: 'hist_type'
+            type: 'char'
+            description: 'histogram id: num_supporting_fragments, num_supporting_fragments_ontarget, or unique_umis_per_fragpos'
+            versions: ['latest']
+          - tidy: 'bin'
+            type: 'int'
+            description: 'histogram bin index (0-based)'
+            versions: ['latest']
+          - tidy: 'count'
+            type: 'float'
+            description: 'count in this bin'
+            versions: ['latest']
+  gc:
+    description: 'DRAGEN GC bias summary metrics.'
     pattern: "\\.gc_metrics\\.csv$"
     glob: ["*.gc_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -1080,33 +1276,80 @@ tables:
         type: 'float'
         description: 'GC dropout metric (Picard)'
         versions: ['latest']
-  gcbias:
-    description: 'DRAGEN per-GC-window counts (GC value 0-100 with window count and percentage). Fan-out of gcmain.'
-    pattern: '__no_file_match__gcbias'
-    ftype: 'dragen-metrics'
-    columns:
-      - raw: 'gc_window'
-        tidy: 'gc_window'
-        type: 'int'
-        description: 'GC content value (0-100)'
-        versions: ['latest']
-      - raw: 'windows'
-        tidy: 'windows'
-        type: 'float'
-        description: 'number of windows at this GC value'
-        versions: ['latest']
-      - raw: 'pct'
-        tidy: 'pct'
-        type: 'float'
-        description: 'percentage of windows at this GC value'
-        versions: ['latest']
-      - raw: 'cov_norm'
-        tidy: 'cov_norm'
-        type: 'float'
-        description: 'normalized coverage at this GC value'
-        versions: ['latest']
-  replaymain:
-    description: 'DRAGEN run provenance main elements. Fan-out primary; derived: replayconfig.'
+    outputs:
+      gcmain:
+        description: 'DRAGEN GC bias summary metrics.'
+        shape: 'subset'
+        columns:
+          - tidy: 'window_size'
+            type: 'int'
+            description: 'GC window size (bp)'
+            versions: ['latest']
+          - tidy: 'windows_valid'
+            type: 'float'
+            description: 'number of valid GC windows'
+            versions: ['latest']
+          - tidy: 'windows_discarded'
+            type: 'float'
+            description: 'number of discarded GC windows'
+            versions: ['latest']
+          - tidy: 'gc_ref_avg'
+            type: 'float'
+            description: 'average reference GC content (%)'
+            versions: ['latest']
+          - tidy: 'cov_global_mean'
+            type: 'float'
+            description: 'mean global coverage'
+            versions: ['latest']
+          - tidy: 'cov_norm_gc_0_19'
+            type: 'float'
+            description: 'normalized coverage at GC 0-19%'
+            versions: ['latest']
+          - tidy: 'cov_norm_gc_20_39'
+            type: 'float'
+            description: 'normalized coverage at GC 20-39%'
+            versions: ['latest']
+          - tidy: 'cov_norm_gc_40_59'
+            type: 'float'
+            description: 'normalized coverage at GC 40-59%'
+            versions: ['latest']
+          - tidy: 'cov_norm_gc_60_79'
+            type: 'float'
+            description: 'normalized coverage at GC 60-79%'
+            versions: ['latest']
+          - tidy: 'cov_norm_gc_80_100'
+            type: 'float'
+            description: 'normalized coverage at GC 80-100%'
+            versions: ['latest']
+          - tidy: 'at_dropout'
+            type: 'float'
+            description: 'AT dropout metric (Picard)'
+            versions: ['latest']
+          - tidy: 'gc_dropout'
+            type: 'float'
+            description: 'GC dropout metric (Picard)'
+            versions: ['latest']
+      gcbias:
+        description: 'DRAGEN per-GC-window counts (GC value 0-100 with window count and percentage).'
+        columns:
+          - tidy: 'gc_window'
+            type: 'int'
+            description: 'GC content value (0-100)'
+            versions: ['latest']
+          - tidy: 'windows'
+            type: 'float'
+            description: 'number of windows at this GC value'
+            versions: ['latest']
+          - tidy: 'pct'
+            type: 'float'
+            description: 'percentage of windows at this GC value'
+            versions: ['latest']
+          - tidy: 'cov_norm'
+            type: 'float'
+            description: 'normalized coverage at this GC value'
+            versions: ['latest']
+  replay:
+    description: 'DRAGEN run provenance main elements.'
     pattern: "-replay\\.json$"
     glob: ["*-replay.json"]
     ftype: 'json'
@@ -1146,18 +1389,46 @@ tables:
         type: 'char'
         description: 'command line used to invoke this run (often just --config-file=dragen_config.toml; the real arguments are in replayconfig)'
         versions: ['latest']
-  replayconfig:
-    description: 'DRAGEN run provenance dragen_config dump. Fan-out of replaymain.'
-    pattern: '__no_file_match__replayconfig'
-    ftype: 'json'
-    columns:
-      - raw: 'name'
-        tidy: 'name'
-        type: 'char'
-        description: 'config option name'
-        versions: ['latest']
-      - raw: 'value'
-        tidy: 'value'
-        type: 'char'
-        description: 'config option value'
-        versions: ['latest']
+    outputs:
+      replaymain:
+        description: 'DRAGEN run provenance main elements.'
+        columns:
+          - tidy: 'dragen_version'
+            type: 'char'
+            description: 'DRAGEN runtime version that produced this run'
+            versions: ['latest']
+          - tidy: 'nodename'
+            type: 'char'
+            description: 'hostname of the node the run executed on'
+            versions: ['latest']
+          - tidy: 'kernel_release'
+            type: 'char'
+            description: 'kernel release of the run node'
+            versions: ['latest']
+          - tidy: 'ht_sw_version'
+            type: 'char'
+            description: 'DRAGEN version that built the reference hash table (not the run version)'
+            versions: ['latest']
+          - tidy: 'hash_table_version'
+            type: 'char'
+            description: 'hash table format version'
+            versions: ['latest']
+          - tidy: 'ht_command_line'
+            type: 'char'
+            description: 'command line used to build the reference hash table'
+            versions: ['latest']
+          - tidy: 'command_line'
+            type: 'char'
+            description: 'command line used to invoke this run (often just --config-file=dragen_config.toml; the real arguments are in replayconfig)'
+            versions: ['latest']
+      replayconfig:
+        description: 'DRAGEN run provenance dragen_config dump.'
+        columns:
+          - tidy: 'name'
+            type: 'char'
+            description: 'config option name'
+            versions: ['latest']
+          - tidy: 'value'
+            type: 'char'
+            description: 'config option value'
+            versions: ['latest']

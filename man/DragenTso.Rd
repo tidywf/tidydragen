@@ -23,22 +23,14 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super classes}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{\link[tidydragen:DragenTool]{tidydragen::DragenTool}} -> \code{DragenTso}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: outputs are named \verb{<tool>_<table>} directly.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DragenTso-new}{\code{DragenTso$new()}}
 \item \href{#method-DragenTso-parse_smallvariants}{\code{DragenTso$parse_smallvariants()}}
 \item \href{#method-DragenTso-parse_fusions}{\code{DragenTso$parse_fusions()}}
-\item \href{#method-DragenTso-parse_sarmain}{\code{DragenTso$parse_sarmain()}}
-\item \href{#method-DragenTso-tidy_sarmain}{\code{DragenTso$tidy_sarmain()}}
+\item \href{#method-DragenTso-parse_sar}{\code{DragenTso$parse_sar()}}
+\item \href{#method-DragenTso-tidy_sar}{\code{DragenTso$tidy_sar()}}
 }
 }
 \if{html}{\out{
@@ -115,13 +107,13 @@ then a CSV table; may hold zero data rows).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenTso-parse_sarmain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenTso-parse_sarmain}{}}}
-\subsection{Method \code{parse_sarmain()}}{
+\if{html}{\out{<a id="method-DragenTso-parse_sar"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-parse_sar}{}}}
+\subsection{Method \code{parse_sar()}}{
 Parse a \code{SampleAnalysisResults.json} file; returns its \code{data}
-block wrapped in a one-row tibble list-column. \code{tidy_sarmain()} fans it out.
+block wrapped in a one-row tibble list-column. \code{tidy_sar()} fans it out.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sarmain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sar(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -133,16 +125,16 @@ block wrapped in a one-row tibble list-column. \code{tidy_sarmain()} fans it out
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenTso-tidy_sarmain"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenTso-tidy_sarmain}{}}}
-\subsection{Method \code{tidy_sarmain()}}{
+\if{html}{\out{<a id="method-DragenTso-tidy_sar"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenTso-tidy_sar}{}}}
+\subsection{Method \code{tidy_sar()}}{
 Fan a \code{SampleAnalysisResults.json} \code{data} block into seven
 tables: \code{sarmain} (sample + library info), \code{sarqc} (QC + expanded metrics +
 TMB/MSI biomarkers, wide), \code{sarqcthr} (QC metrics with LSL/USL thresholds,
 long), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
 Nirvana config), \code{sarsnv} (per-transcript small variants), \code{sarcnv} (CNVs).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sarmain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sar(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

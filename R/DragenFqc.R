@@ -2,8 +2,8 @@
 #'
 #' @description
 #' Parses and tidies the DRAGEN FASTQC metrics file (`fastqc_metrics.csv`).
-#' Splits into 8 per-section sub-tables. Setting `flat_tidy_names = TRUE`
-#' gives flat `dragenfqc_<section>` tables rather than the concatenated form.
+#' Splits into the 8 per-section `dragenfqc_<section>` outputs declared in its
+#' schema.
 #'
 #' @examples
 #' cls <- DragenFqc; tool <- "dragenfqc"
@@ -45,13 +45,13 @@
 #' expect_equal(spr1$starts[spr1$bp == 1], 143)
 #' expect_equal(range(spr1$bp), c(1L, 50L))
 #' # empty seqpos (adapter never found at a position, only a Total row) still
-#' # yields an integer bp column; also exercises the path-input branch of tidy_posbasecontent
+#' # yields an integer bp column; also exercises the path-input branch of tidy_fastqc
 #' d2 <- file.path(tempdir(), "fqempty"); dir.create(d2, showWarnings = FALSE)
 #' writeLines(c(
 #'   "READ MEAN QUALITY,Read1,Q30 Reads,10",
 #'   "SEQUENCE POSITIONS,Read1,'AGATCGGAAGAG' Total Sequence Starts,5,0.01"
 #' ), file.path(d2, "sampleZ.fastqc_metrics.csv"))
-#' ez <- DragenFqc$new(d2)$tidy_posbasecontent(list.files(d2, full.names = TRUE))
+#' ez <- DragenFqc$new(d2)$tidy_fastqc(list.files(d2, full.names = TRUE))
 #' ezsp <- ez$data[[which(ez$name == "seqpos")]]
 #' expect_equal(nrow(ezsp), 0L)
 #' expect_true(is.integer(ezsp$bp))
@@ -61,10 +61,6 @@ DragenFqc <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' drop the parser token so the 8 sub-tables are named
-    #' `dragenfqc_<section>` (see [nemo::Tool]).
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenFqc object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -76,7 +72,7 @@ DragenFqc <- R6::R6Class(
     #' @description Parse headerless `section,mate,metric,value` `fastqc_metrics.csv`
     #' into a long tibble.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_posbasecontent = function(x) {
+    parse_fastqc = function(x) {
       d <- readr::read_lines(x) |>
         tibble::as_tibble_col(column_name = "raw") |>
         # drop "Total Sequence Starts" rows: extra field, derivable from the rest
@@ -96,9 +92,9 @@ DragenFqc <- R6::R6Class(
     },
     #' @description Tidy `fastqc_metrics.csv` into 8 long per-section sub-tables.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_posbasecontent = function(x) {
+    tidy_fastqc = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- self$parse_posbasecontent(x)
+        x <- self$parse_fastqc(x)
       }
       # count: expand binned positions, divide count across grains, then express
       # each base as a proportion of the total bases at that (mate, pos).

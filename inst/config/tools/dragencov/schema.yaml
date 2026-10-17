@@ -1,6 +1,6 @@
 tables:
-  metricsmain:
-    description: 'DRAGEN coverage summary metrics. Fan-out primary; derived: metricsbins, metricscumu.'
+  covmetrics:
+    description: 'DRAGEN coverage summary metrics.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     glob: ["*.*_coverage_metrics*.csv"]
     ftype: 'dragen-metrics'
@@ -95,26 +95,121 @@ tables:
         type: 'float'
         description: 'average chr Y coverage / average autosomal coverage'
         versions: ['latest']
-  metricsbins:
-    description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin). Fan-out of metricsmain.'
-    pattern: "__no_file_match__metricsbins"
-    ftype: 'dragen-metrics'
-    columns:
-      - raw: 'cov_pct'
-        tidy: 'pct'
-        type: 'float'
-        description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
-        versions: ['latest']
-  metricscumu:
-    description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min). Fan-out of metricsmain.'
-    pattern: "__no_file_match__metricscumu"
-    ftype: 'dragen-metrics'
-    columns:
-      - raw: 'cov_pct'
-        tidy: 'pct'
-        type: 'float'
-        description: 'percentage of sites in the region with at least cov_min coverage'
-        versions: ['latest']
+    outputs:
+      metricsmain:
+        description: 'DRAGEN coverage summary metrics.'
+        shape: 'subset'
+        columns:
+          - tidy: 'bases_aligned_tot'
+            type: 'float'
+            description: 'total aligned bases'
+            versions: ['latest']
+          - tidy: 'reads_aligned_tot'
+            type: 'float'
+            description: 'total aligned reads'
+            versions: ['latest']
+          - tidy: 'bases_aligned_in_region'
+            type: 'float'
+            description: 'number of uniquely mapped bases to the region'
+            versions: ['latest']
+          - tidy: 'bases_aligned_in_region_pct'
+            type: 'float'
+            description: 'number of uniquely mapped bases to the region (%)'
+            versions: ['latest']
+          - tidy: 'reads_aligned_in_region'
+            type: 'float'
+            description: 'number of uniquely mapped reads to the region; only reads with MAPQ >= 1 are included, secondary and supplementary alignments ignored'
+            versions: ['latest']
+          - tidy: 'reads_aligned_in_region_pct'
+            type: 'float'
+            description: 'number of uniquely mapped reads to the region; only reads with MAPQ >= 1 are included, secondary and supplementary alignments ignored (%)'
+            versions: ['latest']
+          - tidy: 'cov_alignment_avg'
+            type: 'float'
+            description: 'uniquely mapped bases to the region divided by the number of sites in the region'
+            versions: ['latest']
+          - tidy: 'cov_auto_avg'
+            type: 'float'
+            description: 'bases aligned to autosomal loci divided by the number of autosomal loci; NA if the reference/region has no autosomes'
+            versions: ['latest']
+          - tidy: 'cov_mt_avg'
+            type: 'float'
+            description: 'bases aligned to the mitochondrial chromosome divided by the number of mitochondrial loci; NA if the reference/region has no MT'
+            versions: ['latest']
+          - tidy: 'cov_mean_median_auto_ratio'
+            type: 'float'
+            description: 'mean autosomal coverage divided by median autosomal coverage'
+            versions: ['latest']
+          - tidy: 'cov_auto_median'
+            type: 'float'
+            description: 'median alignment coverage over autosomal loci'
+            versions: ['latest']
+          - tidy: 'cov_x_median_ign0'
+            type: 'float'
+            description: 'median alignment coverage over chr X loci, ignoring 0x loci; NA if the reference/region has no chr X'
+            versions: ['latest']
+          - tidy: 'cov_y_median_ign0'
+            type: 'float'
+            description: 'median alignment coverage over chr Y loci, ignoring 0x loci; NA if the reference/region has no chr Y'
+            versions: ['latest']
+          - tidy: 'cov_uniformity_pct_gt02mean'
+            type: 'float'
+            description: 'percentage of sites with coverage greater than 20% of the mean coverage in the region'
+            versions: ['latest']
+          - tidy: 'cov_uniformity_pct_gt04mean'
+            type: 'float'
+            description: 'percentage of sites with coverage greater than 40% of the mean coverage in the region'
+            versions: ['latest']
+          - tidy: 'cov_x_avg'
+            type: 'float'
+            description: 'average chr X coverage'
+            versions: ['latest']
+          - tidy: 'cov_y_avg'
+            type: 'float'
+            description: 'average chr Y coverage'
+            versions: ['latest']
+          - tidy: 'cov_x_y_ratio'
+            type: 'float'
+            description: 'average chr X coverage / average chr Y coverage'
+            versions: ['latest']
+          - tidy: 'cov_x_auto_ratio'
+            type: 'float'
+            description: 'average chr X coverage / average autosomal coverage'
+            versions: ['latest']
+          - tidy: 'cov_y_auto_ratio'
+            type: 'float'
+            description: 'average chr Y coverage / average autosomal coverage'
+            versions: ['latest']
+      metricsbins:
+        description: 'DRAGEN coverage-depth histogram (percent of region bases per finite [cov_lo, cov_hi) bin).'
+        shape: 'subset'
+        columns:
+          - tidy: 'cov_lo'
+            type: 'int'
+            description: 'coverage bin lower bound (inclusive)'
+            versions: ['latest']
+          - tidy: 'cov_hi'
+            type: 'int'
+            description: 'coverage bin upper bound (exclusive)'
+            versions: ['latest']
+          - raw: 'cov_pct'
+            tidy: 'pct'
+            type: 'float'
+            description: 'percentage of sites in the region with at least cov_lo but less than cov_hi coverage'
+            versions: ['latest']
+      metricscumu:
+        description: 'DRAGEN cumulative coverage (percent of region bases with coverage >= cov_min).'
+        shape: 'subset'
+        columns:
+          - tidy: 'cov_min'
+            type: 'int'
+            description: 'minimum coverage threshold'
+            versions: ['latest']
+          - raw: 'cov_pct'
+            tidy: 'pct'
+            type: 'float'
+            description: 'percentage of sites in the region with at least cov_min coverage'
+            versions: ['latest']
   contigmean:
     description: 'DRAGEN per-contig mean coverage (chrom, aligned bases, mean coverage).'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_contig_mean_cov(?:_normal|_tumor)?\\.csv$"
@@ -152,8 +247,8 @@ tables:
         type: 'float'
         description: 'number of loci covered at this depth'
         versions: ['latest']
-  reportbedmain:
-    description: 'DRAGEN coverage report BED, distribution stats per region interval. Fan-out primary; derived: reportbedcumu.'
+  reportbed:
+    description: 'DRAGEN coverage report BED, distribution stats per region interval.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     glob: ["*.*_cov_report*.bed"]
     ftype: 'tsv'
@@ -208,36 +303,73 @@ tables:
         type: 'float'
         description: 'maximum coverage over the interval'
         versions: ['latest']
-  reportbedcumu:
-    description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold). Fan-out of reportbedmain.'
-    pattern: "__no_file_match__reportbedcumu"
-    ftype: 'tsv'
-    columns:
-      - raw: 'chrom'
-        tidy: 'chrom'
-        type: 'char'
-        description: 'chromosome'
-        versions: ['latest']
-      - raw: 'start'
-        tidy: 'start'
-        type: 'int'
-        description: 'region interval start'
-        versions: ['latest']
-      - raw: 'end'
-        tidy: 'end'
-        type: 'int'
-        description: 'region interval end'
-        versions: ['latest']
-      - raw: 'cov_min'
-        tidy: 'cov_min'
-        type: 'int'
-        description: 'coverage threshold X (from the pct_above_<X> column name)'
-        versions: ['latest']
-      - raw: 'pct_above'
-        tidy: 'pct_above'
-        type: 'float'
-        description: 'percentage of bases over the interval with depth coverage strictly greater than cov_min'
-        versions: ['latest']
+    outputs:
+      reportbedmain:
+        description: 'DRAGEN coverage report BED, distribution stats per region interval.'
+        columns:
+          - tidy: 'chrom'
+            type: 'char'
+            description: 'chrom'
+            versions: ['latest']
+          - tidy: 'start'
+            type: 'int'
+            description: 'start'
+            versions: ['latest']
+          - tidy: 'end'
+            type: 'int'
+            description: 'end'
+            versions: ['latest']
+          - tidy: 'total_cvg'
+            type: 'float'
+            description: 'total coverage'
+            versions: ['latest']
+          - tidy: 'mean_cvg'
+            type: 'float'
+            description: 'mean coverage'
+            versions: ['latest']
+          - tidy: 'q1_cvg'
+            type: 'float'
+            description: 'lower quartile (25th percentile) coverage over the interval'
+            versions: ['latest']
+          - tidy: 'median_cvg'
+            type: 'float'
+            description: 'median coverage over the interval'
+            versions: ['latest']
+          - tidy: 'q3_cvg'
+            type: 'float'
+            description: 'upper quartile (75th percentile) coverage over the interval'
+            versions: ['latest']
+          - tidy: 'min_cvg'
+            type: 'float'
+            description: 'minimum coverage over the interval'
+            versions: ['latest']
+          - tidy: 'max_cvg'
+            type: 'float'
+            description: 'maximum coverage over the interval'
+            versions: ['latest']
+      reportbedcumu:
+        description: 'DRAGEN coverage-report cumulative thresholds (percent of interval bases above each threshold).'
+        columns:
+          - tidy: 'chrom'
+            type: 'char'
+            description: 'chromosome'
+            versions: ['latest']
+          - tidy: 'start'
+            type: 'int'
+            description: 'region interval start'
+            versions: ['latest']
+          - tidy: 'end'
+            type: 'int'
+            description: 'region interval end'
+            versions: ['latest']
+          - tidy: 'cov_min'
+            type: 'int'
+            description: 'coverage threshold X (from the pct_above_<X> column name)'
+            versions: ['latest']
+          - tidy: 'pct_above'
+            type: 'float'
+            description: 'percentage of bases over the interval with depth coverage strictly greater than cov_min'
+            versions: ['latest']
   readreportbed:
     description: 'DRAGEN per-gene read coverage report BED.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_read_cov_report(?:_normal|_tumor)?\\.bed$"

@@ -3,8 +3,8 @@
 #' @description
 #' Parses and tidies DRAGEN coverage outputs (per-contig mean coverage, coverage
 #' metrics, fine histograms, and coverage-report BEDs). Some files fan out into
-#' multiple output tables: `tidy_metricsmain` splits the coverage metrics into
-#' `metricsmain`/`metricsbins`/`metricscumu`, and `tidy_reportbedmain` splits the
+#' multiple output tables: `tidy_covmetrics` splits the coverage metrics into
+#' `metricsmain`/`metricsbins`/`metricscumu`, and `tidy_reportbed` splits the
 #' coverage-report BED into `reportbedmain`/`reportbedcumu`. Every other table has
 #' `tidy_name == parser`, so its name is unchanged. The per-method docs below cover
 #' each table's specifics.
@@ -73,11 +73,6 @@ DragenCov <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly (parser
-    #' token dropped), so each sub-table's `name` is its final output table. See the
-    #' class description for the fan-out map.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenCov object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -89,7 +84,7 @@ DragenCov <- R6::R6Class(
     #' @description Tidy `*_coverage_metrics.csv` into `metricsmain` (wide summary),
     #' `metricsbins` (bucketed depth histogram), and `metricscumu` (cumulative).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_metricsmain = function(x) {
+    tidy_covmetrics = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
@@ -100,7 +95,7 @@ DragenCov <- R6::R6Class(
       )
       main <- private$tidy_metrics(
         x[!is_bin, , drop = FALSE],
-        "metricsmain",
+        "covmetrics",
         # strip region from names (carried in prefix via refine_files())
         normalise = function(d) {
           d$variable <- dragen_cov_metric_normalize(d$variable)
@@ -134,8 +129,7 @@ DragenCov <- R6::R6Class(
           d
         }
       )
-      # flat_tidy_names drops the parser token -> output is dragencov_<name>, so the
-      # sub-table names ARE the output tables
+      # sub-table names are the schema outputs
       main$name <- "metricsmain"
       bins$name <- "metricsbins"
       cumu$name <- "metricscumu"
@@ -156,9 +150,9 @@ DragenCov <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse `*_cov_report.bed`; `tidy_reportbedmain()` types and splits it.
+    #' @description Parse `*_cov_report.bed`; `tidy_reportbed()` types and splits it.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_reportbedmain = function(x) {
+    parse_reportbed = function(x) {
       # all-character: trailing pct_above_<N> columns are user-configurable, so can't use
       # the fixed tsv schema
       d <- readr::read_tsv(x, col_types = readr::cols(.default = readr::col_character()))
@@ -168,9 +162,9 @@ DragenCov <- R6::R6Class(
     #' @description Tidy `*_cov_report.bed` into `reportbedmain` (per-interval
     #' distribution stats, wide) and `reportbedcumu` (coverage thresholds, long).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_reportbedmain = function(x) {
+    tidy_reportbed = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- private$parse_reportbedmain(x)
+        x <- private$parse_reportbed(x)
       }
       main <- x |>
         dplyr::transmute(

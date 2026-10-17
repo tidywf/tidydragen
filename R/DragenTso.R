@@ -85,9 +85,6 @@ DragenTso <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: outputs are named `<tool>_<table>` directly.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenTso object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -158,9 +155,9 @@ DragenTso <- R6::R6Class(
       d[]
     },
     #' @description Parse a `SampleAnalysisResults.json` file; returns its `data`
-    #' block wrapped in a one-row tibble list-column. `tidy_sarmain()` fans it out.
+    #' block wrapped in a one-row tibble list-column. `tidy_sar()` fans it out.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_sarmain = function(x) {
+    parse_sar = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
       d <- tibble::tibble(data = list(j[["data"]]))
       attr(d, "file_version") <- "latest"
@@ -172,9 +169,9 @@ DragenTso <- R6::R6Class(
     #' long), `sarswds` (Nirvana data sources), `sarsw` (software +
     #' Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv` (CNVs).
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_sarmain = function(x) {
+    tidy_sar = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- self$parse_sarmain(x)
+        x <- self$parse_sar(x)
       }
       dat <- x$data[[1]]
       ## sampleInformation
