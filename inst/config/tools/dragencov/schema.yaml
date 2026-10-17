@@ -248,61 +248,10 @@ tables:
         description: 'number of loci covered at this depth'
         versions: ['latest']
   reportbed:
-    description: 'DRAGEN coverage report BED, distribution stats per region interval.'
+    description: 'DRAGEN coverage report BED: per-interval coverage stats plus run-configurable pct_above_<N> columns.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_cov_report(?:_normal|_tumor)?\\.bed$"
     glob: ["*.*_cov_report*.bed"]
     ftype: 'tsv'
-    columns:
-      - raw: '#chrom'
-        tidy: 'chrom'
-        type: 'char'
-        description: 'chrom'
-        versions: ['latest']
-      - raw: 'start'
-        tidy: 'start'
-        type: 'int'
-        description: 'start'
-        versions: ['latest']
-      - raw: 'end'
-        tidy: 'end'
-        type: 'int'
-        description: 'end'
-        versions: ['latest']
-      - raw: 'total_cvg'
-        tidy: 'total_cvg'
-        type: 'float'
-        description: 'total coverage'
-        versions: ['latest']
-      - raw: 'mean_cvg'
-        tidy: 'mean_cvg'
-        type: 'float'
-        description: 'mean coverage'
-        versions: ['latest']
-      - raw: 'Q1_cvg'
-        tidy: 'q1_cvg'
-        type: 'float'
-        description: 'lower quartile (25th percentile) coverage over the interval'
-        versions: ['latest']
-      - raw: 'median_cvg'
-        tidy: 'median_cvg'
-        type: 'float'
-        description: 'median coverage over the interval'
-        versions: ['latest']
-      - raw: 'Q3_cvg'
-        tidy: 'q3_cvg'
-        type: 'float'
-        description: 'upper quartile (75th percentile) coverage over the interval'
-        versions: ['latest']
-      - raw: 'min_cvg'
-        tidy: 'min_cvg'
-        type: 'float'
-        description: 'minimum coverage over the interval'
-        versions: ['latest']
-      - raw: 'max_cvg'
-        tidy: 'max_cvg'
-        type: 'float'
-        description: 'maximum coverage over the interval'
-        versions: ['latest']
     outputs:
       reportbedmain:
         description: 'DRAGEN coverage report BED, distribution stats per region interval.'

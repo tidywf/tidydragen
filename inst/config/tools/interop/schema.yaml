@@ -1,50 +1,9 @@
 tables:
   summary:
-    description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
+    description: 'InterOp run summary CSV: run-level table plus per-read/lane/surface blocks.'
     pattern: "(?<!-index)_summary\\.csv$"
     glob: ["*_summary.csv"]
     ftype: 'csv'
-    columns:
-      - raw: 'Level'
-        tidy: 'level'
-        type: 'char'
-        description: 'read grouping (Read 1, Read 2 (I), ..., Non-indexed, Total)'
-        versions: ['latest']
-      - raw: 'Yield'
-        tidy: 'yield'
-        type: 'float'
-        description: 'yield (Gb)'
-        versions: ['latest']
-      - raw: 'Projected Yield'
-        tidy: 'yield_projected'
-        type: 'float'
-        description: 'projected yield (Gb)'
-        versions: ['latest']
-      - raw: 'Aligned'
-        tidy: 'aligned_pct'
-        type: 'float'
-        description: 'percent aligned to PhiX'
-        versions: ['latest']
-      - raw: 'Error Rate'
-        tidy: 'error_rate'
-        type: 'float'
-        description: 'PhiX error rate; NA for non-PhiX-spiked (e.g. index) reads'
-        versions: ['latest']
-      - raw: 'Intensity C1'
-        tidy: 'intensity_c1'
-        type: 'float'
-        description: 'intensity at cycle 1'
-        versions: ['latest']
-      - raw: '%>=Q30'
-        tidy: 'pct_q30'
-        type: 'float'
-        description: 'percent of bases >= Q30'
-        versions: ['latest']
-      - raw: '% Occupied'
-        tidy: 'pct_occupied'
-        type: 'float'
-        description: 'percent of nanowells occupied (occupancy-enabled instruments)'
-        versions: ['latest']
     outputs:
       summarymain:
         description: 'InterOp run-level summary: overall metrics by read (Read N / Read N (I) / Non-indexed / Total).'
@@ -468,46 +427,10 @@ tables:
         description: 'percent of nanowells occupied (occupancy-enabled instruments)'
         versions: ['latest']
   indexsummary:
-    description: 'InterOp per-lane index-demux totals.'
+    description: 'InterOp index summary CSV: per-lane totals plus per-index rows.'
     pattern: "-index_summary\\.csv$"
     glob: ["*-index_summary.csv"]
     ftype: 'csv'
-    columns:
-      - raw: 'lane'
-        tidy: 'lane'
-        type: 'int'
-        description: 'lane number (from the index_summary.csv block label)'
-        versions: ['latest']
-      - raw: 'Total Reads'
-        tidy: 'reads_tot'
-        type: 'float'
-        description: 'total reads in the lane'
-        versions: ['latest']
-      - raw: 'PF Reads'
-        tidy: 'reads_pf'
-        type: 'float'
-        description: 'reads passing filter in the lane'
-        versions: ['latest']
-      - raw: '% Read Identified (PF)'
-        tidy: 'pct_identified'
-        type: 'float'
-        description: 'mean percent of PF reads identified to an index across the lane'
-        versions: ['latest']
-      - raw: 'CV'
-        tidy: 'cv'
-        type: 'float'
-        description: 'coefficient of variation of per-index %identified across the lane'
-        versions: ['latest']
-      - raw: 'Min'
-        tidy: 'pct_identified_min'
-        type: 'float'
-        description: 'minimum per-index %identified in the lane'
-        versions: ['latest']
-      - raw: 'Max'
-        tidy: 'pct_identified_max'
-        type: 'float'
-        description: 'maximum per-index %identified in the lane'
-        versions: ['latest']
     outputs:
       indexsummarymain:
         description: 'InterOp per-lane index-demux totals.'

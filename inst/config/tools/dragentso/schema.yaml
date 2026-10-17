@@ -531,56 +531,10 @@ tables:
         description: 'maximum coverage over the gene'
         versions: ['latest']
   sar:
-    description: 'TSO500 SampleAnalysisResults sample information.'
+    description: 'TSO500 SampleAnalysisResults JSON: sample, QC, biomarker, software and variant sections.'
     pattern: "_SampleAnalysisResults\\.json$"
     glob: ["*_SampleAnalysisResults.json"]
     ftype: 'json'
-    columns:
-      - raw: 'sampleId'
-        tidy: 'sample_id'
-        type: 'char'
-        description: 'sample ID'
-        versions: ['latest']
-      - raw: 'analysisDate'
-        tidy: 'analysis_date'
-        type: 'char'
-        description: 'analysis date (YYYY-MM-DD)'
-        versions: ['latest']
-      - raw: 'analysisTime'
-        tidy: 'analysis_time'
-        type: 'char'
-        description: 'analysis time (HH:MM:SS)'
-        versions: ['latest']
-      - raw: 'analysisRunName'
-        tidy: 'analysis_run_name'
-        type: 'char'
-        description: 'analysis run name'
-        versions: ['latest']
-      - raw: 'analysisName'
-        tidy: 'analysis_name'
-        type: 'char'
-        description: 'analysis name'
-        versions: ['latest']
-      - raw: 'schema_version'
-        tidy: 'schema_version'
-        type: 'char'
-        description: 'SampleAnalysisResults JSON schema version'
-        versions: ['latest']
-      - raw: 'library_type'
-        tidy: 'library_type'
-        type: 'char'
-        description: 'sequencing library type (DNA)'
-        versions: ['latest']
-      - raw: 'library_id'
-        tidy: 'library_id'
-        type: 'char'
-        description: 'sequencing library ID'
-        versions: ['latest']
-      - raw: 'analysis_completed'
-        tidy: 'analysis_completed'
-        type: 'char'
-        description: 'library analysis completed (logical)'
-        versions: ['latest']
     outputs:
       sarmain:
         description: 'TSO500 SampleAnalysisResults sample information.'

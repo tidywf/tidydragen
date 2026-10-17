@@ -95,6 +95,10 @@ column to its schema `type`).
   file has a pct, so the declared columns are a superset. Twins seen in the
   fixtures are declared; a new one errors (undeclared column), in keeping with
   `on_unmapped`. JSON pivots (`sarqc`, `sarsnv`, `sarcnv`) are `subset` too.
+- **File tables without `columns:`:** `fastqc`, `reportbed`, `replay`, `sar`,
+  `summary`, `indexsummary` are read by their own `parse_*()` (JSON,
+  multi-section, configurable columns), so they omit `columns:`; only their
+  outputs carry columns.
 - **Output `raw:`** is kept only where `tidy_metrics(x, "<output>")` maps metric
   names through `get_col_map()` (`metricsbins`, `metricscumu`, `ploidyratio`);
   other outputs have tidy-only columns.

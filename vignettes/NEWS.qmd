@@ -58,6 +58,9 @@ renamed:
   of `dragenmap_umimain` and `dragencov_metricsmain`, `cov_lo`/`cov_hi`
   (`dragencov_metricsbins`), `cov_min` (`dragencov_metricscumu`) and `chrom`
   (`dragenvar_ploidyratio`).
+- `fastqc`, `reportbed`, `replay`, `sar`, `summary` and `indexsummary` no longer
+  list `columns:` (their custom parsers never read them, and they duplicated one
+  of their outputs); their descriptions now describe the file.
 - `dragentso_sarmain.analysis_completed` and the `dragentso_sarsnv` flags (e.g.
   `iscanonical`) are now character (`"TRUE"`/`"FALSE"`), matching their `char`
   schema type. An empty `dragentso_sarcnv` now has numeric
