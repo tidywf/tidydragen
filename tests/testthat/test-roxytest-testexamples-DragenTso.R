@@ -45,7 +45,7 @@ test_that("Function DragenTso() @ L83", {
   expect_equal(qc$msi_pct_unstable_sites, 0)
   expect_equal(qc$pct_target_04x_mean, 94.7)
   expect_equal(si$library_type, "DNA")
-  expect_true(si$analysis_completed)
+  expect_equal(si$analysis_completed, "TRUE")
   expect_equal(si$schema_version, "7.0.0")
   # sarqcthr: 6 QC metric rows (median_exon_coverage in two groups) with limits
   th <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqcthr")

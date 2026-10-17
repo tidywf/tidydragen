@@ -52,7 +52,7 @@
 #' expect_equal(qc$msi_pct_unstable_sites, 0)
 #' expect_equal(qc$pct_target_04x_mean, 94.7)
 #' expect_equal(si$library_type, "DNA")
-#' expect_true(si$analysis_completed)
+#' expect_equal(si$analysis_completed, "TRUE")
 #' expect_equal(si$schema_version, "7.0.0")
 #' # sarqcthr: 6 QC metric rows (median_exon_coverage in two groups) with limits
 #' th <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarqcthr")
@@ -195,7 +195,8 @@ DragenTso <- R6::R6Class(
         !!!sarmain,
         library_type = sl[["libraryType"]] %||% NA_character_,
         library_id = sl[["libraryId"]] %||% NA_character_,
-        analysis_completed = sl[["analysisCompleted"]] %||% NA
+        # schema has no bool type: JSON true/false -> "TRUE"/"FALSE"
+        analysis_completed = as.character(sl[["analysisCompleted"]] %||% NA)
       )
       ## qualityControlMetrics -> long table with the LSL/USL thresholds
       num <- function(v) as.numeric(v %||% NA)
@@ -300,7 +301,8 @@ DragenTso <- R6::R6Class(
           dplyr::rename(dplyr::any_of(cnv_ren))
       } else {
         sarcnv <- nemo::empty_tbl(
-          cnames = c("foldchange", "qual", "cn_type", "gene", "chrom", "start", "end")
+          cnames = c("foldchange", "qual", "cn_type", "gene", "chrom", "start", "end"),
+          ctypes = readr::cols(foldchange = "d", qual = "d", start = "d", end = "d", .default = "c")
         )
       }
       list(
@@ -393,8 +395,10 @@ DragenTso <- R6::R6Class(
         hgvsg = vapply(snvs, \(s) s[["nirvana"]][[1]][["hgvsg"]] %||% NA_character_, character(1))
       )[idx, , drop = FALSE]
       # main is pre-expanded by idx so the two are already row-aligned
+      # schema has no bool type: JSON true/false flags (e.g. iscanonical) -> char
       res <- tibble::tibble(!!!main, !!!txt) |>
-        dplyr::rename_with(tolower)
+        dplyr::rename_with(tolower) |>
+        dplyr::mutate(dplyr::across(dplyr::where(is.logical), as.character))
       # transcript fields are sparse (e.g. introns) -> pad so the shape is stable
       res[setdiff(cols, names(res))] <- NA_character_
       res
