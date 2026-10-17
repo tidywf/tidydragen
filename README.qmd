@@ -214,7 +214,7 @@ echo "$ tidydragen.R --version" & tidydragen.R --version
 echo ""
 echo "#-----------------------------------#"
 echo "$ tidydragen.R --help" & tidydragen.R --help
-echo ""
+echo "'" # balance out highlighting
 echo "#-----------------------------------#"
 echo "#------- Tidy ----------------------#"
 echo "$ tidydragen.R tidy --help" & tidydragen.R tidy --help
