@@ -839,7 +839,7 @@ tables:
         description: 'reads filtered for minimum read length r2'
         versions: ['latest']
   umi:
-    description: 'DRAGEN UMI consensus-calling summary statistics (whole-run + on-target variants).'
+    description: 'DRAGEN UMI metrics CSV: summary statistics (whole-run + on-target) plus UMI histograms.'
     pattern: "\\.umi_metrics\\.csv$"
     glob: ["*.umi_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -1211,7 +1211,7 @@ tables:
             description: 'count in this bin'
             versions: ['latest']
   gc:
-    description: 'DRAGEN GC bias summary metrics.'
+    description: 'DRAGEN GC metrics CSV: GC bias summary plus per-GC-window details.'
     pattern: "\\.gc_metrics\\.csv$"
     glob: ["*.gc_metrics.csv"]
     ftype: 'dragen-metrics'

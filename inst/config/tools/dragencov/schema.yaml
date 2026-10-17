@@ -1,6 +1,6 @@
 tables:
   covmetrics:
-    description: 'DRAGEN coverage summary metrics.'
+    description: 'DRAGEN coverage metrics CSV (per region/phenotype): summary metrics plus coverage-depth bins.'
     pattern: "\\.(?:wgs|tmb|exon|target_bed|qc-coverage-region-[A-Za-z0-9-]+)_coverage_metrics(?:_normal|_tumor)?\\.csv$"
     glob: ["*.*_coverage_metrics*.csv"]
     ftype: 'dragen-metrics'

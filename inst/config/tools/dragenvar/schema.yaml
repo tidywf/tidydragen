@@ -377,7 +377,7 @@ tables:
         description: 'non-synonymous TMB'
         versions: ['latest']
   ploidy:
-    description: 'DRAGEN ploidy estimation sample-level metrics.'
+    description: 'DRAGEN ploidy estimation metrics CSV: sample-level metrics plus per-chromosome ratios.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     glob: ["*.ploidy_estimation_metrics.csv"]
     ftype: 'dragen-metrics'
