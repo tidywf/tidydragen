@@ -1,8 +1,7 @@
 #' @title DragenMap Object
 #'
 #' @description
-#' Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
-#' metrics, the fragment-length histogram, and run provenance (`replay.json`).
+#' Parses and tidies DRAGEN mapping/alignment outputs.
 #'
 #' @examples
 #' cls <- DragenMap; tool <- "dragenmap"
@@ -75,10 +74,6 @@ DragenMap <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
-    #' dropped). Needed for the `umimain`/`umihist` and `gcmain`/`gcbias` splits.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenMap object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -87,8 +82,7 @@ DragenMap <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenmap", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `mapping_metrics.csv`. Both id columns retained
-    #' (`drop_constant = character()`).
+    #' @description Tidy `mapping_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_metrics = function(x) {
       private$tidy_metrics(x, "metrics", drop_constant = character(), normalise = function(d) {
@@ -99,15 +93,14 @@ DragenMap <- R6::R6Class(
         d
       })
     },
-    #' @description Tidy `umi_metrics.csv` into `umimain` (summary, wide) and
-    #' `umihist` (the `{a|b|c}` histograms, long).
+    #' @description Tidy `umi_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_umimain = function(x) {
+    tidy_umi = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_hist <- grepl("istogram", x$variable)
-      stats <- private$tidy_metrics(x[!is_hist, , drop = FALSE], "umimain")
+      stats <- private$tidy_metrics(x[!is_hist, , drop = FALSE], "umi")
       stats$name <- "umimain"
       # "{a|b|c}" -> long, 0-based bin; on-target variant encoded in hist_type
       htype <- c(
@@ -130,17 +123,16 @@ DragenMap <- R6::R6Class(
       attr(hist_tbl, "file_version") <- "latest"
       dplyr::bind_rows(stats, tibble::tibble(name = "umihist", data = list(hist_tbl)))
     },
-    #' @description Tidy `gc_metrics.csv` into `gcmain` (GC METRICS SUMMARY, wide)
-    #' and `gcbias` (per-GC-window GC BIAS DETAILS, long — GC 0-100).
+    #' @description Tidy `gc_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_gcmain = function(x) {
+    tidy_gc = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_detail <- x$section == "GC BIAS DETAILS"
-      stats <- private$tidy_metrics(x[!is_detail, , drop = FALSE], "gcmain")
+      stats <- private$tidy_metrics(x[!is_detail, , drop = FALSE], "gc")
       stats$name <- "gcmain"
-      # two per-GC series -> merge on GC value: window count + pct, and normalized cov
+      # two per-GC series (windows, normalized cov) -> merge on GC value
       det <- x[is_detail, , drop = FALSE]
       win <- det[grepl("^Windows at GC ", det$variable), , drop = FALSE]
       cov <- det[grepl("^Normalized coverage at GC ", det$variable), , drop = FALSE]
@@ -158,8 +150,7 @@ DragenMap <- R6::R6Class(
       attr(bias_tbl, "file_version") <- "latest"
       dplyr::bind_rows(stats, tibble::tibble(name = "gcbias", data = list(bias_tbl)))
     },
-    #' @description Tidy `time_metrics.csv`, using seconds (not HH:MM:SS) as the
-    #' metric value and surfacing `total_runtime` first.
+    #' @description Tidy `time_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_time = function(x) {
       # value = seconds (pct col), not the HH:MM:SS count col
@@ -172,7 +163,7 @@ DragenMap <- R6::R6Class(
       r$data[[1]] <- dplyr::relocate(r$data[[1]], dplyr::any_of("total_runtime"))
       r
     },
-    #' @description Parse `fragment_length_hist.csv` into a long tibble.
+    #' @description Parse `fragment_length_hist.csv`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_fraglenhist = function(x) {
       lines <- readr::read_lines(x)
@@ -201,23 +192,19 @@ DragenMap <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse a `replay.json` file; returns the whole
-    #' parsed JSON wrapped in a one-row tibble list-column. `tidy_replaymain()`
-    #' fans it out.
+    #' @description Parse `replay.json` into a one-row list-column tibble.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_replaymain = function(x) {
+    parse_replay = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
       d <- tibble::tibble(data = list(j))
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Fan a `replay.json` file into `replaymain` (run
-    #' provenance, 1 row) and `replayconfig` (the full `dragen_config` dump,
-    #' long).
+    #' @description Tidy `replay.json`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_replaymain = function(x) {
+    tidy_replay = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- self$parse_replaymain(x)
+        x <- self$parse_replay(x)
       }
       j <- x$data[[1]]
       sys <- j[["system"]] %||% list()

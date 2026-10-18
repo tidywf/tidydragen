@@ -10,14 +10,15 @@ One `schema.yaml` per tool under `inst/config/tools/<tool>/`. Class/schema
 walkthrough: [nemo
 structure](https://tidywf.github.io/nemo/articles/structure.html).
 
-All tools extend `DragenTool` (`nemo::Tool` child), which holds shared parsing,
-notably the `dragen-metrics` ftype for headerless
-`section,rg,variable,count[,pct]` `*_metrics.csv` files. See [UML](uml.html).
+DRAGEN tools extend `DragenTool` (`nemo::Tool` child), which holds shared
+parsing, notably the `dragen-metrics` ftype for headerless
+`section,rg,variable,count[,pct]` `*_metrics.csv` files. `Interop` (Illumina run
+QC, not a DRAGEN output) extends `nemo::Tool` directly. See [UML](uml.html).
 
 ## Why several tools, not one
 
-One tool per DRAGEN output group: `DragenMap`, `DragenCov`, `DragenVar`,
-`DragenRna`, `DragenFqc`, `DragenTso`.
+One tool per output group: `DragenMap`, `DragenCov`, `DragenVar`, `DragenRna`,
+`DragenFqc`, `DragenTso`, `DragenBcl`, `Interop`.
 
 - Pipelines produce different subsets; `Dragen` skips absent tools
 - One tool = one `schema.yaml` = one output token (e.g.
@@ -25,3 +26,28 @@ One tool per DRAGEN output group: `DragenMap`, `DragenCov`, `DragenVar`,
 - Schemas evolve independently
 - Shared logic (`dragen-metrics`/`csv-nohead` ftypes, `refine_files`, fail-loud
   policies) lives on `DragenTool`, so no duplication
+
+## Fan-out
+
+Some files split into several output tables, declared under `outputs:` in their
+tool's `schema.yaml` and written as `<prefix>_<tool>_<output>`:
+
+```{r}
+#| label: fanout
+#| echo: false
+
+use("tidydragen", "DRAGEN_TOOLS")
+names(DRAGEN_TOOLS) |>
+  purrr::map(\(tool) {
+    nemo::Config$new(tool, pkg = "tidydragen")$get_outputs() |>
+      dplyr::mutate(tool = tool, .before = 1)
+  }) |>
+  purrr::list_rbind() |>
+  dplyr::filter(.data$name != .data$table) |>
+  dplyr::summarise(
+    outputs = paste0("`", .data$name, "`", collapse = ", "),
+    .by = c("tool", "table")
+  ) |>
+  dplyr::mutate(table = paste0("`", .data$table, "`")) |>
+  knitr::kable(col.names = c("Tool", "File table", "Outputs"))
+```

@@ -4,9 +4,7 @@
 \alias{DragenFqc}
 \title{DragenFqc Object}
 \description{
-Parses and tidies the DRAGEN FASTQC metrics file (\code{fastqc_metrics.csv}).
-Splits into 8 per-section sub-tables. Setting \code{flat_tidy_names = TRUE}
-gives flat \verb{dragenfqc_<section>} tables rather than the concatenated form.
+Parses and tidies DRAGEN FASTQC metrics (\code{fastqc_metrics.csv}).
 }
 \examples{
 cls <- DragenFqc; tool <- "dragenfqc"
@@ -19,21 +17,12 @@ obj$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super classes}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{\link[tidydragen:DragenTool]{tidydragen::DragenTool}} -> \code{DragenFqc}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-drop the parser token so the 8 sub-tables are named
-\verb{dragenfqc_<section>} (see \link[nemo:Tool]{nemo::Tool}).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DragenFqc-new}{\code{DragenFqc$new()}}
-\item \href{#method-DragenFqc-parse_posbasecontent}{\code{DragenFqc$parse_posbasecontent()}}
-\item \href{#method-DragenFqc-tidy_posbasecontent}{\code{DragenFqc$tidy_posbasecontent()}}
+\item \href{#method-DragenFqc-parse_fastqc}{\code{DragenFqc$parse_fastqc()}}
+\item \href{#method-DragenFqc-tidy_fastqc}{\code{DragenFqc$tidy_fastqc()}}
 }
 }
 \if{html}{\out{
@@ -73,13 +62,12 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenFqc-parse_posbasecontent"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenFqc-parse_posbasecontent}{}}}
-\subsection{Method \code{parse_posbasecontent()}}{
-Parse headerless \verb{section,mate,metric,value} \code{fastqc_metrics.csv}
-into a long tibble.
+\if{html}{\out{<a id="method-DragenFqc-parse_fastqc"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenFqc-parse_fastqc}{}}}
+\subsection{Method \code{parse_fastqc()}}{
+Parse \code{fastqc_metrics.csv}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenFqc$parse_posbasecontent(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenFqc$parse_fastqc(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -91,12 +79,12 @@ into a long tibble.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DragenFqc-tidy_posbasecontent"></a>}}
-\if{latex}{\out{\hypertarget{method-DragenFqc-tidy_posbasecontent}{}}}
-\subsection{Method \code{tidy_posbasecontent()}}{
-Tidy \code{fastqc_metrics.csv} into 8 long per-section sub-tables.
+\if{html}{\out{<a id="method-DragenFqc-tidy_fastqc"></a>}}
+\if{latex}{\out{\hypertarget{method-DragenFqc-tidy_fastqc}{}}}
+\subsection{Method \code{tidy_fastqc()}}{
+Tidy \code{fastqc_metrics.csv}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DragenFqc$tidy_posbasecontent(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DragenFqc$tidy_fastqc(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

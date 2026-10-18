@@ -1,8 +1,7 @@
 #' @title DragenVar Object
 #'
 #' @description
-#' Parses and tidies DRAGEN variant-related metric outputs (variant caller, SV,
-#' CNV, ploidy, TMB, HRD, etc.).
+#' Parses and tidies DRAGEN variant-calling outputs.
 #'
 #' @examples
 #' cls <- DragenVar; tool <- "dragenvar"
@@ -122,10 +121,6 @@ DragenVar <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser token
-    #' dropped). Needed for the `ploidymain`/`ploidyratio` split.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenVar object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -134,8 +129,7 @@ DragenVar <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenvar", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `vc_metrics.csv`. `rg` (sample id) kept raw; region moved
-    #' from metric names into a `region` column.
+    #' @description Tidy `vc_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_vc = function(x) {
       private$tidy_metrics(x, "vc", drop_constant = character(), normalise = function(d) {
@@ -152,8 +146,7 @@ DragenVar <- R6::R6Class(
         r$x
       })
     },
-    #' @description Tidy `gvcf_metrics.csv` (gVCF postfilter). Same shape as
-    #' `vc_metrics`; region moved into a `region` column.
+    #' @description Tidy `gvcf_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_gvcf = function(x) {
       private$tidy_metrics(x, "gvcf", drop_constant = character(), normalise = function(d) {
@@ -197,16 +190,15 @@ DragenVar <- R6::R6Class(
         d
       })
     },
-    #' @description Tidy `ploidy_estimation_metrics.csv` into `ploidymain` (sample
-    #' scalars) and `ploidyratio` (long, one row per chromosome ratio).
+    #' @description Tidy `ploidy_estimation_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_ploidymain = function(x) {
+    tidy_ploidy = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
       is_ratio <- grepl("/", x$variable)
-      # scalars -> ploidymain table; per-chrom ratios -> ploidyratio sentinel
-      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidymain")
+      # sample scalars vs per-chrom ratios
+      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidy")
       ratio <- private$tidy_metrics(
         x[is_ratio, , drop = FALSE],
         "ploidyratio",
@@ -220,7 +212,7 @@ DragenVar <- R6::R6Class(
       ratio$name <- "ploidyratio"
       dplyr::bind_rows(stats, ratio)
     },
-    #' @description Tidy `allele_transition_noise_metrics.csv`
+    #' @description Tidy `allele_transition_noise_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_nuctrans = function(x) {
       private$tidy_metrics(x, "nuctrans", normalise = function(d) {
@@ -229,7 +221,7 @@ DragenVar <- R6::R6Class(
         d
       })
     },
-    #' @description Parse `microsat_output.json` (MSI).
+    #' @description Parse `microsat_output.json`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_microsat = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
@@ -266,8 +258,7 @@ DragenVar <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse `contamination.json` (cttso cross-sample contamination).
-    #' Flat JSON; the per-SNP `SNPsUsed` array is dropped, `NaN` p-value -> NA.
+    #' @description Parse `contamination.json`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_contamination = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
@@ -284,8 +275,7 @@ DragenVar <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse `ploidy.vcf.gz` depth-of-coverage `dc` and normalised
-    #' depth `ndc`.
+    #' @description Parse `ploidy.vcf.gz`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_ploidyvcf = function(x) {
       cnames <- list(

@@ -30,12 +30,14 @@ Each tool has its own `inst/config/tools/<tool>/schema.yaml`.
 | `DragenCov` | coverage `*.csv`/`*.bed` (region {wgs/tmb/exon/target_bed/qc-coverage-region-*} + pheno variants)                                                                                                           | `metricsmain`/`metricsbins`/`metricscumu`, `contigmean`, `finehist`, `reportbedmain`/`reportbedcumu`, `readreportbed`                                                                                            |
 | `DragenVar` | `*.vc/sv/cnv/ploidy/tmb/allele_transition_noise/vc_hethom_ratio/hrdscore/gvcf_metrics.csv`, `*.microsat_output.json`, `*.ploidy.vcf.gz`, `*.contamination.json`                                             | `vc`, `sv`, `cnv`, `ploidymain`/`ploidyratio`, `tmb`, `nuctrans`, `hethom`, `hrd`, `gvcf`, `microsat` (JSON), `ploidyvcf` (native VCF parse), `contamination` (JSON)                                             |
 | `DragenRna` | `*.fusion_metrics.csv`, `*.quant_metrics.csv`                                                                                                                                                               | `fusion`, `quant`                                                                                                                                                                                                |
-| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out `sarmain` → `sar{qc,qcthr,snv,cnv,swds,sw}`                                                                               |
+| `DragenTso` | cttso app-layer: `*_CombinedVariantOutput.tsv`, `*_Fusions.csv`, `*.tmb.trace/msaf`, `*.{exon,gene}_cov_report.tsv`, `*_SampleAnalysisResults.json`                                                         | `smallvariants`, `fusions`, `tmbtrace`, `tmbmsaf`, `exoncov`, `genecov`, + SAR fan-out (file `sar`) → `sarmain`, `sar{qc,qcthr,snv,cnv,swds,sw}`                                                                 |
 | `DragenBcl` | BCLConvert `Reports/`: `Adapter[_Cycle]_Metrics.csv`, `Demultiplex[_Tile]_Stats.csv`, `Index_Hopping_Counts.csv`, `Quality[_Tile]_Metrics.csv`, `Top_Unknown_Barcodes.csv`, `fastq_list.csv`, `RunInfo.xml` | `adaptercyclemetrics`, `adaptermetrics`, `demultiplexstats`, `demultiplextilestats`, `indexhoppingcounts`, `qualitymetrics`, `qualitytilemetrics`, `topunknownbarcodes`, `fastqlist`, `runinfo` (XML via `xml2`) |
 | `Interop`   | Illumina InterOp run-QC (NOT a DRAGEN output --- see below): `<run>_summary.csv`, `<run>-index_summary.csv`, `imaging_table.csv[.gz]`                                                                       | `summarymain`/`summaryreadlane`, `indexsummarymain`/`indexsummarydetail`, `imagingtable`                                                                                                                         |
 
-Output name = `<prefix>_<tool>_<table>`; `prefix` is the sample id (+
-region/pheno for coverage).
+Output name = `<prefix>_<tool>_<table>`, or `<prefix>_<tool>_<output>` for a
+fan-out file (the `a/b` pairs above are a file's `outputs:`; its file table is
+named after the file, see gotchas); `prefix` is the sample id (+ region/pheno
+for coverage).
 
 - **`DragenBcl` is run-scoped** --- no sample id in the basename, so
   `refine_files()` blanks `prefix` → outputs are `dragenbcl_<table>` (a run over
@@ -43,12 +45,12 @@ region/pheno for coverage).
   `input_id`, traceable via `metadata_dragenbcl`).
 - **`Interop` is Illumina run-QC, not a DRAGEN tool** --- `InterOp/*.bin` is
   decoded upstream by the `interop` toolchain; tidydragen only parses its CSV
-  output. Inherits `Tool` directly (so registers its own fan-out,
-  `flat_tidy_names = TRUE`). The summary files carry the run id in the filename;
-  `imaging_table.csv[.gz]` doesn't, so `refine_files()` blanks its `prefix`
-  (run-scoped, like `DragenBcl`) → `interop_imagingtable`. Registered in
-  `DRAGEN_TOOLS` anyway since it's typically co-located with BCLConvert/DRAGEN
-  outputs.
+  output. Inherits `Tool` directly (its two fan-outs, `summary` and
+  `indexsummary`, are plain `outputs:`). The summary files carry the run id in
+  the filename; `imaging_table.csv[.gz]` doesn't, so `refine_files()` blanks its
+  `prefix` (run-scoped, like `DragenBcl`) → `interop_imagingtable`. Registered
+  in `DRAGEN_TOOLS` anyway since it's typically co-located with
+  BCLConvert/DRAGEN outputs.
 
 The `Dragen` `Workflow` (`R/Dragen.R`, exported `DRAGEN_TOOLS`) registers all 8
 tools and tolerates absent files (each missing tool → 0 tables). Current status,
@@ -76,23 +78,32 @@ column to its schema `type`).
 
 ## Critical gotchas
 
-- **1 file → N tables:** fan out via a named list of tibbles →
-  `nemo::nemo_enframe()`, `$name` per sub-table. Fan-out tools set
-  `flat_tidy_names = TRUE` → output is `<tool>_<name>`. The full rules (shared
-  with tidywigits) are in `docs/r-pkg/schema.md` → *Fan-out*; the rest of this
-  bullet list is the tidydragen-specific part.
-- **Schema table name == output table name** for every tool (only exception:
-  nemo's `metadata_<tool>`). On fan-out tools the file-matching table is named
-  `<stem>main` (`metricsmain`, `umimain`, `ploidymain`, `sarmain`, ...) and each
-  derived sibling `<stem><qualifier>` --- nemo dispatch binds `parse_`/`tidy_`
-  method names to the matched table name (`glue("tidy_{table_name}")`), so a
-  mismatch silently falls back to `tidy_file` and breaks.
-- **`DragenFqc` is the one exception** to `<stem>main`: its 8 sub-tables are
-  peers of one FASTQC metrics file with no primary among them, so each keeps a
-  content name (`posbasecontent` matches the file).
-- **Sentinel tables:** a schema table with `pattern: "__no_file_match__<x>"` and
-  no `glob` is never matched to a file --- exists only to supply a `col_map` for
-  a fan-out sub-table. See *Fan-out* in `docs/r-pkg/schema.md`.
+- **1 file → N tables:** the file table declares its sub-tables under `outputs:`
+  in `schema.yaml`; `tidy_<file table>()` returns them via
+  `nemo::nemo_enframe()`, keyed by output name, written as `<tool>_<output>`.
+  nemo checks every result against the declared outputs. Full rules (shared with
+  tidywigits) in `docs/r-pkg/schema.md` → *Fan-out*; tidydragen-specific parts
+  below.
+- **File table names:** `umi`, `gc`, `replay` (dragenmap), `fastqc` (dragenfqc),
+  `covmetrics`, `reportbed` (dragencov), `ploidy` (dragenvar), `sar`
+  (dragentso), `summary`, `indexsummary` (interop). Output names are the old
+  `<stem>main` + siblings (`umimain`, `metricsmain`, ...). Not `metrics` for
+  dragencov: a public `tidy_metrics()` would clash with `DragenTool`'s private
+  one.
+- **`dragen-metrics` outputs use `shape: 'subset'`:** `tidy_metrics()` emits
+  only the metrics present (file order) plus a `<metric>_pct` twin where the
+  file has a pct, so the declared columns are a superset. Twins seen in the
+  fixtures are declared; a new one errors (undeclared column), in keeping with
+  `on_unmapped`. JSON pivots (`sarqc`, `sarsnv`, `sarcnv`) are `subset` too.
+- **File tables without `columns:`:** `fastqc`, `reportbed`, `replay`, `sar`,
+  `summary`, `indexsummary` are read by their own `parse_*()` (JSON,
+  multi-section, configurable columns), so they omit `columns:`; only their
+  outputs carry columns.
+- **Output `raw:`** is kept only where `tidy_metrics(x, "<output>")` maps metric
+  names through `get_col_map()` (`metricsbins`, `metricscumu`, `ploidyratio`);
+  other outputs have tidy-only columns.
+- **No `bool` type:** JSON true/false flags are coerced to character
+  (`sarmain.analysis_completed`, `sarsnv` flags) to match their `char` type.
 - **Region + phenotype (coverage):** folded into `prefix` by `refine_files()`
   (`wgs`/`tmb`/`exon`/`target_bed`/`qc-coverage-region-<label>` +
   `normal`/`tumor`). `vc` instead keeps region as a `region` column via
@@ -104,13 +115,14 @@ column to its schema `type`).
   `Tool$run()` accommodation appending the disambiguator with no leading `_`.
   `Interop` reuses it for `imagingtable`. Design notes: *BCLConvert* in
   `.claude/dev-plan.md`.
-- **Same-basename, different-content files (cttso `replaymain`/`time`) need no
+- **Same-basename, different-content files (cttso `replay`/`time`) need no
   dedup** --- nemo's generic collision handling already assigns distinct
   prefixes; match rows by content (e.g. `grepl("Tmb", command_line)`), not by
   which file got the `_2` suffix.
 - **`ftype` is nominal once a `parse_<table>()` method exists** --- nemo calls
   it first and never consults `ftype`, so name it for the real format: `runinfo` =
-  `xml`, `microsat`/`contamination`/`sarmain` = `json`, `ploidyvcf` = `vcf`.
+  `xml`, `microsat`/`contamination`/`sar`/`replay` = `json`, `ploidyvcf` =
+  `vcf`.
 - **Ragged metrics rows → base `read.csv(fill=TRUE)`, NOT readr** --- readr
   infers column count from the first row and silently merges `pct` into `count`.
 - Numeric counts typed **`float`** in schemas (avoid 32-bit overflow); `int` for
@@ -123,7 +135,7 @@ column to its schema `type`).
   `csv-nohead`), the `on_*` policy fields.
 - `R/utils.R` --- `dragen_cov_metric_normalize()`, `dragen_cov_bin_split()`,
   `fastqc_bin_open()`/`fastqc_bin_expand()` (bin-range decoding), `pkg_name`.
-- `R/s3.R` --- `s3sync()` (sync test data). One function for every pipeline
+- `R/aws_s3.R` --- `s3sync()` (sync test data). One function for every pipeline
   (DNA/RNA/ctTSO/BCLConvert); the former `s3sync_bcl()`/`s3sync_cttso()` are
   gone. Delegates to `nemo::s3sync(workflow = "dragen")`, whose include/exclude
   patterns are **declared in the tool schemas** (a `glob` field per table,
@@ -168,7 +180,9 @@ Full Makefile target list (shared with nemo/tidywigits):
 `tidywf/docs/r-pkg/dev-commands.md`.
 
 Dev loop (`make install` after schema edits, reinstall `../nemo` after editing
-it): *Dev loop* in that same doc.
+it): *Dev loop* in that same doc. Run `make fmt` (also run by `make test`)
+before committing, so the pre-commit air/panache hooks have nothing left to
+reformat.
 
 `devtools::load_all()` (no make equivalent) to load package interactively:
 

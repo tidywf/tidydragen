@@ -1,13 +1,7 @@
 #' @title DragenCov Object
 #'
 #' @description
-#' Parses and tidies DRAGEN coverage outputs (per-contig mean coverage, coverage
-#' metrics, fine histograms, and coverage-report BEDs). Some files fan out into
-#' multiple output tables: `tidy_metricsmain` splits the coverage metrics into
-#' `metricsmain`/`metricsbins`/`metricscumu`, and `tidy_reportbedmain` splits the
-#' coverage-report BED into `reportbedmain`/`reportbedcumu`. Every other table has
-#' `tidy_name == parser`, so its name is unchanged. The per-method docs below cover
-#' each table's specifics.
+#' Parses and tidies DRAGEN coverage outputs.
 #'
 #' The coverage region (`wgs` / `tmb` /`qc-coverage-region-{<region>}`) and
 #' phenotype (`normal` / `tumor`) are folded from the filename into the output
@@ -73,11 +67,6 @@ DragenCov <- R6::R6Class(
   cloneable = FALSE,
   inherit = DragenTool,
   public = list(
-    #' @field flat_tidy_names (`logical(1)`)\cr
-    #' `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly (parser
-    #' token dropped), so each sub-table's `name` is its final output table. See the
-    #' class description for the fan-out map.
-    flat_tidy_names = TRUE,
     #' @description Create a new DragenCov object.
     #' @param path (`character(1)`)\cr
     #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
@@ -86,30 +75,28 @@ DragenCov <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragencov", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Tidy `*_coverage_metrics.csv` into `metricsmain` (wide summary),
-    #' `metricsbins` (bucketed depth histogram), and `metricscumu` (cumulative).
+    #' @description Tidy `*_coverage_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_metricsmain = function(x) {
+    tidy_covmetrics = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- private$parse_metrics(x)
       }
-      # separate the coverage-depth bin rows from the summary metrics.
+      # coverage-depth bins vs summary metrics
       is_bin <- grepl(
         "^PCT of (?:genome|target region|QC coverage region) with coverage \\[",
         x$variable
       )
       main <- private$tidy_metrics(
         x[!is_bin, , drop = FALSE],
-        "metricsmain",
-        # strip region from names (carried in prefix via refine_files())
+        "covmetrics",
+        # region is carried in prefix, so strip it from names
         normalise = function(d) {
           d$variable <- dragen_cov_metric_normalize(d$variable)
           d
         }
       )
-      # attach bin bounds, then partition into two tables kept separate so each is
-      # homogeneous (no NA upper bound, sum(pct) meaningful within a table):
-      # bucketed [lo:hi) vs cumulative [N:inf) (open bins, where cov_hi is NA).
+      # bucketed [lo:hi) vs cumulative [N:inf) (cov_hi NA), kept apart so
+      # sum(pct) is meaningful within each table
       binx <- x[is_bin, , drop = FALSE]
       bnd <- dragen_cov_bin_split(binx$variable)
       binx$cov_lo <- bnd$cov_lo
@@ -134,14 +121,12 @@ DragenCov <- R6::R6Class(
           d
         }
       )
-      # flat_tidy_names drops the parser token -> output is dragencov_<name>, so the
-      # sub-table names ARE the output tables
       main$name <- "metricsmain"
       bins$name <- "metricsbins"
       cumu$name <- "metricscumu"
       dplyr::bind_rows(main, bins, cumu)
     },
-    #' @description Parse `*_fine_hist.csv`, returning `depth` as an integer.
+    #' @description Parse `*_fine_hist.csv`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_finehist = function(x) {
       d <- readr::read_csv(
@@ -156,21 +141,19 @@ DragenCov <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse `*_cov_report.bed`; `tidy_reportbedmain()` types and splits it.
+    #' @description Parse `*_cov_report.bed`.
     #' @param x (`character(1)`)\cr Path to file.
-    parse_reportbedmain = function(x) {
-      # all-character: trailing pct_above_<N> columns are user-configurable, so can't use
-      # the fixed tsv schema
+    parse_reportbed = function(x) {
+      # all-character: the pct_above_<N> columns are user-configurable
       d <- readr::read_tsv(x, col_types = readr::cols(.default = readr::col_character()))
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Tidy `*_cov_report.bed` into `reportbedmain` (per-interval
-    #' distribution stats, wide) and `reportbedcumu` (coverage thresholds, long).
+    #' @description Tidy `*_cov_report.bed`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
-    tidy_reportbedmain = function(x) {
+    tidy_reportbed = function(x) {
       if (!tibble::is_tibble(x)) {
-        x <- private$parse_reportbedmain(x)
+        x <- private$parse_reportbed(x)
       }
       main <- x |>
         dplyr::transmute(
@@ -185,8 +168,7 @@ DragenCov <- R6::R6Class(
           min_cvg = as.double(.data$min_cvg),
           max_cvg = as.double(.data$max_cvg)
         )
-      # split thresholds long (one row per interval x pct_above_<N>) rather than wide,
-      # since the column set is user-configurable
+      # thresholds long, since the pct_above_<N> set is user-configurable
       cumu <- x |>
         dplyr::select(chrom = "#chrom", "start", "end", dplyr::starts_with("pct_above_")) |>
         tidyr::pivot_longer(

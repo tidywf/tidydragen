@@ -4,25 +4,18 @@
 \alias{DragenTool}
 \title{DragenTool Object}
 \description{
-Intermediate base class for all tidydragen tools. Inherits \link[nemo:Tool]{nemo::Tool} and
-adds DRAGEN-specific shared logic e.g. the metrics parser/tidier used
-by every \verb{*_metrics.csv} table. Tools like \code{DragenCov} inherit from
-\code{DragenTool} rather than \code{nemo::Tool} directly. The \code{dragen-metrics} ftype is
-registered here (parse via \code{extra_ftypes()}, tidy via the \code{tidy_file}
-override), so a plain metrics table needs no methods, just \code{ftype: 'dragen-metrics'} in its schema. A table needing a \code{normalise}/\code{drop_constant}
-still declares an explicit \verb{tidy_<tbl>()} that delegates to \code{tidy_metrics}.
+Base class for the DRAGEN tools, adding the shared \code{dragen-metrics} ftype
+to \link[nemo:Tool]{nemo::Tool}. A plain metrics table needs only \code{ftype: 'dragen-metrics'}
+in its schema; one needing \code{normalise}/\code{drop_constant} declares a
+\verb{tidy_<tbl>()} that delegates to \code{tidy_metrics()}.
 }
 \details{
-DRAGEN \verb{*_metrics.csv} files share a headerless 4/5-column shape:
-\verb{section, rg, variable, count[, pct]}. \code{rg} (read-group / sample) is empty for
-most sections but populated for e.g. fastqc and per-sample variant sections.
-The value column (\code{count}) is read as character since some metrics carry
-string values (e.g. \verb{Ploidy estimation} = \code{"XX"}) and counts can exceed 32-bit
-range; each tidy column is coerced to its schema \code{type} after the wide pivot.
+DRAGEN \verb{*_metrics.csv} files are headerless \verb{section,rg,variable,count[,pct]}.
+\code{count} is read as character (string values such as \code{"XX"}, counts beyond
+32-bit) and coerced to its schema \code{type} after the wide pivot.
 }
 \examples{
-# Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
-# are private; here we just inspect the inherited surface + policy fields.
+# Abstract base: normally you use a subclass (e.g. DragenVar).
 indir <- system.file("extdata/dragenmap", package = "tidydragen")
 tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)
 tool$list_files()      # inherited nemo::Tool file discovery
@@ -32,8 +25,7 @@ tool$on_coerce_fail    # "error": values that fail type coercion abort
 # flip a policy to be lenient (drop/keep-NA with a warning instead)
 tool$on_unmapped <- "warn"
 
-# Exercise the fail-loud paths end to end (not just the field above), via a
-# deliberately-corrupted copy of a real DragenRna fixture (smallest schema).
+# fail-loud paths, via a corrupted copy of the DragenRna fixture
 rna_dir <- system.file("extdata/dragenrna", package = "tidydragen")
 bad_dir <- tempfile()
 dir.create(bad_dir)
@@ -48,26 +40,16 @@ lines <- readLines(qf)
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{on_unmapped}}{(\code{character(1)})\cr
-Policy for metrics present in a \verb{*_metrics.csv} file but absent from the
-schema. \code{error} refuses to drop data and aborts, so schema
-drift (e.g. a new DRAGEN version adds a metric) fails loudly rather than
-silently omitting a column. Set to \code{warn} to instead drop the unmapped
-metrics with a warning.}
+Policy for file metrics absent from the schema: \code{error} (default) or
+\code{warn} (drop them).}
 
 \item{\code{on_coerce_fail}}{(\code{character(1)})\cr
-Policy for a non-empty metric value that fails coercion to its schema
-numeric \code{type} (becomes \code{NA}). \code{error} aborts rather than
-losing the value; usually a wrong schema \code{type} (should be \code{char}) or an
-unexpected string. Set to \code{warn} to keep the \code{NA} with a warning. Genuine
-missings (\code{NA}/empty in the file) never trigger this.}
+Policy for a non-empty value that coerces to \code{NA} under its schema \code{type}:
+\code{error} (default) or \code{warn} (keep the \code{NA}).}
 
 \item{\code{on_unexpected_col}}{(\code{character(1)})\cr
-Policy for an id column named in \code{tidy_metrics(drop_constant=)} that was
-expected to be constant (and so dropped) but instead varies across rows.
-\code{error} aborts rather than letting a surprise extra column appear in the
-output table (schema drift into a data lake). Set to \code{warn} to keep the
-unexpected column with a warning. Tables that legitimately vary in
-\code{section}/\code{rg} opt out via \code{drop_constant = character()} and never trip this.}
+Policy for a \code{drop_constant} id column that varies across rows: \code{error}
+(default) or \code{warn} (keep the column).}
 }
 \if{html}{\out{</div>}}
 }

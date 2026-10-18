@@ -1,26 +1,18 @@
 #' @title DragenTool Object
 #'
 #' @description
-#' Intermediate base class for all tidydragen tools. Inherits [nemo::Tool] and
-#' adds DRAGEN-specific shared logic e.g. the metrics parser/tidier used
-#' by every `*_metrics.csv` table. Tools like `DragenCov` inherit from
-#' `DragenTool` rather than `nemo::Tool` directly. The `dragen-metrics` ftype is
-#' registered here (parse via `extra_ftypes()`, tidy via the `tidy_file`
-#' override), so a plain metrics table needs no methods, just `ftype:
-#' 'dragen-metrics'` in its schema. A table needing a `normalise`/`drop_constant`
-#' still declares an explicit `tidy_<tbl>()` that delegates to `tidy_metrics`.
+#' Base class for the DRAGEN tools, adding the shared `dragen-metrics` ftype
+#' to [nemo::Tool]. A plain metrics table needs only `ftype: 'dragen-metrics'`
+#' in its schema; one needing `normalise`/`drop_constant` declares a
+#' `tidy_<tbl>()` that delegates to `tidy_metrics()`.
 #'
 #' @details
-#' DRAGEN `*_metrics.csv` files share a headerless 4/5-column shape:
-#' `section, rg, variable, count[, pct]`. `rg` (read-group / sample) is empty for
-#' most sections but populated for e.g. fastqc and per-sample variant sections.
-#' The value column (`count`) is read as character since some metrics carry
-#' string values (e.g. `Ploidy estimation` = `"XX"`) and counts can exceed 32-bit
-#' range; each tidy column is coerced to its schema `type` after the wide pivot.
+#' DRAGEN `*_metrics.csv` files are headerless `section,rg,variable,count[,pct]`.
+#' `count` is read as character (string values such as `"XX"`, counts beyond
+#' 32-bit) and coerced to its schema `type` after the wide pivot.
 #'
 #' @examples
-#' # Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
-#' # are private; here we just inspect the inherited surface + policy fields.
+#' # Abstract base: normally you use a subclass (e.g. DragenVar).
 #' indir <- system.file("extdata/dragenmap", package = "tidydragen")
 #' tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)
 #' tool$list_files()      # inherited nemo::Tool file discovery
@@ -30,8 +22,7 @@
 #' # flip a policy to be lenient (drop/keep-NA with a warning instead)
 #' tool$on_unmapped <- "warn"
 #'
-#' # Exercise the fail-loud paths end to end (not just the field above), via a
-#' # deliberately-corrupted copy of a real DragenRna fixture (smallest schema).
+#' # fail-loud paths, via a corrupted copy of the DragenRna fixture
 #' rna_dir <- system.file("extdata/dragenrna", package = "tidydragen")
 #' bad_dir <- tempfile()
 #' dir.create(bad_dir)
@@ -85,33 +76,20 @@ DragenTool <- R6::R6Class(
   inherit = Tool,
   public = list(
     #' @field on_unmapped (`character(1)`)\cr
-    #' Policy for metrics present in a `*_metrics.csv` file but absent from the
-    #' schema. `error` refuses to drop data and aborts, so schema
-    #' drift (e.g. a new DRAGEN version adds a metric) fails loudly rather than
-    #' silently omitting a column. Set to `warn` to instead drop the unmapped
-    #' metrics with a warning.
+    #' Policy for file metrics absent from the schema: `error` (default) or
+    #' `warn` (drop them).
     on_unmapped = "error",
     #' @field on_coerce_fail (`character(1)`)\cr
-    #' Policy for a non-empty metric value that fails coercion to its schema
-    #' numeric `type` (becomes `NA`). `error` aborts rather than
-    #' losing the value; usually a wrong schema `type` (should be `char`) or an
-    #' unexpected string. Set to `warn` to keep the `NA` with a warning. Genuine
-    #' missings (`NA`/empty in the file) never trigger this.
+    #' Policy for a non-empty value that coerces to `NA` under its schema `type`:
+    #' `error` (default) or `warn` (keep the `NA`).
     on_coerce_fail = "error",
     #' @field on_unexpected_col (`character(1)`)\cr
-    #' Policy for an id column named in `tidy_metrics(drop_constant=)` that was
-    #' expected to be constant (and so dropped) but instead varies across rows.
-    #' `error` aborts rather than letting a surprise extra column appear in the
-    #' output table (schema drift into a data lake). Set to `warn` to keep the
-    #' unexpected column with a warning. Tables that legitimately vary in
-    #' `section`/`rg` opt out via `drop_constant = character()` and never trip this.
+    #' Policy for a `drop_constant` id column that varies across rows: `error`
+    #' (default) or `warn` (keep the column).
     on_unexpected_col = "error"
   ),
   private = list(
-    # Register pkg-specific ftype parsers. `dragen-metrics` routes every
-    # `*_metrics.csv` table through the shared `parse_metrics`, so simple metrics
-    # tables need no `parse_<tbl>` one-liner (tidy is routed in `tidy_file` below).
-    # `csv-nohead` is used by certain coverage tables.
+    # pkg-specific ftype parsers (dragen-metrics tidy is routed in tidy_file)
     extra_ftypes = function() {
       list(
         "dragen-metrics" = function(x, table_name) private$parse_metrics(x),
@@ -122,25 +100,18 @@ DragenTool <- R6::R6Class(
         }
       )
     },
-    # nemo's tidy dispatch has no ftype hook (custom `tidy_<tbl>()` or else
-    # `tidy_file`), so route `dragen-metrics` tables to the shared pivot here.
-    # Tables needing a `normalise`/`drop_constant` still declare an explicit
-    # `tidy_<tbl>()`; the plain ones fall through to this.
+    # nemo's tidy dispatch has no ftype hook, so route plain `dragen-metrics`
+    # tables (no `tidy_<tbl>()`) to the shared pivot here.
     tidy_file = function(x, table_name, convert_types = FALSE) {
       if (identical(self$config$get_ftype(table_name), "dragen-metrics")) {
         return(private$tidy_metrics(x, table_name))
       }
       super$tidy_file(x, table_name, convert_types = convert_types)
     },
-    # Fold the coverage region (wgs / tmb / exon / target_bed /
-    # qc-coverage-region-<label>) and phenotype (normal / tumor) from the filename
-    # into `prefix`, so `sampleA.wgs_coverage_metrics_tumor.csv` ->
-    # `sampleA_wgs_tumor_dragencov_metrics`. Appends `_<region>[_<pheno>]` before
-    # nemo's `_2/_3` collision fallback fires. No-op on non-coverage files (regex
-    # never matches). The qc-coverage-region <label> is the user's
-    # `--qc-coverage-region-N` name, matched generically and the stem dropped to
-    # leave the label; wgs/tmb/exon/target_bed are fixed keywords (exon/target_bed
-    # are the cttso ctDNA regions), enumerated.
+    # Fold the coverage region and phenotype from the filename into `prefix`:
+    # `sampleA.wgs_coverage_metrics_tumor.csv` -> `sampleA_wgs_tumor_...`.
+    # No-op on non-coverage files. qc-coverage-region-<label> keeps only the
+    # user's label.
     refine_files = function(files) {
       if (nrow(files) == 0) {
         return(files)
@@ -152,17 +123,14 @@ DragenTool <- R6::R6Class(
         "(?:contig_mean_cov|coverage_metrics|fine_hist|",
         "read_cov_report|cov_report)"
       )
-      # Build the "_<region>[_<pheno>]" suffix for one basename. Returns "" for a
-      # non-coverage file so its prefix is left untouched.
+      # "_<region>[_<pheno>]", or "" for a non-coverage file
       suffix_for <- function(bname) {
-        # m[2] = region group; length(m) < 2 means non-coverage file, no suffix.
         m <- regmatches(bname, regexec(region_re, bname))[[1]]
         if (length(m) < 2) {
           return("")
         }
         region <- sub("^qc-coverage-region-", "", m[2])
-        # phenotype present only in somatic files ("..._tumor.csv"); ph[2] is the
-        # matched group, else empty.
+        # phenotype only in somatic files ("..._tumor.csv")
         ph <- regmatches(bname, regexec("_(normal|tumor)\\.[^.]+$", bname))[[1]]
         if (length(ph) >= 2) {
           paste0("_", region, "_", ph[2])
@@ -195,8 +163,7 @@ DragenTool <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    # Coerce a character vector to the schema type for its column. `type` is the
-    # readr type code from Config's remap (char->c, int->i, float->d).
+    # `type` is the readr code from Config's remap (char->c, int->i, float->d)
     coerce_by_type = function(vec, type) {
       switch(
         type,
@@ -206,9 +173,7 @@ DragenTool <- R6::R6Class(
         vec
       )
     },
-    # Detect the coverage/variant region embedded in metric names and strip the
-    # " over <region>" suffix so names normalise across regions. Returns the
-    # modified tibble plus the detected region code (or NA if none present).
+    # Strip " over <region>" from metric names; returns list(x, region code or NA).
     region_split = function(x) {
       pat <- " over (genome|target region|QC coverage region)$"
       codes <- c(
@@ -222,9 +187,8 @@ DragenTool <- R6::R6Class(
       x$variable <- sub(pat, "", x$variable)
       list(x = x, region = region)
     },
-    # Pivot a long metrics tibble wide: one row per (section, rg [, extra id cols]),
-    # one column per mapped metric plus a paired `<metric>_pct`. `normalise`
-    # rewrites the long tibble before mapping (e.g. region stripping for vc).
+    # Pivot long metrics wide: one row per id cols, one column per mapped metric
+    # (+ `<metric>_pct`). `normalise` rewrites the long tibble before mapping.
     tidy_metrics = function(
       x,
       table_name,
@@ -245,8 +209,7 @@ DragenTool <- R6::R6Class(
       raw_to_tidy <- col_map |> dplyr::select("raw", "tidy") |> tibble::deframe()
       tidy_to_type <- col_map |> dplyr::select("tidy", "type") |> tibble::deframe()
 
-      # metrics present in the file but absent from the schema: error (default,
-      # never drop data) or warn-and-drop, per `on_unmapped`.
+      # file metrics absent from the schema, per `on_unmapped`
       unmapped <- setdiff(unique(x$variable), names(raw_to_tidy))
       if (length(unmapped) > 0) {
         mode <- rlang::arg_match0(on_unmapped %||% self$on_unmapped, c("error", "warn"))
@@ -274,16 +237,13 @@ DragenTool <- R6::R6Class(
         dplyr::select(dplyr::all_of(id_cols), "tidy_var", value = "count") |>
         tidyr::pivot_wider(names_from = "tidy_var", values_from = "value")
 
-      # coerce each metric column to its schema type. A non-empty value that
-      # coerces to NA is data loss (wrong schema type / unexpected string);
-      # collect and error/warn per on_coerce_fail.
+      # coerce to schema type; non-empty -> NA is data loss, per `on_coerce_fail`
       present <- intersect(names(tidy_to_type), colnames(d_count))
       coerce_fails <- character()
       for (nm in present) {
         orig <- d_count[[nm]]
         new <- suppressWarnings(private$coerce_by_type(orig, tidy_to_type[[nm]]))
-        # is.nan guard: DRAGEN's "nan" (e.g. 0/0 het-hom ratio) parses to a valid
-        # NaN, not a failure. Only a plain NA (as.numeric("abc")) is lost data.
+        # DRAGEN "nan" (e.g. 0/0 het-hom ratio) -> NaN is valid, not lost
         lost <- !is.na(orig) & nzchar(trimws(orig)) & is.na(new) & !is.nan(new)
         if (any(lost)) {
           coerce_fails <- c(
@@ -319,11 +279,8 @@ DragenTool <- R6::R6Class(
 
       d_tidy <- dplyr::left_join(d_count, d_pct, by = id_cols)
 
-      # Drop the `drop_constant` id cols, expected constant so carrying no grouping
-      # info. One that VARIES is schema drift (would add a surprise output column)
-      # -> error/warn per `on_unexpected_col`. Provenance cols added by `normalise`
-      # (region, chrom) aren't eligible; tables that legitimately vary (mapping, vc,
-      # hethom) pass `drop_constant = character()`.
+      # drop constant `drop_constant` id cols; one that varies would add a
+      # surprise column, per `on_unexpected_col`
       unexpected <- character()
       for (col in intersect(drop_constant, colnames(d_tidy))) {
         if (dplyr::n_distinct(d_tidy[[col]]) <= 1L) {
@@ -350,9 +307,7 @@ DragenTool <- R6::R6Class(
         warning(glue("{detail} (kept)"), call. = FALSE)
       }
 
-      # Interleave each metric with its paired `_pct` (counts and pcts are pivoted
-      # separately then joined, which would otherwise leave all pcts in a block
-      # after all counts). Retained id cols stay in front, in order.
+      # interleave each metric with its `_pct` twin, id cols first
       count_names <- setdiff(colnames(d_count), id_cols)
       paired <- unlist(lapply(count_names, function(nm) {
         pct <- paste0(nm, "_pct")

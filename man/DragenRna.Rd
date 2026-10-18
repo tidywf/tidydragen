@@ -4,8 +4,7 @@
 \alias{DragenRna}
 \title{DragenRna Object}
 \description{
-Parses and tidies DRAGEN RNA outputs (gene-fusion statistics, quantification
-statistics).
+Parses and tidies DRAGEN RNA outputs.
 }
 \examples{
 cls <- DragenRna; tool <- "dragenrna"

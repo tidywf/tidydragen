@@ -376,8 +376,8 @@ tables:
         type: 'float'
         description: 'non-synonymous TMB'
         versions: ['latest']
-  ploidymain:
-    description: 'DRAGEN ploidy estimation sample-level metrics. Fan-out primary; derived: ploidyratio.'
+  ploidy:
+    description: 'DRAGEN ploidy estimation metrics CSV: sample-level metrics plus per-chromosome ratios.'
     pattern: "\\.ploidy_estimation_metrics\\.csv$"
     glob: ["*.ploidy_estimation_metrics.csv"]
     ftype: 'dragen-metrics'
@@ -422,16 +422,56 @@ tables:
         type: 'float'
         description: 'chrY median coverage'
         versions: ['latest']
-  ploidyratio:
-    description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage). Fan-out of ploidymain.'
-    pattern: "__no_file_match__ploidyratio"
-    ftype: 'dragen-metrics'
-    columns:
-      - raw: 'ratio'
-        tidy: 'ratio'
-        type: 'float'
-        description: 'chromosome / autosomal median coverage ratio'
-        versions: ['latest']
+    outputs:
+      ploidymain:
+        description: 'DRAGEN ploidy estimation sample-level metrics.'
+        shape: 'subset'
+        columns:
+          - tidy: 'ploidy_est'
+            type: 'char'
+            description: 'estimated sex-chromosome ploidy (e.g. XX, XY)'
+            versions: ['latest']
+          - tidy: 'cov_skewness'
+            type: 'float'
+            description: 'coverage skewness'
+            versions: ['latest']
+          - tidy: 'cov_auto_pctile'
+            type: 'float'
+            description: 'autosomal coverage percentile'
+            versions: ['latest']
+          - tidy: 'cov_x_pctile'
+            type: 'float'
+            description: 'chrX coverage percentile'
+            versions: ['latest']
+          - tidy: 'cov_y_pctile'
+            type: 'float'
+            description: 'chrY coverage percentile'
+            versions: ['latest']
+          - tidy: 'cov_auto_median'
+            type: 'float'
+            description: 'autosomal median coverage'
+            versions: ['latest']
+          - tidy: 'cov_x_median'
+            type: 'float'
+            description: 'chrX median coverage'
+            versions: ['latest']
+          - tidy: 'cov_y_median'
+            type: 'float'
+            description: 'chrY median coverage'
+            versions: ['latest']
+      ploidyratio:
+        description: 'DRAGEN per-chromosome ploidy ratio (chromosome / autosomal median coverage).'
+        shape: 'subset'
+        columns:
+          - tidy: 'chrom'
+            type: 'char'
+            description: 'chromosome'
+            versions: ['latest']
+          - raw: 'ratio'
+            tidy: 'ratio'
+            type: 'float'
+            description: 'chromosome / autosomal median coverage ratio'
+            versions: ['latest']
   nuctrans:
     description: 'DRAGEN allele nucleotide transition noise.'
     pattern: "\\.allele_transition_noise_metrics\\.csv$"

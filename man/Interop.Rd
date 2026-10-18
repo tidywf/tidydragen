@@ -4,26 +4,14 @@
 \alias{Interop}
 \title{Interop Object}
 \description{
-Parses and tidies Illumina InterOp run-QC summary outputs: \verb{<run>_summary.csv}
-(per-read/lane/surface run metrics), \verb{<run>-index_summary.csv}
-(per-lane/index demux QC), and \code{imaging_table.csv}/\code{imaging_table.csv.gz}
-(per-lane/tile/cycle imaging metrics; gzipped or not, both accepted). InterOp
-is Illumina run-level QC, not a DRAGEN output, so unlike the other tools this
-one inherits \code{nemo::Tool} directly rather than the DRAGEN-shared \code{DragenTool}
-base; it's housed here for convenience (typically co-located with
-BCLConvert). The run id for \code{summary.csv}/\code{index_summary.csv} lives in the
-filename itself, so the usual prefix extraction just works with no
-\code{refine_files()} override needed there; \code{imaging_table.csv[.gz]} carries no
-run id in its filename at all, so that one is handled explicitly.
+Parses and tidies Illumina InterOp run-QC summaries. Not a DRAGEN output, so
+it inherits \link[nemo:Tool]{nemo::Tool} rather than \link{DragenTool}; housed here since it's
+typically co-located with BCLConvert outputs.
 }
 \examples{
 cls <- Interop; tool <- "interop"
-# summaries/ kept separate from imaging_tables/ so scanning for one never
-# also matches the other (list_files_dir() recurses; `imaging_table.csv`
-# and `.csv.gz` both match the imagingtable pattern, so a single run over
-# imaging_tables/ picks up BOTH compressed/ and uncompressed/ at once and
-# nemo's generic same-table collision handling disambiguates them, `_2`
-# suffix --- exercised deliberately below, not avoided).
+# imaging_tables/ holds a .csv and a .csv.gz copy, so its run also
+# exercises nemo's `_2` same-table disambiguation.
 odir <- tempdir()
 obj_sum <- cls$new(system.file("extdata", tool, "summaries", package = "tidydragen"))
 obj_sum$run(output_dir = odir, format = "parquet", input_id = "run1")
@@ -34,24 +22,14 @@ obj_it$run(output_dir = odir, format = "parquet", input_id = "run1")
 \section{Super class}{
 \code{\link[nemo:Tool]{nemo::Tool}} -> \code{Interop}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{flat_tidy_names}}{(\code{logical(1)})\cr
-\code{TRUE}: fan-out sub-tables are named \verb{<tool>_<tidy_name>} (parser token
-dropped). Needed for the \code{summarymain}/\code{summaryreadlane} and
-\code{indexsummarymain}/\code{indexsummarydetail} splits.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Interop-new}{\code{Interop$new()}}
-\item \href{#method-Interop-parse_summarymain}{\code{Interop$parse_summarymain()}}
-\item \href{#method-Interop-tidy_summarymain}{\code{Interop$tidy_summarymain()}}
-\item \href{#method-Interop-parse_indexsummarymain}{\code{Interop$parse_indexsummarymain()}}
-\item \href{#method-Interop-tidy_indexsummarymain}{\code{Interop$tidy_indexsummarymain()}}
+\item \href{#method-Interop-parse_summary}{\code{Interop$parse_summary()}}
+\item \href{#method-Interop-tidy_summary}{\code{Interop$tidy_summary()}}
+\item \href{#method-Interop-parse_indexsummary}{\code{Interop$parse_indexsummary()}}
+\item \href{#method-Interop-tidy_indexsummary}{\code{Interop$tidy_indexsummary()}}
 \item \href{#method-Interop-parse_imagingtable}{\code{Interop$parse_imagingtable()}}
 \item \href{#method-Interop-tidy_imagingtable}{\code{Interop$tidy_imagingtable()}}
 }
@@ -93,14 +71,12 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-parse_summarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-parse_summarymain}{}}}
-\subsection{Method \code{parse_summarymain()}}{
-Parse \verb{<run>_summary.csv}; returns the raw level table and
-the raw per-read/lane/surface table (both still character), wrapped in a
-one-row tibble list-column. \code{tidy_summarymain()} types and splits them.
+\if{html}{\out{<a id="method-Interop-parse_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-parse_summary}{}}}
+\subsection{Method \code{parse_summary()}}{
+Parse \verb{<run>_summary.csv} into a one-row list-column tibble.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_summarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_summary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -112,15 +88,12 @@ one-row tibble list-column. \code{tidy_summarymain()} types and splits them.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-tidy_summarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-tidy_summarymain}{}}}
-\subsection{Method \code{tidy_summarymain()}}{
-Fan \verb{<run>_summary.csv} into \code{summarymain} (level table, wide,
-6 rows) and \code{summaryreadlane} (per-read/lane/surface detail, long).
-\code{"nan"}/\code{"-"} sentinel values -> NA throughout; \code{"mean +/- sd"} and
-\code{"a / b"} cells are split into paired columns.
+\if{html}{\out{<a id="method-Interop-tidy_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-tidy_summary}{}}}
+\subsection{Method \code{tidy_summary()}}{
+Tidy \verb{<run>_summary.csv}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_summarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_summary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -132,14 +105,13 @@ Fan \verb{<run>_summary.csv} into \code{summarymain} (level table, wide,
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-parse_indexsummarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-parse_indexsummarymain}{}}}
-\subsection{Method \code{parse_indexsummarymain()}}{
-Parse \verb{<run>-index_summary.csv}; returns the raw per-lane
-totals and the raw per-index table (both still character), wrapped in a
-one-row tibble list-column. \code{tidy_indexsummarymain()} types them.
+\if{html}{\out{<a id="method-Interop-parse_indexsummary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-parse_indexsummary}{}}}
+\subsection{Method \code{parse_indexsummary()}}{
+Parse \verb{<run>-index_summary.csv} into a one-row list-column
+tibble.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_indexsummarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$parse_indexsummary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -151,13 +123,12 @@ one-row tibble list-column. \code{tidy_indexsummarymain()} types them.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Interop-tidy_indexsummarymain"></a>}}
-\if{latex}{\out{\hypertarget{method-Interop-tidy_indexsummarymain}{}}}
-\subsection{Method \code{tidy_indexsummarymain()}}{
-Fan \verb{<run>-index_summary.csv} into \code{indexsummarymain} (per-lane
-totals, wide) and \code{indexsummarydetail} (per-index rows, long).
+\if{html}{\out{<a id="method-Interop-tidy_indexsummary"></a>}}
+\if{latex}{\out{\hypertarget{method-Interop-tidy_indexsummary}{}}}
+\subsection{Method \code{tidy_indexsummary()}}{
+Tidy \verb{<run>-index_summary.csv}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_indexsummarymain(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_indexsummary(x)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -172,14 +143,9 @@ totals, wide) and \code{indexsummarydetail} (per-index rows, long).
 \if{html}{\out{<a id="method-Interop-parse_imagingtable"></a>}}
 \if{latex}{\out{\hypertarget{method-Interop-parse_imagingtable}{}}}
 \subsection{Method \code{parse_imagingtable()}}{
-Parse \code{imaging_table.csv}/\code{imaging_table.csv.gz} (\code{readr}
-decompresses \code{.gz} transparently by extension --- no branching needed
-here). Its header is unreliable for grouped columns (e.g.
-\code{"Corrected<A;C;G;T>"} prints one label but is followed by 4 data
-columns), so this bypasses the header entirely (\code{skip = 3}, past the
-2 \verb{#} comment lines + the header row) and reads 49 positional character
-columns; \code{"nan"} -> \code{NA} at parse time so \code{tidy_imagingtable()}'s
-\code{type_convert()} yields \code{NA}, not \code{NaN}.
+Parse \code{imaging_table.csv[.gz]} positionally, skipping its
+header: grouped columns (e.g. \verb{Corrected<A;C;G;T>}) have one label for
+4 data columns.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Interop$parse_imagingtable(x)}\if{html}{\out{</div>}}
 }
@@ -196,8 +162,7 @@ columns; \code{"nan"} -> \code{NA} at parse time so \code{tidy_imagingtable()}'s
 \if{html}{\out{<a id="method-Interop-tidy_imagingtable"></a>}}
 \if{latex}{\out{\hypertarget{method-Interop-tidy_imagingtable}{}}}
 \subsection{Method \code{tidy_imagingtable()}}{
-Type \code{imaging_table.csv[.gz]}'s 49 positional columns via
-the schema (rename + \code{type_convert()}); no fan-out, one flat table.
+Tidy \code{imaging_table.csv[.gz]}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Interop$tidy_imagingtable(x)}\if{html}{\out{</div>}}
 }

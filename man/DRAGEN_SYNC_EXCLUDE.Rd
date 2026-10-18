@@ -11,11 +11,8 @@ An object of class \code{character} of length 7.
 DRAGEN_SYNC_EXCLUDE
 }
 \description{
-Trailing \code{--exclude} globs applied after the schema-derived includes when
-syncing a DRAGEN run (see \code{\link[=s3sync]{s3sync()}}). A ctTSO run writes the same
-app-layer outputs twice — once under \verb{Logs_Intermediates/<sample>/} and once
-under \verb{Results/<sample>/} — so these drop the \verb{Logs_Intermediates/} copy and
-keep the \verb{Results/} one. \verb{aws s3 sync} filters are ordered and last-match
-wins, hence these must come last.
+Trailing \code{--exclude} globs for \code{\link[=s3sync]{s3sync()}}, dropping the ctTSO
+\verb{Logs_Intermediates/} duplicates of \verb{Results/} outputs. \verb{aws s3 sync} filters
+are last-match-wins, so these come after the schema-derived includes.
 }
 \keyword{datasets}

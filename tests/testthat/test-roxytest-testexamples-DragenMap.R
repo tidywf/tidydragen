@@ -2,7 +2,7 @@
 
 # File R/DragenMap.R: @testexamples
 
-test_that("Function DragenMap() @ L73", {
+test_that("Function DragenMap() @ L72", {
   
   cls <- DragenMap; tool <- "dragenmap"
   indir <- system.file("extdata", tool, package = "tidydragen")

@@ -1,5 +1,3 @@
-
-
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
 <a href="https://tidywf.github.io/tidydragen"><img src="man/figures/logo.png" alt="logo" align="left" height="100" /></a>
@@ -24,21 +22,18 @@
 
 Parses and tidies Illumina
 [DRAGEN](https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html "Illumina DRAGEN")
-outputs into versioned, `snake_case` tables, written to Parquet,
-PostgreSQL, TSV, CSV or RDS (plus a `metadata.parquet` per run). Built
-on [nemo](https://github.com/tidywf/nemo "nemo").
+outputs into versioned, `snake_case` tables, written to Parquet, PostgreSQL,
+TSV, CSV or RDS (plus a `metadata.parquet` per run). Built on
+[nemo](https://github.com/tidywf/nemo "nemo").
 
 Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.
 
 ## Documentation
 
-- Installation:
-  <https://tidywf.github.io/tidydragen/articles/installation>
+- Installation: <https://tidywf.github.io/tidydragen/articles/installation>
 - Quickstart: <https://tidywf.github.io/tidydragen/articles/quickstart>
-- Files supported:
-  <https://tidywf.github.io/tidydragen/articles/schema_table>
-- Output naming:
-  <https://tidywf.github.io/tidydragen/articles/output_naming>
+- Files supported: <https://tidywf.github.io/tidydragen/articles/schema_table>
+- Output naming: <https://tidywf.github.io/tidydragen/articles/output_naming>
 - Structure: <https://tidywf.github.io/tidydragen/articles/structure>
 - Changelog: <https://tidywf.github.io/tidydragen/articles/NEWS>
 - R6: <https://tidywf.github.io/nemo/articles/structure>
@@ -49,7 +44,7 @@ Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.
 
 Raw DRAGEN metrics (headerless `section,rg,variable,count[,pct]`):
 
-``` r
+```r
 indir_map <- system.file("extdata/dragenmap", package = "tidydragen")
 writeLines(head(
   readLines(
@@ -66,7 +61,7 @@ writeLines(head(
 
 Parse, tidy and write with `DragenMap$run()`:
 
-``` r
+```r
 outdir_map <- file.path(tempdir(), "map_out")
 DragenMap$new(indir_map)$run(
   output_dir = outdir_map,
@@ -74,20 +69,20 @@ DragenMap$new(indir_map)$run(
   input_id = "run1"
 )
 list.files(outdir_map, pattern = "\\.parquet$")
-#>  [1] "metadata_dragenmap.parquet"               "sampleA_dragenmap_fraglenhist.parquet"   
-#>  [3] "sampleA_dragenmap_gcbias.parquet"         "sampleA_dragenmap_gcmain.parquet"        
-#>  [5] "sampleA_dragenmap_metrics.parquet"        "sampleA_dragenmap_replayconfig.parquet"  
-#>  [7] "sampleA_dragenmap_replaymain.parquet"     "sampleA_dragenmap_time.parquet"          
-#>  [9] "sampleA_dragenmap_trimmer.parquet"        "sampleA_dragenmap_umihist.parquet"       
+#>  [1] "metadata_dragenmap.parquet"               "sampleA_dragenmap_fraglenhist.parquet"
+#>  [3] "sampleA_dragenmap_gcbias.parquet"         "sampleA_dragenmap_gcmain.parquet"
+#>  [5] "sampleA_dragenmap_metrics.parquet"        "sampleA_dragenmap_replayconfig.parquet"
+#>  [7] "sampleA_dragenmap_replaymain.parquet"     "sampleA_dragenmap_time.parquet"
+#>  [9] "sampleA_dragenmap_trimmer.parquet"        "sampleA_dragenmap_umihist.parquet"
 #> [11] "sampleA_dragenmap_umimain.parquet"        "sampleB_2_dragenmap_replayconfig.parquet"
-#> [13] "sampleB_2_dragenmap_replaymain.parquet"   "sampleB_2_dragenmap_time.parquet"        
-#> [15] "sampleB_dragenmap_replayconfig.parquet"   "sampleB_dragenmap_replaymain.parquet"    
+#> [13] "sampleB_2_dragenmap_replaymain.parquet"   "sampleB_2_dragenmap_time.parquet"
+#> [15] "sampleB_dragenmap_replayconfig.parquet"   "sampleB_dragenmap_replaymain.parquet"
 #> [17] "sampleB_dragenmap_time.parquet"
 ```
 
 Tidy output:
 
-``` r
+```r
 file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
   arrow::read_parquet() |>
   str(list.len = 10)
@@ -107,8 +102,7 @@ file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
 
 ### Full DRAGEN run
 
-`Dragen` runs all tools over a results directory; absent tools are
-skipped:
+`Dragen` runs all tools over a results directory; absent tools are skipped:
 
 <details class="code-fold">
 <summary>View input files</summary>
@@ -116,7 +110,7 @@ skipped:
 ``` r
 indir_d <- system.file("extdata", package = "tidydragen")
 dir_tree(indir_d)
-/home/runner/miniconda3/envs/bump_env/lib/R/library/tidydragen/extdata
+/Users/pdiakumis/Library/R/arm64/4.6/library/tidydragen/extdata
 ├── dragenbcl
 │   ├── Adapter_Cycle_Metrics.csv
 │   ├── Adapter_Cycle_Metrics.csv.dvc
@@ -253,7 +247,7 @@ dir_tree(indir_d)
 
 </details>
 
-``` r
+```r
 outdir_d <- file.path(tempdir(), "dragen_out_parquet")
 d <- Dragen$new(indir_d)
 res <- d$run(
@@ -265,16 +259,16 @@ res <- d$run(
 )
 res # shows summary of Dragen object
 #> #--- Workflow Dragen ---#
-#> 
-#> |var           |value                                                                  |
-#> |:-------------|:----------------------------------------------------------------------|
-#> |name          |Dragen                                                                 |
-#> |path          |/home/runner/miniconda3/envs/bump_env/lib/R/library/tidydragen/extdata |
-#> |ntools        |8                                                                      |
-#> |files_total   |118                                                                    |
-#> |files_matched |59                                                                     |
-#> |tidied        |true                                                                   |
-#> |written       |true                                                                   |
+#>
+#> |var           |value                                                           |
+#> |:-------------|:---------------------------------------------------------------|
+#> |name          |Dragen                                                          |
+#> |path          |/Users/pdiakumis/Library/R/arm64/4.6/library/tidydragen/extdata |
+#> |ntools        |8                                                               |
+#> |files_total   |118                                                             |
+#> |files_matched |59                                                              |
+#> |tidied        |true                                                            |
+#> |written       |true                                                            |
 list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 #>  chr [1:89] "dragenbcl_adaptercyclemetrics.parquet" "dragenbcl_adaptermetrics.parquet" ...
 ```
@@ -282,98 +276,102 @@ list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
 PostgreSQL: `format = "db"` + DBI connection
 ([article](https://tidywf.github.io/tidydragen/articles/postgresql)).
 
-Optional provenance columns (recommended for multi-sample/multi-run
-use):
+Optional provenance columns (recommended for multi-sample/multi-run use):
 
-| Column | Purpose | User-supplied or auto-generated? |
-|----|----|----|
-| `input_id` | identifies the sample or input run | user |
-| `output_id` | identifies the tidydragen processing run | user or auto (ULID) |
-| `input_prefix` | filename prefix (e.g. sample name) | auto |
+| Column         | Purpose                                  | User-supplied or auto-generated? |
+| ----           | ----                                     | ----                             |
+| `input_id`     | identifies the sample or input run       | user                             |
+| `output_id`    | identifies the tidydragen processing run | user or auto (ULID)              |
+| `input_prefix` | filename prefix (e.g. sample name)       | auto                             |
 
 ## Installation
 
 From GitHub:
 
-``` r
+```r
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
 remotes::install_github("tidywf/tidydragen@v0.0.0.9005") # specific version
 ```
 
 - conda: <https://anaconda.org/tidywf/r-tidydragen>
-- Docker:
-  <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
+- Docker: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
 - more: <https://tidywf.github.io/tidydragen/articles/installation>
 
 ## CLI
 
 `tidydragen.R` is on `PATH` in the conda env. Otherwise:
 
-``` bash
+```bash
 td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
 export PATH="${td_cli}:${PATH}"
 ```
 
-    $ tidydragen.R --version
-    tidydragen 0.0.0.9005
+```
+$ tidydragen.R --version
+tidydragen 0.0.0.9005
 
-    #-----------------------------------#
-    $ tidydragen.R --help
-    usage: tidydragen.R [-h] [-v] {tidy,list,sync} ...
+#-----------------------------------#
+$ tidydragen.R --help
+usage: tidydragen.R [-h] [-v] {tidy,list,sync} ...
 
-    ✨ DRAGEN Output Tidying ✨
+✨ DRAGEN Output Tidying ✨
 
-    positional arguments:
-      {tidy,list,sync}  sub-command help
-        tidy            Tidy Workflow Outputs
-        list            List Parsable Workflow Outputs
-        sync            Sync Parsable Workflow Outputs From AWS S3
+positional arguments:
+  {tidy,list,sync}  sub-command help
+    tidy            Tidy Workflow Outputs
+    list            List Parsable Workflow Outputs
+    sync            Sync Parsable Workflow Outputs From AWS S3
 
-    options:
-      -h, --help        show this help message and exit
-      -v, --version     show program's version number and exit
+options:
+  -h, --help        show this help message and exit
+  -v, --version     show program's version number and exit
+'
+#-----------------------------------#
+#------- Tidy ----------------------#
+$ tidydragen.R tidy --help
+usage: tidydragen.R tidy [-h] -d IN_DIR [-o OUTPUT_DIR] [-f FORMAT]
+                         [--input_id INPUT_ID]
+                         [--output_id OUTPUT_ID | --ulid] [--dbname DBNAME]
+                         [--dbuser DBUSER] [--dbhost DBHOST] [--dbport DBPORT]
+                         [--include INCLUDE] [--exclude EXCLUDE]
+                         [--prefix_include] [-q]
 
-    #-----------------------------------#
-    #------- Tidy ----------------------#
-    $ tidydragen.R tidy --help
-    usage: tidydragen.R tidy [-h] -d IN_DIR [-o OUTPUT_DIR] [-f FORMAT]
-                             [--input_id INPUT_ID] [--output_id OUTPUT_ID |
-                             --ulid] [--dbname DBNAME] [--dbuser DBUSER]
-                             [--dbhost DBHOST] [--dbport DBPORT]
-                             [--include INCLUDE] [--exclude EXCLUDE]
-                             [--prefix_include] [-q]
+options:
+  -h, --help            show this help message and exit
+  -d IN_DIR, --in_dir IN_DIR
+                        Input directory.
+  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
+                        Output directory.
+  -f FORMAT, --format FORMAT
+                        Format of output [def: parquet] (parquet, db, tsv,
+                        csv, rds)
+  --input_id INPUT_ID   Input ID for this run.
+  --output_id OUTPUT_ID
+                        Output ID for this run.
+  --ulid                Generate a ULID as output ID.
+  --dbname DBNAME       Database name.
+  --dbuser DBUSER       Database user.
+  --dbhost DBHOST       Database host (default: driver/env default, e.g.
+                        PGHOST).
+  --dbport DBPORT       Database port (default: driver/env default, e.g.
+                        PGPORT).
+  --include INCLUDE     Include only these files (comma sep tool_parsers).
+  --exclude EXCLUDE     Exclude only these files (comma sep tool_parsers).
+  --prefix_include      Include input prefix column in output tables.
+  -q, --quiet           Shush all the logs.
 
-    options:
-      -h, --help            show this help message and exit
-      -d, --in_dir IN_DIR   Input directory.
-      -o, --output_dir OUTPUT_DIR
-                            Output directory.
-      -f, --format FORMAT   Format of output [def: parquet] (parquet, db, tsv,
-                            csv, rds)
-      --input_id INPUT_ID   Input ID for this run.
-      --output_id OUTPUT_ID
-                            Output ID for this run.
-      --ulid                Generate a ULID as output ID.
-      --dbname DBNAME       Database name.
-      --dbuser DBUSER       Database user.
-      --dbhost DBHOST       Database host (default: driver/env default, e.g.
-                            PGHOST).
-      --dbport DBPORT       Database port (default: driver/env default, e.g.
-                            PGPORT).
-      --include INCLUDE     Include only these files (comma sep tool_parsers).
-      --exclude EXCLUDE     Exclude only these files (comma sep tool_parsers).
-      --prefix_include      Include input prefix column in output tables.
-      -q, --quiet           Shush all the logs.
+#-----------------------------------#
+#------- List ----------------------#
+$ tidydragen.R list --help
+usage: tidydragen.R list [-h] -d IN_DIR [-f FORMAT] [-m MAX] [-q]
 
-    #-----------------------------------#
-    #------- List ----------------------#
-    $ tidydragen.R list --help
-    usage: tidydragen.R list [-h] -d IN_DIR [-f FORMAT] [-m MAX] [-q]
-
-    options:
-      -h, --help           show this help message and exit
-      -d, --in_dir IN_DIR  Input directory.
-      -f, --format FORMAT  Format of list output [def: pretty] (tsv, pretty)
-      -m, --max MAX        Max rows to show.
-      -q, --quiet          Shush all the logs.
+options:
+  -h, --help            show this help message and exit
+  -d IN_DIR, --in_dir IN_DIR
+                        Input directory.
+  -f FORMAT, --format FORMAT
+                        Format of list output [def: pretty] (tsv, pretty)
+  -m MAX, --max MAX     Max rows to show.
+  -q, --quiet           Shush all the logs.
+```
