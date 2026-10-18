@@ -135,7 +135,7 @@ column to its schema `type`).
   `csv-nohead`), the `on_*` policy fields.
 - `R/utils.R` --- `dragen_cov_metric_normalize()`, `dragen_cov_bin_split()`,
   `fastqc_bin_open()`/`fastqc_bin_expand()` (bin-range decoding), `pkg_name`.
-- `R/s3.R` --- `s3sync()` (sync test data). One function for every pipeline
+- `R/aws_s3.R` --- `s3sync()` (sync test data). One function for every pipeline
   (DNA/RNA/ctTSO/BCLConvert); the former `s3sync_bcl()`/`s3sync_cttso()` are
   gone. Delegates to `nemo::s3sync(workflow = "dragen")`, whose include/exclude
   patterns are **declared in the tool schemas** (a `glob` field per table,

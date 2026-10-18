@@ -58,6 +58,6 @@ Collate:
     'DragenFqc.R'
     'DragenMap.R'
     'Dragen.R'
-    's3.R'
+    'aws_s3.R'
     'tidydragen-package.R'
     'utils.R'

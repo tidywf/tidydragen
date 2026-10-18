@@ -21,51 +21,27 @@ child1 <- system.file(
 #| label: child-news
 ```
 
-## v0.0.0.9002 (current dev)
+## v0.0.0.9005 (current dev)
 
 Initial development release. `tidydragen` is a [nemo][nemo] child package that
 parses and tidies Illumina DRAGEN outputs into tidy tables, written to parquet,
 TSV, CSV, RDS, or PostgreSQL.
 
-- Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, ctTSO500,
-  BCLConvert demultiplexing, and Illumina InterOp run QC.
+- Pipelines:
+  - DNA tumor-normal
+  - DNA germline
+  - RNA tumor-only, ctTSO500,
+  - BCLConvert demultiplexing
+  - Illumina InterOp run QC.
 - Tools: `DragenMap`, `DragenFqc`, `DragenCov`, `DragenVar`, `DragenRna`,
   `DragenTso`, `DragenBcl`, `Interop`, orchestrated by the `Dragen` workflow.
-- `s3sync()` for pulling DRAGEN run outputs from S3.
+- Files holding several tables (e.g. coverage metrics, FastQC metrics, the
+  ctTSO500 `SampleAnalysisResults.json`, InterOp summaries) are split into one
+  output table per part, declared under `outputs:` in each tool's `schema.yaml`.
+- Fail-loud by default: metrics missing from the schema, values that fail type
+  coercion, and normally-constant id columns that vary all error. Set a tool's
+  `on_unmapped`, `on_coerce_fail` or `on_unexpected_col` to `"warn"` to relax.
+- `s3sync()` pulls only the DRAGEN files the schemas need from AWS S3.
 - CLI (`tidydragen.R`), conda package, and multi-arch Docker image.
-
-### Schema outputs
-
-Fan-out files declare their outputs under `outputs:` in `schema.yaml`, replacing
-the `__no_file_match__` sentinel tables. Output table names are unchanged; the
-file tables, and so the `tool_parser` names used by `include`/`exclude`, are
-renamed:
-
-| Old                        | New                    |
-| -------------------------- | ---------------------- |
-| `dragenmap_umimain`        | `dragenmap_umi`        |
-| `dragenmap_gcmain`         | `dragenmap_gc`         |
-| `dragenmap_replaymain`     | `dragenmap_replay`     |
-| `dragenfqc_posbasecontent` | `dragenfqc_fastqc`     |
-| `dragencov_metricsmain`    | `dragencov_covmetrics` |
-| `dragencov_reportbedmain`  | `dragencov_reportbed`  |
-| `dragenvar_ploidymain`     | `dragenvar_ploidy`     |
-| `dragentso_sarmain`        | `dragentso_sar`        |
-| `interop_summarymain`      | `interop_summary`      |
-| `interop_indexsummarymain` | `interop_indexsummary` |
-
-- Columns the schema never declared are now declared: the `<metric>_pct` twins
-  of `dragenmap_umimain` and `dragencov_metricsmain`, `cov_lo`/`cov_hi`
-  (`dragencov_metricsbins`), `cov_min` (`dragencov_metricscumu`) and `chrom`
-  (`dragenvar_ploidyratio`).
-- `fastqc`, `reportbed`, `replay`, `sar`, `summary` and `indexsummary` no longer
-  list `columns:` (their custom parsers never read them, and they duplicated one
-  of their outputs); their descriptions now describe the file.
-- `umi`, `gc`, `covmetrics` and `ploidy` descriptions now describe the file
-  instead of repeating their main output's.
-- `dragentso_sarmain.analysis_completed` and the `dragentso_sarsnv` flags (e.g.
-  `iscanonical`) are now character (`"TRUE"`/`"FALSE"`), matching their `char`
-  schema type. An empty `dragentso_sarcnv` now has numeric
-  `foldchange`/`qual`/`start`/`end`.
 
 [nemo]: https://github.com/tidywf/nemo

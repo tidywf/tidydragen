@@ -10,14 +10,15 @@ One `schema.yaml` per tool under `inst/config/tools/<tool>/`. Class/schema
 walkthrough: [nemo
 structure](https://tidywf.github.io/nemo/articles/structure.html).
 
-All tools extend `DragenTool` (`nemo::Tool` child), which holds shared parsing,
-notably the `dragen-metrics` ftype for headerless
-`section,rg,variable,count[,pct]` `*_metrics.csv` files. See [UML](uml.html).
+DRAGEN tools extend `DragenTool` (`nemo::Tool` child), which holds shared
+parsing, notably the `dragen-metrics` ftype for headerless
+`section,rg,variable,count[,pct]` `*_metrics.csv` files. `Interop` (Illumina run
+QC, not a DRAGEN output) extends `nemo::Tool` directly. See [UML](uml.html).
 
 ## Why several tools, not one
 
-One tool per DRAGEN output group: `DragenMap`, `DragenCov`, `DragenVar`,
-`DragenRna`, `DragenFqc`, `DragenTso`.
+One tool per output group: `DragenMap`, `DragenCov`, `DragenVar`, `DragenRna`,
+`DragenFqc`, `DragenTso`, `DragenBcl`, `Interop`.
 
 - Pipelines produce different subsets; `Dragen` skips absent tools
 - One tool = one `schema.yaml` = one output token (e.g.

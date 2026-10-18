@@ -68,7 +68,8 @@ Parses and tidies Illumina [DRAGEN] outputs into versioned, `snake_case` tables,
 written to Parquet, PostgreSQL, TSV, CSV or RDS (plus a `metadata.parquet` per
 run). Built on [nemo].
 
-Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.
+Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA, plus
+BCLConvert demultiplexing and Illumina InterOp run QC.
 
 [DRAGEN]: <https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html> "Illumina DRAGEN"
 [nemo]: <https://github.com/tidywf/nemo> "nemo"
@@ -222,5 +223,9 @@ echo ""
 echo "#-----------------------------------#"
 echo "#------- List ----------------------#"
 echo "$ tidydragen.R list --help" & tidydragen.R list --help
+echo ""
+echo "#-----------------------------------#"
+echo "#------- Sync ----------------------#"
+echo "$ tidydragen.R sync --help" & tidydragen.R sync --help
 echo ""
 ```

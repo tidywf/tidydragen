@@ -73,7 +73,7 @@ m |> str(list.len = 10)
 ## Output - Full DRAGEN run
 
 `Dragen` runs all tools on a parent directory; absent tools are skipped, so it
-works for germline, somatic, RNA and ctTSO500:
+works for germline, somatic, RNA, ctTSO500 and BCLConvert/InterOp run folders:
 
 ```{r}
 #| label: dragen_run
