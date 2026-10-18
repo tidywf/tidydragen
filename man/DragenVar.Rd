@@ -4,8 +4,7 @@
 \alias{DragenVar}
 \title{DragenVar Object}
 \description{
-Parses and tidies DRAGEN variant-related metric outputs (variant caller, SV,
-CNV, ploidy, TMB, HRD, etc.).
+Parses and tidies DRAGEN variant-calling outputs.
 }
 \examples{
 cls <- DragenVar; tool <- "dragenvar"
@@ -73,8 +72,7 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenVar-tidy_vc"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_vc}{}}}
 \subsection{Method \code{tidy_vc()}}{
-Tidy \code{vc_metrics.csv}. \code{rg} (sample id) kept raw; region moved
-from metric names into a \code{region} column.
+Tidy \code{vc_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_vc(x)}\if{html}{\out{</div>}}
 }
@@ -91,8 +89,7 @@ from metric names into a \code{region} column.
 \if{html}{\out{<a id="method-DragenVar-tidy_gvcf"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_gvcf}{}}}
 \subsection{Method \code{tidy_gvcf()}}{
-Tidy \code{gvcf_metrics.csv} (gVCF postfilter). Same shape as
-\code{vc_metrics}; region moved into a \code{region} column.
+Tidy \code{gvcf_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_gvcf(x)}\if{html}{\out{</div>}}
 }
@@ -143,8 +140,7 @@ Tidy \code{vc_hethom_ratio_metrics.csv}.
 \if{html}{\out{<a id="method-DragenVar-tidy_ploidy"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_ploidy}{}}}
 \subsection{Method \code{tidy_ploidy()}}{
-Tidy \code{ploidy_estimation_metrics.csv} into \code{ploidymain} (sample
-scalars) and \code{ploidyratio} (long, one row per chromosome ratio).
+Tidy \code{ploidy_estimation_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_ploidy(x)}\if{html}{\out{</div>}}
 }
@@ -161,7 +157,7 @@ scalars) and \code{ploidyratio} (long, one row per chromosome ratio).
 \if{html}{\out{<a id="method-DragenVar-tidy_nuctrans"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-tidy_nuctrans}{}}}
 \subsection{Method \code{tidy_nuctrans()}}{
-Tidy \code{allele_transition_noise_metrics.csv}
+Tidy \code{allele_transition_noise_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$tidy_nuctrans(x)}\if{html}{\out{</div>}}
 }
@@ -178,7 +174,7 @@ Tidy \code{allele_transition_noise_metrics.csv}
 \if{html}{\out{<a id="method-DragenVar-parse_microsat"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-parse_microsat}{}}}
 \subsection{Method \code{parse_microsat()}}{
-Parse \code{microsat_output.json} (MSI).
+Parse \code{microsat_output.json}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_microsat(x)}\if{html}{\out{</div>}}
 }
@@ -195,8 +191,7 @@ Parse \code{microsat_output.json} (MSI).
 \if{html}{\out{<a id="method-DragenVar-parse_contamination"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-parse_contamination}{}}}
 \subsection{Method \code{parse_contamination()}}{
-Parse \code{contamination.json} (cttso cross-sample contamination).
-Flat JSON; the per-SNP \code{SNPsUsed} array is dropped, \code{NaN} p-value -> NA.
+Parse \code{contamination.json}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_contamination(x)}\if{html}{\out{</div>}}
 }
@@ -213,8 +208,7 @@ Flat JSON; the per-SNP \code{SNPsUsed} array is dropped, \code{NaN} p-value -> N
 \if{html}{\out{<a id="method-DragenVar-parse_ploidyvcf"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenVar-parse_ploidyvcf}{}}}
 \subsection{Method \code{parse_ploidyvcf()}}{
-Parse \code{ploidy.vcf.gz} depth-of-coverage \code{dc} and normalised
-depth \code{ndc}.
+Parse \code{ploidy.vcf.gz}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenVar$parse_ploidyvcf(x)}\if{html}{\out{</div>}}
 }

@@ -4,8 +4,7 @@
 \alias{DragenBcl}
 \title{DragenBcl Object}
 \description{
-Parses and tidies DRAGEN BCLConvert demultiplexing outputs from a \verb{Reports/}
-directory. Most tables are plain header CSVs handled by the nemo \code{csv} ftype.
+Parses and tidies DRAGEN BCLConvert \verb{Reports/} outputs.
 }
 \examples{
 cls <- DragenBcl; tool <- "dragenbcl"
@@ -69,7 +68,7 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenBcl-parse_demultiplexstats"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenBcl-parse_demultiplexstats}{}}}
 \subsection{Method \code{parse_demultiplexstats()}}{
-Parse Demultiplex_Stats.csv (splits combined \code{Index}).
+Parse \code{Demultiplex_Stats.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenBcl$parse_demultiplexstats(x)}\if{html}{\out{</div>}}
 }
@@ -77,7 +76,7 @@ Parse Demultiplex_Stats.csv (splits combined \code{Index}).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to Demultiplex_Stats.csv.}
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }
@@ -86,7 +85,7 @@ Parse Demultiplex_Stats.csv (splits combined \code{Index}).
 \if{html}{\out{<a id="method-DragenBcl-parse_demultiplextilestats"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenBcl-parse_demultiplextilestats}{}}}
 \subsection{Method \code{parse_demultiplextilestats()}}{
-Parse Demultiplex_Tile_Stats.csv (splits combined \code{Index}).
+Parse \code{Demultiplex_Tile_Stats.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenBcl$parse_demultiplextilestats(x)}\if{html}{\out{</div>}}
 }
@@ -94,7 +93,7 @@ Parse Demultiplex_Tile_Stats.csv (splits combined \code{Index}).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to Demultiplex_Tile_Stats.csv.}
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }
@@ -103,7 +102,7 @@ Parse Demultiplex_Tile_Stats.csv (splits combined \code{Index}).
 \if{html}{\out{<a id="method-DragenBcl-parse_fastqlist"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenBcl-parse_fastqlist}{}}}
 \subsection{Method \code{parse_fastqlist()}}{
-Parse fastq_list.csv (pivots Read1File/Read2File long).
+Parse \code{fastq_list.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenBcl$parse_fastqlist(x)}\if{html}{\out{</div>}}
 }
@@ -111,7 +110,7 @@ Parse fastq_list.csv (pivots Read1File/Read2File long).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to fastq_list.csv.}
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }
@@ -120,7 +119,7 @@ Parse fastq_list.csv (pivots Read1File/Read2File long).
 \if{html}{\out{<a id="method-DragenBcl-parse_runinfo"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenBcl-parse_runinfo}{}}}
 \subsection{Method \code{parse_runinfo()}}{
-Parse RunInfo.xml into a one-row run-metadata table.
+Parse \code{RunInfo.xml}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenBcl$parse_runinfo(x)}\if{html}{\out{</div>}}
 }
@@ -128,7 +127,7 @@ Parse RunInfo.xml into a one-row run-metadata table.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{(\code{character(1)})\cr Path to RunInfo.xml.}
+\item{\code{x}}{(\code{character(1)})\cr Path to file.}
 }
 \if{html}{\out{</div>}}
 }

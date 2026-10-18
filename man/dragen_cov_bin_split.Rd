@@ -14,12 +14,8 @@ dragen_cov_bin_split(v)
 for the open \code{inf} upper bound).
 }
 \description{
-Parses the coverage-bin rows of a DRAGEN \verb{*_coverage_metrics.csv}
-(\verb{PCT of <region> with coverage [lo: hi)}) into their numeric depth bounds.
-The open, cumulative bins (\verb{[Nx: inf)}) return \code{NA} for the upper bound, which
-distinguishes them from the bucketed bins (\verb{[lo: hi)}). \link{DragenCov} uses this
-\code{NA} to partition the bins into the \code{metricsbins} (bucketed) and \code{metricscumu}
-(cumulative) long tables.
+Parses DRAGEN coverage-bin names (\verb{PCT of <region> with coverage [lo: hi)})
+into their depth bounds. Open bins (\verb{[Nx: inf)}) get an \code{NA} upper bound.
 }
 \examples{
 dragen_cov_bin_split(c(

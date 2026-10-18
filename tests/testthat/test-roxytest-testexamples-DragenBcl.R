@@ -2,7 +2,7 @@
 
 # File R/DragenBcl.R: @testexamples
 
-test_that("Function DragenBcl() @ L61", {
+test_that("Function DragenBcl() @ L60", {
   
   cls <- DragenBcl; tool <- "dragenbcl"
   indir <- system.file("extdata", tool, package = "tidydragen")

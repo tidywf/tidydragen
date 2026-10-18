@@ -1,8 +1,7 @@
 #' @title DragenBcl Object
 #'
 #' @description
-#' Parses and tidies DRAGEN BCLConvert demultiplexing outputs from a `Reports/`
-#' directory. Most tables are plain header CSVs handled by the nemo `csv` ftype.
+#' Parses and tidies DRAGEN BCLConvert `Reports/` outputs.
 #'
 #' @examples
 #' cls <- DragenBcl; tool <- "dragenbcl"
@@ -73,20 +72,20 @@ DragenBcl <- R6::R6Class(
       super$initialize(name = "dragenbcl", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
 
-    #' @description Parse Demultiplex_Stats.csv (splits combined `Index`).
-    #' @param x (`character(1)`)\cr Path to Demultiplex_Stats.csv.
+    #' @description Parse `Demultiplex_Stats.csv`.
+    #' @param x (`character(1)`)\cr Path to file.
     parse_demultiplexstats = function(x) {
       private$parse_demux(x, tile = FALSE)
     },
 
-    #' @description Parse Demultiplex_Tile_Stats.csv (splits combined `Index`).
-    #' @param x (`character(1)`)\cr Path to Demultiplex_Tile_Stats.csv.
+    #' @description Parse `Demultiplex_Tile_Stats.csv`.
+    #' @param x (`character(1)`)\cr Path to file.
     parse_demultiplextilestats = function(x) {
       private$parse_demux(x, tile = TRUE)
     },
 
-    #' @description Parse fastq_list.csv (pivots Read1File/Read2File long).
-    #' @param x (`character(1)`)\cr Path to fastq_list.csv.
+    #' @description Parse `fastq_list.csv`.
+    #' @param x (`character(1)`)\cr Path to file.
     parse_fastqlist = function(x) {
       # RGID, RGSM, RGLB, Lane, Read1File, Read2File
       d <- readr::read_csv(x, col_types = "cccicc")
@@ -101,8 +100,8 @@ DragenBcl <- R6::R6Class(
       d[]
     },
 
-    #' @description Parse RunInfo.xml into a one-row run-metadata table.
-    #' @param x (`character(1)`)\cr Path to RunInfo.xml.
+    #' @description Parse `RunInfo.xml`.
+    #' @param x (`character(1)`)\cr Path to file.
     parse_runinfo = function(x) {
       doc <- xml2::read_xml(x)
       run <- xml2::xml_find_first(doc, ".//Run")
@@ -148,18 +147,15 @@ DragenBcl <- R6::R6Class(
     }
   ),
   private = list(
-    # Run-scoped: no sample id in the basename, so blank the prefix. nemo then
-    # names outputs `dragenbcl_<table>` (with `_2`/`_3` disambiguation when a run
-    # spans several Reports/ dirs). Overrides DragenTool's coverage refine_files;
-    # BCLConvert files never match the coverage regex anyway.
+    # Run-scoped: no sample id in the basename, so blank the prefix ->
+    # `dragenbcl_<table>`. Replaces DragenTool's coverage refine_files.
     refine_files = function(files) {
       if (nrow(files) > 0) {
         files[["prefix"]] <- ""
       }
       files
     },
-    # Shared reader for Demultiplex_Stats.csv / Demultiplex_Tile_Stats.csv:
-    # splits Index (i7-i5) into index/index2
+    # Demultiplex_[Tile_]Stats.csv: splits Index (i7-i5) into index/index2
     parse_demux = function(x, tile) {
       # Lane, SampleID, Index[, Tile], then 8 count/pct metrics.
       ct <- if (tile) "iccidddddddd" else "iccdddddddd"

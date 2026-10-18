@@ -4,13 +4,7 @@
 \alias{DragenCov}
 \title{DragenCov Object}
 \description{
-Parses and tidies DRAGEN coverage outputs (per-contig mean coverage, coverage
-metrics, fine histograms, and coverage-report BEDs). Some files fan out into
-multiple output tables: \code{tidy_covmetrics} splits the coverage metrics into
-\code{metricsmain}/\code{metricsbins}/\code{metricscumu}, and \code{tidy_reportbed} splits the
-coverage-report BED into \code{reportbedmain}/\code{reportbedcumu}. Every other table has
-\code{tidy_name == parser}, so its name is unchanged. The per-method docs below cover
-each table's specifics.
+Parses and tidies DRAGEN coverage outputs.
 
 The coverage region (\code{wgs} / \code{tmb} /\verb{qc-coverage-region-\{<region>\}}) and
 phenotype (\code{normal} / \code{tumor}) are folded from the filename into the output
@@ -78,8 +72,7 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenCov-tidy_covmetrics"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenCov-tidy_covmetrics}{}}}
 \subsection{Method \code{tidy_covmetrics()}}{
-Tidy \verb{*_coverage_metrics.csv} into \code{metricsmain} (wide summary),
-\code{metricsbins} (bucketed depth histogram), and \code{metricscumu} (cumulative).
+Tidy \verb{*_coverage_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenCov$tidy_covmetrics(x)}\if{html}{\out{</div>}}
 }
@@ -96,7 +89,7 @@ Tidy \verb{*_coverage_metrics.csv} into \code{metricsmain} (wide summary),
 \if{html}{\out{<a id="method-DragenCov-parse_finehist"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenCov-parse_finehist}{}}}
 \subsection{Method \code{parse_finehist()}}{
-Parse \verb{*_fine_hist.csv}, returning \code{depth} as an integer.
+Parse \verb{*_fine_hist.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenCov$parse_finehist(x)}\if{html}{\out{</div>}}
 }
@@ -113,7 +106,7 @@ Parse \verb{*_fine_hist.csv}, returning \code{depth} as an integer.
 \if{html}{\out{<a id="method-DragenCov-parse_reportbed"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenCov-parse_reportbed}{}}}
 \subsection{Method \code{parse_reportbed()}}{
-Parse \verb{*_cov_report.bed}; \code{tidy_reportbed()} types and splits it.
+Parse \verb{*_cov_report.bed}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenCov$parse_reportbed(x)}\if{html}{\out{</div>}}
 }
@@ -130,8 +123,7 @@ Parse \verb{*_cov_report.bed}; \code{tidy_reportbed()} types and splits it.
 \if{html}{\out{<a id="method-DragenCov-tidy_reportbed"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenCov-tidy_reportbed}{}}}
 \subsection{Method \code{tidy_reportbed()}}{
-Tidy \verb{*_cov_report.bed} into \code{reportbedmain} (per-interval
-distribution stats, wide) and \code{reportbedcumu} (coverage thresholds, long).
+Tidy \verb{*_cov_report.bed}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenCov$tidy_reportbed(x)}\if{html}{\out{</div>}}
 }

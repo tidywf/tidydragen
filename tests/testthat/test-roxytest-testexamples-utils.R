@@ -2,7 +2,7 @@
 
 # File R/utils.R: @testexamples
 
-test_that("Function dragen_cov_metric_normalize() @ L43", {
+test_that("Function dragen_cov_metric_normalize() @ L32", {
   
   dragen_cov_metric_normalize(c(
     "Aligned bases",
@@ -23,7 +23,7 @@ test_that("Function dragen_cov_metric_normalize() @ L43", {
 })
 
 
-test_that("Function dragen_cov_bin_split() @ L78", {
+test_that("Function dragen_cov_bin_split() @ L63", {
   
   dragen_cov_bin_split(c(
     "PCT of genome with coverage [ 100x: inf)",
@@ -39,7 +39,7 @@ test_that("Function dragen_cov_bin_split() @ L78", {
 })
 
 
-test_that("Function fastqc_bin_open() @ L114", {
+test_that("Function fastqc_bin_open() @ L92", {
   
   fastqc_bin_open(c("150", "145-152", "256+", ">=255"))
   
@@ -48,7 +48,7 @@ test_that("Function fastqc_bin_open() @ L114", {
 })
 
 
-test_that("Function fastqc_bin_expand() @ L145", {
+test_that("Function fastqc_bin_expand() @ L116", {
   
   fastqc_bin_expand(c("150", "2-3", "137-140"))
   

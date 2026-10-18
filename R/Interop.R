@@ -1,26 +1,14 @@
 #' @title Interop Object
 #'
 #' @description
-#' Parses and tidies Illumina InterOp run-QC summary outputs: `<run>_summary.csv`
-#' (per-read/lane/surface run metrics), `<run>-index_summary.csv`
-#' (per-lane/index demux QC), and `imaging_table.csv`/`imaging_table.csv.gz`
-#' (per-lane/tile/cycle imaging metrics; gzipped or not, both accepted). InterOp
-#' is Illumina run-level QC, not a DRAGEN output, so unlike the other tools this
-#' one inherits `nemo::Tool` directly rather than the DRAGEN-shared `DragenTool`
-#' base; it's housed here for convenience (typically co-located with
-#' BCLConvert). The run id for `summary.csv`/`index_summary.csv` lives in the
-#' filename itself, so the usual prefix extraction just works with no
-#' `refine_files()` override needed there; `imaging_table.csv[.gz]` carries no
-#' run id in its filename at all, so that one is handled explicitly.
+#' Parses and tidies Illumina InterOp run-QC summaries. Not a DRAGEN output, so
+#' it inherits [nemo::Tool] rather than [DragenTool]; housed here since it's
+#' typically co-located with BCLConvert outputs.
 #'
 #' @examples
 #' cls <- Interop; tool <- "interop"
-#' # summaries/ kept separate from imaging_tables/ so scanning for one never
-#' # also matches the other (list_files_dir() recurses; `imaging_table.csv`
-#' # and `.csv.gz` both match the imagingtable pattern, so a single run over
-#' # imaging_tables/ picks up BOTH compressed/ and uncompressed/ at once and
-#' # nemo's generic same-table collision handling disambiguates them, `_2`
-#' # suffix --- exercised deliberately below, not avoided).
+#' # imaging_tables/ holds a .csv and a .csv.gz copy, so its run also
+#' # exercises nemo's `_2` same-table disambiguation.
 #' odir <- tempdir()
 #' obj_sum <- cls$new(system.file("extdata", tool, "summaries", package = "tidydragen"))
 #' obj_sum$run(output_dir = odir, format = "parquet", input_id = "run1")
@@ -81,9 +69,7 @@ Interop <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "interop", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Parse `<run>_summary.csv`; returns the raw level table and
-    #' the raw per-read/lane/surface table (both still character), wrapped in a
-    #' one-row tibble list-column. `tidy_summary()` types and splits them.
+    #' @description Parse `<run>_summary.csv` into a one-row list-column tibble.
     #' @param x (`character(1)`)\cr Path to file.
     parse_summary = function(x) {
       lines <- readr::read_lines(x)
@@ -103,10 +89,7 @@ Interop <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Fan `<run>_summary.csv` into `summarymain` (level table, wide,
-    #' 6 rows) and `summaryreadlane` (per-read/lane/surface detail, long).
-    #' `"nan"`/`"-"` sentinel values -> NA throughout; `"mean +/- sd"` and
-    #' `"a / b"` cells are split into paired columns.
+    #' @description Tidy `<run>_summary.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_summary = function(x) {
       if (!tibble::is_tibble(x)) {
@@ -176,9 +159,8 @@ Interop <- R6::R6Class(
       list(summarymain = summary_tbl, summaryreadlane = readlane_tbl) |>
         nemo::nemo_enframe()
     },
-    #' @description Parse `<run>-index_summary.csv`; returns the raw per-lane
-    #' totals and the raw per-index table (both still character), wrapped in a
-    #' one-row tibble list-column. `tidy_indexsummary()` types them.
+    #' @description Parse `<run>-index_summary.csv` into a one-row list-column
+    #' tibble.
     #' @param x (`character(1)`)\cr Path to file.
     parse_indexsummary = function(x) {
       lines <- readr::read_lines(x)
@@ -187,8 +169,7 @@ Interop <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Fan `<run>-index_summary.csv` into `indexsummarymain` (per-lane
-    #' totals, wide) and `indexsummarydetail` (per-index rows, long).
+    #' @description Tidy `<run>-index_summary.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_indexsummary = function(x) {
       if (!tibble::is_tibble(x)) {
@@ -218,14 +199,9 @@ Interop <- R6::R6Class(
       list(indexsummarymain = indexsummary_tbl, indexsummarydetail = detail_tbl) |>
         nemo::nemo_enframe()
     },
-    #' @description Parse `imaging_table.csv`/`imaging_table.csv.gz` (`readr`
-    #' decompresses `.gz` transparently by extension --- no branching needed
-    #' here). Its header is unreliable for grouped columns (e.g.
-    #' `"Corrected<A;C;G;T>"` prints one label but is followed by 4 data
-    #' columns), so this bypasses the header entirely (`skip = 3`, past the
-    #' 2 `#` comment lines + the header row) and reads 49 positional character
-    #' columns; `"nan"` -> `NA` at parse time so `tidy_imagingtable()`'s
-    #' `type_convert()` yields `NA`, not `NaN`.
+    #' @description Parse `imaging_table.csv[.gz]` positionally, skipping its
+    #' header: grouped columns (e.g. `Corrected<A;C;G;T>`) have one label for
+    #' 4 data columns.
     #' @param x (`character(1)`)\cr Path to file.
     parse_imagingtable = function(x) {
       d <- readr::read_csv(
@@ -233,14 +209,13 @@ Interop <- R6::R6Class(
         skip = 3,
         col_names = FALSE,
         col_types = readr::cols(.default = "c"),
-        na = c("", "NA", "nan"),
+        na = c("", "NA", "nan"), # "nan" -> NA, not NaN after type_convert()
         show_col_types = FALSE
       )
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Type `imaging_table.csv[.gz]`'s 49 positional columns via
-    #' the schema (rename + `type_convert()`); no fan-out, one flat table.
+    #' @description Tidy `imaging_table.csv[.gz]`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_imagingtable = function(x) {
       if (!tibble::is_tibble(x)) {
@@ -250,12 +225,8 @@ Interop <- R6::R6Class(
     }
   ),
   private = list(
-    # Run-scoped like DragenBcl: imaging_table.csv[.gz] carries no run id in its
-    # filename (always literally "imaging_table.csv" or ".csv.gz"), so blank its
-    # prefix -> nemo names the output plain "interop_imagingtable" instead of
-    # collapsing the whole basename into the prefix (nemo's default when the
-    # pattern consumes it entirely). summarymain/indexsummarymain keep their
-    # filename-derived run-id prefix untouched.
+    # imaging_table.csv[.gz] has no run id in its filename: blank its prefix
+    # (run-scoped, like DragenBcl) -> `interop_imagingtable`.
     refine_files = function(files) {
       if (nrow(files) > 0) {
         files[["prefix"]][files[["parser"]] == "imagingtable"] <- ""

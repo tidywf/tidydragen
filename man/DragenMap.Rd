@@ -4,8 +4,7 @@
 \alias{DragenMap}
 \title{DragenMap Object}
 \description{
-Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics, run-time
-metrics, the fragment-length histogram, and run provenance (\code{replay.json}).
+Parses and tidies DRAGEN mapping/alignment outputs.
 }
 \examples{
 cls <- DragenMap; tool <- "dragenmap"
@@ -71,8 +70,7 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenMap-tidy_metrics"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_metrics}{}}}
 \subsection{Method \code{tidy_metrics()}}{
-Tidy \code{mapping_metrics.csv}. Both id columns retained
-(\code{drop_constant = character()}).
+Tidy \code{mapping_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_metrics(x)}\if{html}{\out{</div>}}
 }
@@ -89,8 +87,7 @@ Tidy \code{mapping_metrics.csv}. Both id columns retained
 \if{html}{\out{<a id="method-DragenMap-tidy_umi"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_umi}{}}}
 \subsection{Method \code{tidy_umi()}}{
-Tidy \code{umi_metrics.csv} into \code{umimain} (summary, wide) and
-\code{umihist} (the \code{{a|b|c}} histograms, long).
+Tidy \code{umi_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_umi(x)}\if{html}{\out{</div>}}
 }
@@ -107,8 +104,7 @@ Tidy \code{umi_metrics.csv} into \code{umimain} (summary, wide) and
 \if{html}{\out{<a id="method-DragenMap-tidy_gc"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_gc}{}}}
 \subsection{Method \code{tidy_gc()}}{
-Tidy \code{gc_metrics.csv} into \code{gcmain} (GC METRICS SUMMARY, wide)
-and \code{gcbias} (per-GC-window GC BIAS DETAILS, long — GC 0-100).
+Tidy \code{gc_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_gc(x)}\if{html}{\out{</div>}}
 }
@@ -125,8 +121,7 @@ and \code{gcbias} (per-GC-window GC BIAS DETAILS, long — GC 0-100).
 \if{html}{\out{<a id="method-DragenMap-tidy_time"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_time}{}}}
 \subsection{Method \code{tidy_time()}}{
-Tidy \code{time_metrics.csv}, using seconds (not HH:MM:SS) as the
-metric value and surfacing \code{total_runtime} first.
+Tidy \code{time_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_time(x)}\if{html}{\out{</div>}}
 }
@@ -143,7 +138,7 @@ metric value and surfacing \code{total_runtime} first.
 \if{html}{\out{<a id="method-DragenMap-parse_fraglenhist"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-parse_fraglenhist}{}}}
 \subsection{Method \code{parse_fraglenhist()}}{
-Parse \code{fragment_length_hist.csv} into a long tibble.
+Parse \code{fragment_length_hist.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_fraglenhist(x)}\if{html}{\out{</div>}}
 }
@@ -160,9 +155,7 @@ Parse \code{fragment_length_hist.csv} into a long tibble.
 \if{html}{\out{<a id="method-DragenMap-parse_replay"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-parse_replay}{}}}
 \subsection{Method \code{parse_replay()}}{
-Parse a \code{replay.json} file; returns the whole
-parsed JSON wrapped in a one-row tibble list-column. \code{tidy_replay()}
-fans it out.
+Parse \code{replay.json} into a one-row list-column tibble.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$parse_replay(x)}\if{html}{\out{</div>}}
 }
@@ -179,9 +172,7 @@ fans it out.
 \if{html}{\out{<a id="method-DragenMap-tidy_replay"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenMap-tidy_replay}{}}}
 \subsection{Method \code{tidy_replay()}}{
-Fan a \code{replay.json} file into \code{replaymain} (run
-provenance, 1 row) and \code{replayconfig} (the full \code{dragen_config} dump,
-long).
+Tidy \code{replay.json}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenMap$tidy_replay(x)}\if{html}{\out{</div>}}
 }

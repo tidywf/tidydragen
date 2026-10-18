@@ -2,10 +2,9 @@
 
 # File R/DragenTool.R: @testexamples
 
-test_that("Function DragenTool() @ L82", {
+test_that("Function DragenTool() @ L73", {
   
-  # Abstract base. Normally you use a subclass (e.g. DragenVar). The parser/tidier
-  # are private; here we just inspect the inherited surface + policy fields.
+  # Abstract base: normally you use a subclass (e.g. DragenVar).
   indir <- system.file("extdata/dragenmap", package = "tidydragen")
   tool <- DragenTool$new(name = "dragenmap", pkg = "tidydragen", path = indir)
   tool$list_files()      # inherited nemo::Tool file discovery
@@ -15,8 +14,7 @@ test_that("Function DragenTool() @ L82", {
   # flip a policy to be lenient (drop/keep-NA with a warning instead)
   tool$on_unmapped <- "warn"
   
-  # Exercise the fail-loud paths end to end (not just the field above), via a
-  # deliberately-corrupted copy of a real DragenRna fixture (smallest schema).
+  # fail-loud paths, via a corrupted copy of the DragenRna fixture
   rna_dir <- system.file("extdata/dragenrna", package = "tidydragen")
   bad_dir <- tempfile()
   dir.create(bad_dir)

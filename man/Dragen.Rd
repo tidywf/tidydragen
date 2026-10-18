@@ -4,11 +4,8 @@
 \alias{Dragen}
 \title{Dragen Object}
 \description{
-Orchestrates all DRAGEN tools (\link{DragenMap}, \link{DragenFqc}, \link{DragenCov},
-\link{DragenVar}, \link{DragenRna}, \link{DragenTso}, \link{DragenBcl}) plus \link{Interop} for
-convenience. A DRAGEN run exposes a different subset of files depending on
-the pipeline; tools whose files are absent contribute nothing, so a single
-\code{Dragen$run()} works across all pipelines.
+Runs every tool in \link{DRAGEN_TOOLS}. Tools whose files are absent contribute
+nothing, so one \code{Dragen$run()} covers any DRAGEN pipeline.
 }
 \examples{
 indir <- system.file("extdata", package = "tidydragen")

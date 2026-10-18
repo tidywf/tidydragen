@@ -1,9 +1,7 @@
 #' @title DragenFqc Object
 #'
 #' @description
-#' Parses and tidies the DRAGEN FASTQC metrics file (`fastqc_metrics.csv`).
-#' Splits into the 8 per-section `dragenfqc_<section>` outputs declared in its
-#' schema.
+#' Parses and tidies DRAGEN FASTQC metrics (`fastqc_metrics.csv`).
 #'
 #' @examples
 #' cls <- DragenFqc; tool <- "dragenfqc"
@@ -69,14 +67,12 @@ DragenFqc <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenfqc", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Parse headerless `section,mate,metric,value` `fastqc_metrics.csv`
-    #' into a long tibble.
+    #' @description Parse `fastqc_metrics.csv`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_fastqc = function(x) {
       d <- readr::read_lines(x) |>
         tibble::as_tibble_col(column_name = "raw") |>
         # drop "Total Sequence Starts" rows: extra field, derivable from the rest
-        # of the SEQUENCE POSITIONS section
         dplyr::filter(!grepl("Total Sequence Starts", .data$raw)) |>
         tidyr::separate_wider_delim(
           "raw",
@@ -90,14 +86,13 @@ DragenFqc <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Tidy `fastqc_metrics.csv` into 8 long per-section sub-tables.
+    #' @description Tidy `fastqc_metrics.csv`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_fastqc = function(x) {
       if (!tibble::is_tibble(x)) {
         x <- self$parse_fastqc(x)
       }
-      # count: expand binned positions, divide count across grains, then express
-      # each base as a proportion of the total bases at that (mate, pos).
+      # counts: expand bins and divide across grains, then prop per (mate, pos).
       posbasecontent <- x |>
         dplyr::filter(.data$section == "POSITIONAL BASE CONTENT") |>
         tidyr::separate_wider_delim(
@@ -118,7 +113,7 @@ DragenFqc <- R6::R6Class(
           .by = c("mate", "pos")
         ) |>
         dplyr::select("mate", "pos", "base", "prop")
-      # per-base mean quality: an average, so kept as-is across expanded bins.
+      # averages: kept as-is across expanded bins.
       posbasemeanqual <- x |>
         dplyr::filter(.data$section == "POSITIONAL BASE MEAN QUALITY") |>
         tidyr::separate_wider_delim(
@@ -130,7 +125,7 @@ DragenFqc <- R6::R6Class(
         tidyr::unnest_longer("pos") |>
         dplyr::mutate(avg_qual = round(.data$value, 2), pos = as.integer(.data$pos)) |>
         dplyr::select("mate", "pos", "base", "avg_qual")
-      # per-position quality quantiles (QV): kept as-is across expanded bins.
+      # quantiles: kept as-is across expanded bins.
       posqual <- x |>
         dplyr::filter(.data$section == "POSITIONAL QUALITY") |>
         tidyr::separate_wider_delim(
@@ -146,7 +141,6 @@ DragenFqc <- R6::R6Class(
           qv = .data$value
         ) |>
         dplyr::select("mate", "pos", "pct", "qv")
-      # read count per %GC bin (not position-binned; no split).
       readgc <- x |>
         dplyr::filter(.data$section == "READ GC CONTENT") |>
         tidyr::separate_wider_delim(
@@ -156,7 +150,6 @@ DragenFqc <- R6::R6Class(
         ) |>
         dplyr::mutate(gc_pct = as.integer(sub("%", "", .data$pct)), reads = .data$value) |>
         dplyr::select("mate", "gc_pct", "reads")
-      # mean read quality per %GC bin.
       readgcqual <- x |>
         dplyr::filter(.data$section == "READ GC CONTENT QUALITY") |>
         tidyr::separate_wider_delim(
@@ -169,7 +162,7 @@ DragenFqc <- R6::R6Class(
           avg_qual = round(.data$value, 2)
         ) |>
         dplyr::select("mate", "gc_pct", "avg_qual")
-      # count: expand binned lengths, divide count across grains.
+      # counts: expand bins and divide across grains.
       readlen <- x |>
         dplyr::filter(.data$section == "READ LENGTHS") |>
         tidyr::separate_wider_delim(
@@ -185,7 +178,6 @@ DragenFqc <- R6::R6Class(
         dplyr::mutate(reads = .data$value / dplyr::n(), .by = "bin_group") |>
         dplyr::mutate(bp = as.integer(.data$bp)) |>
         dplyr::select("mate", "bp", "reads")
-      # read count per mean-quality (Q) bin (not position-binned; no split).
       readmeanqual <- x |>
         dplyr::filter(.data$section == "READ MEAN QUALITY") |>
         tidyr::separate_wider_delim(
@@ -195,8 +187,7 @@ DragenFqc <- R6::R6Class(
         ) |>
         dplyr::mutate(q = as.integer(sub("Q", "", .data$q)), reads = .data$value) |>
         dplyr::select("mate", "q", "reads")
-      # count: per-sequence start counts by position; positions can be binned
-      # (e.g. "137-140bp"), so expand and divide the count across grains.
+      # counts: expand bins and divide across grains.
       seqpos <- x |>
         dplyr::filter(.data$section == "SEQUENCE POSITIONS") |>
         tidyr::separate_wider_delim(

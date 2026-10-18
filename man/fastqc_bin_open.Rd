@@ -14,16 +14,9 @@ trailing \code{bp} already removed).}
 (\code{character()}) Tokens with open-bin markers stripped.
 }
 \description{
-DRAGEN FASTQC \code{fastqc_metrics.csv} position and read-length tokens are usually a
-single integer (\code{150}) or a closed range (\code{145-152}), but with a coarser
-\code{--fastqc-granularity} (or reads longer than the top bin) DRAGEN also emits
-open-ended terminal bins: \verb{256+} (positions) and \verb{>=255} (read lengths). This
-strips the open-bin markers (\code{+}, \code{>=}, \code{>}, \code{=}) so the token collapses to its
-single integer bound. Closed ranges (\code{A-B}) are left untouched for a subsequent
-\code{separate_longer_delim("-")} to expand.
-
-Without this, \code{as.integer("256+")} / \code{as.integer(">=255")} would silently coerce
-to \code{NA} and drop the top position/length bin.
+Strips open-ended bin markers from FASTQC position/length tokens (\verb{256+},
+\verb{>=255} -> \code{256}, \code{255}), which would otherwise coerce to \code{NA} and drop the
+top bin. Closed ranges (\code{A-B}) are left for \code{\link[=fastqc_bin_expand]{fastqc_bin_expand()}}.
 }
 \examples{
 fastqc_bin_open(c("150", "145-152", "256+", ">=255"))

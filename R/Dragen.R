@@ -1,11 +1,8 @@
 #' DRAGEN S3 Sync Excludes
 #'
-#' Trailing `--exclude` globs applied after the schema-derived includes when
-#' syncing a DRAGEN run (see [s3sync()]). A ctTSO run writes the same
-#' app-layer outputs twice — once under `Logs_Intermediates/<sample>/` and once
-#' under `Results/<sample>/` — so these drop the `Logs_Intermediates/` copy and
-#' keep the `Results/` one. `aws s3 sync` filters are ordered and last-match
-#' wins, hence these must come last.
+#' Trailing `--exclude` globs for [s3sync()], dropping the ctTSO
+#' `Logs_Intermediates/` duplicates of `Results/` outputs. `aws s3 sync` filters
+#' are last-match-wins, so these come after the schema-derived includes.
 #'
 #' @export
 DRAGEN_SYNC_EXCLUDE <- c(
@@ -21,11 +18,8 @@ DRAGEN_SYNC_EXCLUDE <- c(
 #' @title Dragen Object
 #'
 #' @description
-#' Orchestrates all DRAGEN tools ([DragenMap], [DragenFqc], [DragenCov],
-#' [DragenVar], [DragenRna], [DragenTso], [DragenBcl]) plus [Interop] for
-#' convenience. A DRAGEN run exposes a different subset of files depending on
-#' the pipeline; tools whose files are absent contribute nothing, so a single
-#' `Dragen$run()` works across all pipelines.
+#' Runs every tool in [DRAGEN_TOOLS]. Tools whose files are absent contribute
+#' nothing, so one `Dragen$run()` covers any DRAGEN pipeline.
 #'
 #' @examples
 #' indir <- system.file("extdata", package = "tidydragen")

@@ -4,13 +4,10 @@
 \alias{DragenTso}
 \title{DragenTso Object}
 \description{
-Parses and tidies the TSO500 ctDNA (cttsov2) app-layer outputs that sit
-alongside the DRAGEN metrics files: the CombinedVariantOutput small variants,
-DNA fusions, TMB trace / MSAF, and per-exon / per-gene coverage reports.
+Parses and tidies TSO500 ctDNA (cttsov2) app-layer outputs.
 
-These files appear in both \verb{Results/<sample>/} and a \verb{Logs_Intermediates/}
-subdirectory (byte-identical). nemo matches on bname only, so the two
-copies would collide; \code{refine_files()} keeps the \verb{Results/} copy.
+These files are duplicated under \verb{Results/} and \verb{Logs_Intermediates/};
+\code{refine_files()} keeps the \verb{Results/} copy.
 }
 \examples{
 cls <- DragenTso; tool <- "dragentso"
@@ -73,9 +70,8 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenTso-parse_smallvariants"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenTso-parse_smallvariants}{}}}
 \subsection{Method \code{parse_smallvariants()}}{
-Parse only the \verb{[Small Variants]} section of a
-\code{CombinedVariantOutput.tsv} file, dropping the rest (sourced from the SAR
-JSON instead).
+Parse the \verb{[Small Variants]} section of
+\code{CombinedVariantOutput.tsv} (the rest comes from the SAR JSON).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_smallvariants(x)}\if{html}{\out{</div>}}
 }
@@ -92,8 +88,7 @@ JSON instead).
 \if{html}{\out{<a id="method-DragenTso-parse_fusions"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenTso-parse_fusions}{}}}
 \subsection{Method \code{parse_fusions()}}{
-Parse a \code{Fusions.csv} file (comment-prefixed header block,
-then a CSV table; may hold zero data rows).
+Parse \code{Fusions.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_fusions(x)}\if{html}{\out{</div>}}
 }
@@ -110,8 +105,8 @@ then a CSV table; may hold zero data rows).
 \if{html}{\out{<a id="method-DragenTso-parse_sar"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenTso-parse_sar}{}}}
 \subsection{Method \code{parse_sar()}}{
-Parse a \code{SampleAnalysisResults.json} file; returns its \code{data}
-block wrapped in a one-row tibble list-column. \code{tidy_sar()} fans it out.
+Parse \code{SampleAnalysisResults.json} into a one-row
+list-column tibble.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenTso$parse_sar(x)}\if{html}{\out{</div>}}
 }
@@ -128,11 +123,7 @@ block wrapped in a one-row tibble list-column. \code{tidy_sar()} fans it out.
 \if{html}{\out{<a id="method-DragenTso-tidy_sar"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenTso-tidy_sar}{}}}
 \subsection{Method \code{tidy_sar()}}{
-Fan a \code{SampleAnalysisResults.json} \code{data} block into seven
-tables: \code{sarmain} (sample + library info), \code{sarqc} (QC + expanded metrics +
-TMB/MSI biomarkers, wide), \code{sarqcthr} (QC metrics with LSL/USL thresholds,
-long), \code{sarswds} (Nirvana data sources), \code{sarsw} (software +
-Nirvana config), \code{sarsnv} (per-transcript small variants), \code{sarcnv} (CNVs).
+Tidy \code{SampleAnalysisResults.json}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenTso$tidy_sar(x)}\if{html}{\out{</div>}}
 }

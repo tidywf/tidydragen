@@ -1,13 +1,10 @@
 #' @title DragenTso Object
 #'
 #' @description
-#' Parses and tidies the TSO500 ctDNA (cttsov2) app-layer outputs that sit
-#' alongside the DRAGEN metrics files: the CombinedVariantOutput small variants,
-#' DNA fusions, TMB trace / MSAF, and per-exon / per-gene coverage reports.
+#' Parses and tidies TSO500 ctDNA (cttsov2) app-layer outputs.
 #'
-#' These files appear in both `Results/<sample>/` and a `Logs_Intermediates/`
-#' subdirectory (byte-identical). nemo matches on bname only, so the two
-#' copies would collide; `refine_files()` keeps the `Results/` copy.
+#' These files are duplicated under `Results/` and `Logs_Intermediates/`;
+#' `refine_files()` keeps the `Results/` copy.
 #'
 #' @examples
 #' cls <- DragenTso; tool <- "dragentso"
@@ -93,9 +90,8 @@ DragenTso <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragentso", pkg = pkg_name, path = path, files_tbl = files_tbl)
     },
-    #' @description Parse only the `[Small Variants]` section of a
-    #' `CombinedVariantOutput.tsv` file, dropping the rest (sourced from the SAR
-    #' JSON instead).
+    #' @description Parse the `[Small Variants]` section of
+    #' `CombinedVariantOutput.tsv` (the rest comes from the SAR JSON).
     #' @param x (`character(1)`)\cr Path to file.
     parse_smallvariants = function(x) {
       cols <- c(
@@ -136,8 +132,7 @@ DragenTso <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse a `Fusions.csv` file (comment-prefixed header block,
-    #' then a CSV table; may hold zero data rows).
+    #' @description Parse `Fusions.csv`.
     #' @param x (`character(1)`)\cr Path to file.
     parse_fusions = function(x) {
       ct <- readr::cols(
@@ -154,8 +149,8 @@ DragenTso <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Parse a `SampleAnalysisResults.json` file; returns its `data`
-    #' block wrapped in a one-row tibble list-column. `tidy_sar()` fans it out.
+    #' @description Parse `SampleAnalysisResults.json` into a one-row
+    #' list-column tibble.
     #' @param x (`character(1)`)\cr Path to file.
     parse_sar = function(x) {
       j <- jsonlite::fromJSON(x, simplifyVector = FALSE)
@@ -163,11 +158,7 @@ DragenTso <- R6::R6Class(
       attr(d, "file_version") <- "latest"
       d[]
     },
-    #' @description Fan a `SampleAnalysisResults.json` `data` block into seven
-    #' tables: `sarmain` (sample + library info), `sarqc` (QC + expanded metrics +
-    #' TMB/MSI biomarkers, wide), `sarqcthr` (QC metrics with LSL/USL thresholds,
-    #' long), `sarswds` (Nirvana data sources), `sarsw` (software +
-    #' Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv` (CNVs).
+    #' @description Tidy `SampleAnalysisResults.json`.
     #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
     tidy_sar = function(x) {
       if (!tibble::is_tibble(x)) {
@@ -400,9 +391,8 @@ DragenTso <- R6::R6Class(
       res[setdiff(cols, names(res))] <- NA_character_
       res
     },
-    # The CVO/Fusions/trace/coverage files are duplicated in Results/ and
-    # Logs_Intermediates/; nemo matches on bname so both collide. Keep the
-    # Results/ copy, and fall back to the first row for bnames that appear once.
+    # Same bname under Results/ and Logs_Intermediates/: keep Results/, else
+    # the first row.
     refine_files = function(files) {
       if (nrow(files) == 0) {
         return(files)

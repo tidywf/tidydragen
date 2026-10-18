@@ -2,15 +2,11 @@
 
 # File R/Interop.R: @testexamples
 
-test_that("Function Interop() @ L71", {
+test_that("Function Interop() @ L59", {
   
   cls <- Interop; tool <- "interop"
-  # summaries/ kept separate from imaging_tables/ so scanning for one never
-  # also matches the other (list_files_dir() recurses; `imaging_table.csv`
-  # and `.csv.gz` both match the imagingtable pattern, so a single run over
-  # imaging_tables/ picks up BOTH compressed/ and uncompressed/ at once and
-  # nemo's generic same-table collision handling disambiguates them, `_2`
-  # suffix --- exercised deliberately below, not avoided).
+  # imaging_tables/ holds a .csv and a .csv.gz copy, so its run also
+  # exercises nemo's `_2` same-table disambiguation.
   odir <- tempdir()
   obj_sum <- cls$new(system.file("extdata", tool, "summaries", package = "tidydragen"))
   obj_sum$run(output_dir = odir, format = "parquet", input_id = "run1")

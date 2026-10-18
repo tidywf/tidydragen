@@ -1,8 +1,7 @@
 #' @title DragenRna Object
 #'
 #' @description
-#' Parses and tidies DRAGEN RNA outputs (gene-fusion statistics, quantification
-#' statistics).
+#' Parses and tidies DRAGEN RNA outputs.
 #'
 #' @examples
 #' cls <- DragenRna; tool <- "dragenrna"
@@ -33,7 +32,6 @@ DragenRna <- R6::R6Class(
     initialize = function(path = NULL, files_tbl = NULL) {
       super$initialize(name = "dragenrna", pkg = pkg_name, path = path, files_tbl = files_tbl)
     }
-    # `fusion` and `quant` are plain `dragen-metrics` tables — parsed and tidied
-    # via the ftype dispatch on DragenTool, so they need no methods here.
+    # plain `dragen-metrics` tables only, so no methods needed
   )
 )

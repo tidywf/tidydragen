@@ -2,7 +2,7 @@
 
 # File R/DragenFqc.R: @testexamples
 
-test_that("Function DragenFqc() @ L59", {
+test_that("Function DragenFqc() @ L57", {
   
   cls <- DragenFqc; tool <- "dragenfqc"
   indir <- system.file("extdata", tool, package = "tidydragen")

@@ -14,16 +14,9 @@ markers already stripped (single value or \code{lo-hi} range).}
 (\code{list()}) One integer vector per input token.
 }
 \description{
-Turns each position/length token into the full integer sequence it covers: a
-single value (\code{"150"}) becomes \code{150L}, a closed range (\code{"137-140"}) becomes
-the whole span \code{137:140}. Returns a list-column, one integer vector per input,
-for a subsequent \code{\link[tidyr:unnest_longer]{tidyr::unnest_longer()}}.
-
-Note that \code{\link[tidyr:separate_longer_delim]{tidyr::separate_longer_delim()}} on \code{"-"} is \strong{not} a substitute: it
-yields only the two endpoints (\code{137}, \code{140}), silently dropping the interior
-positions and giving the wrong grain count when the count is divided across the
-span. Feed tokens through \code{\link[=fastqc_bin_open]{fastqc_bin_open()}} first so open-ended bins (\verb{256+},
-\verb{>=255}) have collapsed to a single bound.
+Expands each position/length token to the integers it covers (\code{"137-140"} ->
+\code{137:140}), for \code{\link[tidyr:unnest_longer]{tidyr::unnest_longer()}}. Not \code{\link[tidyr:separate_longer_delim]{tidyr::separate_longer_delim()}},
+which keeps only the endpoints. Run \code{\link[=fastqc_bin_open]{fastqc_bin_open()}} first.
 }
 \examples{
 fastqc_bin_expand(c("150", "2-3", "137-140"))

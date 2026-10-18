@@ -4,9 +4,7 @@
 \alias{DragenFqc}
 \title{DragenFqc Object}
 \description{
-Parses and tidies the DRAGEN FASTQC metrics file (\code{fastqc_metrics.csv}).
-Splits into the 8 per-section \verb{dragenfqc_<section>} outputs declared in its
-schema.
+Parses and tidies DRAGEN FASTQC metrics (\code{fastqc_metrics.csv}).
 }
 \examples{
 cls <- DragenFqc; tool <- "dragenfqc"
@@ -67,8 +65,7 @@ Tibble of files from \code{\link[nemo:list_files_dir]{nemo::list_files_dir()}}.}
 \if{html}{\out{<a id="method-DragenFqc-parse_fastqc"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenFqc-parse_fastqc}{}}}
 \subsection{Method \code{parse_fastqc()}}{
-Parse headerless \verb{section,mate,metric,value} \code{fastqc_metrics.csv}
-into a long tibble.
+Parse \code{fastqc_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenFqc$parse_fastqc(x)}\if{html}{\out{</div>}}
 }
@@ -85,7 +82,7 @@ into a long tibble.
 \if{html}{\out{<a id="method-DragenFqc-tidy_fastqc"></a>}}
 \if{latex}{\out{\hypertarget{method-DragenFqc-tidy_fastqc}{}}}
 \subsection{Method \code{tidy_fastqc()}}{
-Tidy \code{fastqc_metrics.csv} into 8 long per-section sub-tables.
+Tidy \code{fastqc_metrics.csv}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DragenFqc$tidy_fastqc(x)}\if{html}{\out{</div>}}
 }

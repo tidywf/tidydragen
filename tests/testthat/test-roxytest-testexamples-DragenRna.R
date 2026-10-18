@@ -2,7 +2,7 @@
 
 # File R/DragenRna.R: @testexamples
 
-test_that("Function DragenRna() @ L23", {
+test_that("Function DragenRna() @ L22", {
   
   cls <- DragenRna; tool <- "dragenrna"
   indir <- system.file("extdata", tool, package = "tidydragen")
