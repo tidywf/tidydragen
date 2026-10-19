@@ -1,13 +1,10 @@
 # DRAGEN S3 Sync Excludes
 
-Trailing `--exclude` globs applied after the schema-derived includes
-when syncing a DRAGEN run (see
-[`s3sync()`](https://tidywf.github.io/tidydragen/reference/s3sync.md)).
-A ctTSO run writes the same app-layer outputs twice — once under
-`Logs_Intermediates/<sample>/` and once under `Results/<sample>/` — so
-these drop the `Logs_Intermediates/` copy and keep the `Results/` one.
-`aws s3 sync` filters are ordered and last-match wins, hence these must
-come last.
+Trailing `--exclude` globs for
+[`s3sync()`](https://tidywf.github.io/tidydragen/reference/s3sync.md),
+dropping the ctTSO `Logs_Intermediates/` duplicates of `Results/`
+outputs. `aws s3 sync` filters are last-match-wins, so these come after
+the schema-derived includes.
 
 ## Usage
 

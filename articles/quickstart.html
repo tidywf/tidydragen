@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9005/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9006/vignettes/quickstart.qmd" class="external-link"><code>vignettes/quickstart.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -192,7 +192,7 @@
 </div>
 <section class="level3"><h3 id="file-naming">File naming<a class="anchor" aria-label="anchor" href="#file-naming"></a>
 </h3>
-<p><code>{prefix}_{tool}_{table}.parquet</code>, prefix from input filename (<code>sampleA</code>). One file can fan out to several tables. See <a href="output_naming.html">Output Naming</a>.</p>
+<p><code>{prefix}_{tool}_{table}.parquet</code>, prefix from input filename (<code>sampleA</code>). One file can fan out to several tables, declared under <code>outputs:</code> in the tool’s <code>schema.yaml</code> (e.g. <code>umi_metrics.csv</code> =&gt; <code>umimain</code> + <code>umihist</code>). See <a href="output_naming.html">Output Naming</a> and <a href="structure.html">Structure</a>.</p>
 </section><section class="level3"><h3 id="reading-a-table-back">Reading a table back<a class="anchor" aria-label="anchor" href="#reading-a-table-back"></a>
 </h3>
 <div class="cell">
@@ -214,7 +214,7 @@
 </div>
 </section></section><section class="level2"><h2 id="output---full-dragen-run">Output - Full DRAGEN run<a class="anchor" aria-label="anchor" href="#output---full-dragen-run"></a>
 </h2>
-<p><code>Dragen</code> runs all tools on a parent directory; absent tools are skipped, so it works for germline, somatic, RNA and ctTSO500:</p>
+<p><code>Dragen</code> runs all tools on a parent directory; absent tools are skipped, so it works for germline, somatic, RNA, ctTSO500 and BCLConvert/InterOp run folders:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outdir_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"qs_dragen"</span><span class="op">)</span></span>
@@ -295,7 +295,7 @@
 <span><span class="co">#&gt;  $ input_dirs  : list&lt;character&gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: chr(0) </span></span>
-<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/Rtmps9RmmL/qs_dragen"</span></span>
+<span><span class="co">#&gt;  $ output_dir  : chr "/tmp/Rtmpo2xerl/qs_dragen"</span></span>
 <span><span class="co">#&gt;  $ pkg_versions: list&lt;</span></span>
 <span><span class="co">#&gt;   tbl_df&lt;</span></span>
 <span><span class="co">#&gt;     name   : character</span></span>
@@ -304,7 +304,7 @@
 <span><span class="co">#&gt; &gt; [1:1] </span></span>
 <span><span class="co">#&gt;   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr [1:2] "nemo" "tidydragen"</span></span>
-<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9007" "0.0.0.9005"</span></span>
+<span><span class="co">#&gt;   .. ..$ version: chr [1:2] "0.1.0.9008" "0.0.0.9006"</span></span>
 <span><span class="co">#&gt;   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;   .. ..$ name   : chr(0) </span></span>
 <span><span class="co">#&gt;   .. ..$ version: chr(0) </span></span>

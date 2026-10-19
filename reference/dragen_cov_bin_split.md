@@ -1,13 +1,8 @@
 # Split DRAGEN coverage-bin metric names into numeric bounds
 
-Parses the coverage-bin rows of a DRAGEN `*_coverage_metrics.csv`
-(`PCT of <region> with coverage [lo: hi)`) into their numeric depth
-bounds. The open, cumulative bins (`[Nx: inf)`) return `NA` for the
-upper bound, which distinguishes them from the bucketed bins
-(`[lo: hi)`).
-[DragenCov](https://tidywf.github.io/tidydragen/reference/DragenCov.md)
-uses this `NA` to partition the bins into the `metricsbins` (bucketed)
-and `metricscumu` (cumulative) long tables.
+Parses DRAGEN coverage-bin names
+(`PCT of <region> with coverage [lo: hi)`) into their depth bounds. Open
+bins (`[Nx: inf)`) get an `NA` upper bound.
 
 ## Usage
 

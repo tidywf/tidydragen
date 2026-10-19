@@ -6,15 +6,39 @@ to keep runs distinguishable after merging.
 
 ## Anatomy of a tidy filename
 
-    {output_dir}/{prefix}_{tool}_{parser}.{ext}
+    {output_dir}/{prefix}_{tool}_{table}.{ext}
 
 - `{output_dir}`: flat output directory
 - `{prefix}`: input basename minus the schema `pattern`
   (`sampleA.tool1.table1.tsv` =\> `sampleA`)
-- `{tool}_{parser}`: e.g. `tool1_table1`
+- `{tool}_{table}`: the schema table that matched the file,
+  e.g. `tool1_table1`; for a file that fans out, one file per declared
+  output instead (see below)
 - `{ext}`: from `format` (parquet, db, tsv, csv or rds)
 
 `sampleA.tool1.table1.tsv` =\> `sampleA_tool1_table1.parquet`.
+
+## One file, several tables
+
+A file can fan out into several tables, declared under its schema
+table’s `outputs:`. Each output is written as
+`{prefix}_{tool}_{output}`: `table7` splits into `table7main` (read
+counts) and `table7dp` (long-form depth coverage):
+
+``` r
+
+dir_fan <- path(tempdir(), "naming-fanout")
+fan <- Tool1$new(path = system.file("extdata/tool1_outputs", package = "nemo"))
+fan$config$get_table_outputs("table7")
+#> [1] "table7main" "table7dp"
+fan$run(output_dir = dir_fan, format = "parquet", input_id = "input1")
+sort(basename(fan$written_files$outpath))
+#> [1] "sampleA_2_tool1_table7dp.parquet"   "sampleA_2_tool1_table7main.parquet"
+#> [3] "sampleA_tool1_table7dp.parquet"     "sampleA_tool1_table7main.parquet"
+```
+
+The two `table7` files (`latest`, `v1.0.0`) share basename `sampleA`,
+hence `sampleA` and `sampleA_2`, as in the repeated-sample case below.
 
 ## A repeated sample
 
@@ -33,7 +57,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_runs)
-#> /tmp/RtmpXhTjHX/naming-demo/runs
+#> /tmp/RtmpiXMd4B/naming-demo/runs
 #> ├── run1
 #> │   ├── sampleA.tool1.table1.tsv
 #> │   └── sampleA.tool1.table2.tsv
@@ -58,12 +82,12 @@ tool$list_files() |>
 #> # A tibble: 6 × 3
 #>   path                                                           prefix   parser
 #>   <chr>                                                          <chr>    <chr> 
-#> 1 /tmp/RtmpXhTjHX/naming-demo/runs/run1/sampleA.tool1.table1.tsv sampleA  table1
-#> 2 /tmp/RtmpXhTjHX/naming-demo/runs/run2/sampleA.tool1.table1.tsv sampleA… table1
-#> 3 /tmp/RtmpXhTjHX/naming-demo/runs/run3/sampleA.tool1.table1.tsv sampleA… table1
-#> 4 /tmp/RtmpXhTjHX/naming-demo/runs/run1/sampleA.tool1.table2.tsv sampleA  table2
-#> 5 /tmp/RtmpXhTjHX/naming-demo/runs/run2/sampleA.tool1.table2.tsv sampleA… table2
-#> 6 /tmp/RtmpXhTjHX/naming-demo/runs/run3/sampleA.tool1.table2.tsv sampleA… table2
+#> 1 /tmp/RtmpiXMd4B/naming-demo/runs/run1/sampleA.tool1.table1.tsv sampleA  table1
+#> 2 /tmp/RtmpiXMd4B/naming-demo/runs/run2/sampleA.tool1.table1.tsv sampleA… table1
+#> 3 /tmp/RtmpiXMd4B/naming-demo/runs/run3/sampleA.tool1.table1.tsv sampleA… table1
+#> 4 /tmp/RtmpiXMd4B/naming-demo/runs/run1/sampleA.tool1.table2.tsv sampleA  table2
+#> 5 /tmp/RtmpiXMd4B/naming-demo/runs/run2/sampleA.tool1.table2.tsv sampleA… table2
+#> 6 /tmp/RtmpiXMd4B/naming-demo/runs/run3/sampleA.tool1.table2.tsv sampleA… table2
 ```
 
 No overwrites:
@@ -79,7 +103,7 @@ tool$run(
 )
 
 dir_tree(dir_outA)
-#> /tmp/RtmpXhTjHX/naming-demo/outA
+#> /tmp/RtmpiXMd4B/naming-demo/outA
 #> ├── metadata_tool1.parquet
 #> ├── sampleA_2_tool1_table1.parquet
 #> ├── sampleA_2_tool1_table2.parquet
@@ -130,7 +154,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_outB)
-#> /tmp/RtmpXhTjHX/naming-demo/outB
+#> /tmp/RtmpiXMd4B/naming-demo/outB
 #> ├── run1
 #> │   ├── metadata_tool1.parquet
 #> │   ├── sampleA_tool1_table1.parquet

@@ -1,11 +1,11 @@
 # AWS S3 Sync Helper
 
-Syncs the parse-relevant DRAGEN outputs from `src` to `dest`. The
-default include patterns are **generated from the tool schemas** under
-`inst/config/tools/*/schema.yaml` (see
+Syncs the parse-relevant DRAGEN outputs (any pipeline, incl. BCLConvert
+`Reports/`) from `src` to `dest`. Include patterns come from the tool
+schemas (see
 [`nemo::wf_sync_patterns()`](https://tidywf.github.io/nemo/reference/wf_sync_patterns.html)),
-so adding a table to a schema automatically adds it here — there is no
-hand-maintained file list to keep in sync.
+followed by
+[DRAGEN_SYNC_EXCLUDE](https://tidywf.github.io/tidydragen/reference/DRAGEN_SYNC_EXCLUDE.md).
 
 ## Usage
 
@@ -39,25 +39,6 @@ s3sync(src, dest, pats = NULL, dryrun = FALSE)
   (`logical(1)`)  
   If `TRUE`, passes `--dryrun` to `aws s3 sync` so operations are
   displayed without being executed.
-
-## Details
-
-This single helper replaces the former `s3sync()`/`s3sync_bcl()`/
-`s3sync_cttso()` trio: the schemas of
-[DragenBcl](https://tidywf.github.io/tidydragen/reference/DragenBcl.md),
-[DragenTso](https://tidywf.github.io/tidydragen/reference/DragenTso.md)
-and the rest are all part of the
-[Dragen](https://tidywf.github.io/tidydragen/reference/Dragen.md)
-workflow, so one pattern set covers BCLConvert `Reports/` directories,
-ctTSO runs and ordinary DRAGEN runs alike. Point `src` at whichever
-directory you have; patterns that do not apply simply match nothing.
-
-The ctTSO `Logs_Intermediates/` duplicates are dropped via
-`Dragen$sync_exclude` (see
-[DRAGEN_SYNC_EXCLUDE](https://tidywf.github.io/tidydragen/reference/DRAGEN_SYNC_EXCLUDE.md)),
-keeping the `Results/` copy only. `aws s3 sync` filters are ordered and
-last-match wins, so those excludes are applied after the schema-derived
-includes.
 
 ## Examples
 

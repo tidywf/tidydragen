@@ -1,27 +1,15 @@
 # DragenTso Object
 
-Parses and tidies the TSO500 ctDNA (cttsov2) app-layer outputs that sit
-alongside the DRAGEN metrics files: the CombinedVariantOutput small
-variants, DNA fusions, TMB trace / MSAF, and per-exon / per-gene
-coverage reports.
+Parses and tidies TSO500 ctDNA (cttsov2) app-layer outputs.
 
-These files appear in both `Results/<sample>/` and a
-`Logs_Intermediates/` subdirectory (byte-identical). nemo matches on
-bname only, so the two copies would collide; `refine_files()` keeps the
-`Results/` copy.
+These files are duplicated under `Results/` and `Logs_Intermediates/`;
+`refine_files()` keeps the `Results/` copy.
 
 ## Super classes
 
 [`nemo::Tool`](https://tidywf.github.io/nemo/reference/Tool.html) -\>
 [`tidydragen::DragenTool`](https://tidywf.github.io/tidydragen/reference/DragenTool.md)
 -\> `DragenTso`
-
-## Public fields
-
-- `flat_tidy_names`:
-
-  (`logical(1)`)  
-  `TRUE`: outputs are named `<tool>_<table>` directly.
 
 ## Methods
 
@@ -33,9 +21,9 @@ bname only, so the two copies would collide; `refine_files()` keeps the
 
 - [`DragenTso$parse_fusions()`](#method-DragenTso-parse_fusions)
 
-- [`DragenTso$parse_sarmain()`](#method-DragenTso-parse_sarmain)
+- [`DragenTso$parse_sar()`](#method-DragenTso-parse_sar)
 
-- [`DragenTso$tidy_sarmain()`](#method-DragenTso-tidy_sarmain)
+- [`DragenTso$tidy_sar()`](#method-DragenTso-tidy_sar)
 
 Inherited methods
 
@@ -76,9 +64,8 @@ Create a new DragenTso object.
 
 ### Method `parse_smallvariants()`
 
-Parse only the `[Small Variants]` section of a
-`CombinedVariantOutput.tsv` file, dropping the rest (sourced from the
-SAR JSON instead).
+Parse the `[Small Variants]` section of `CombinedVariantOutput.tsv` (the
+rest comes from the SAR JSON).
 
 #### Usage
 
@@ -95,8 +82,7 @@ SAR JSON instead).
 
 ### Method `parse_fusions()`
 
-Parse a `Fusions.csv` file (comment-prefixed header block, then a CSV
-table; may hold zero data rows).
+Parse `Fusions.csv`.
 
 #### Usage
 
@@ -111,14 +97,13 @@ table; may hold zero data rows).
 
 ------------------------------------------------------------------------
 
-### Method `parse_sarmain()`
+### Method `parse_sar()`
 
-Parse a `SampleAnalysisResults.json` file; returns its `data` block
-wrapped in a one-row tibble list-column. `tidy_sarmain()` fans it out.
+Parse `SampleAnalysisResults.json` into a one-row list-column tibble.
 
 #### Usage
 
-    DragenTso$parse_sarmain(x)
+    DragenTso$parse_sar(x)
 
 #### Arguments
 
@@ -129,18 +114,13 @@ wrapped in a one-row tibble list-column. `tidy_sarmain()` fans it out.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_sarmain()`
+### Method `tidy_sar()`
 
-Fan a `SampleAnalysisResults.json` `data` block into seven tables:
-`sarmain` (sample + library info), `sarqc` (QC + expanded metrics +
-TMB/MSI biomarkers, wide), `sarqcthr` (QC metrics with LSL/USL
-thresholds, long), `sarswds` (Nirvana data sources), `sarsw` (software +
-Nirvana config), `sarsnv` (per-transcript small variants), `sarcnv`
-(CNVs).
+Tidy `SampleAnalysisResults.json`.
 
 #### Usage
 
-    DragenTso$tidy_sarmain(x)
+    DragenTso$tidy_sar(x)
 
 #### Arguments
 

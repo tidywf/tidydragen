@@ -124,8 +124,12 @@ list.files(outdir, pattern = "\\.parquet$")
 ### File naming
 
 `{prefix}_{tool}_{table}.parquet`, prefix from input filename
-(`sampleA`). One file can fan out to several tables. See [Output
-Naming](https://tidywf.github.io/tidydragen/articles/output_naming.md).
+(`sampleA`). One file can fan out to several tables, declared under
+`outputs:` in the tool’s `schema.yaml` (e.g. `umi_metrics.csv` =\>
+`umimain` + `umihist`). See [Output
+Naming](https://tidywf.github.io/tidydragen/articles/output_naming.md)
+and
+[Structure](https://tidywf.github.io/tidydragen/articles/structure.md).
 
 ### Reading a table back
 
@@ -150,7 +154,8 @@ m |> str(list.len = 10)
 ## Output - Full DRAGEN run
 
 `Dragen` runs all tools on a parent directory; absent tools are skipped,
-so it works for germline, somatic, RNA and ctTSO500:
+so it works for germline, somatic, RNA, ctTSO500 and BCLConvert/InterOp
+run folders:
 
 ``` r
 
@@ -215,7 +220,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>  $ input_dirs  : list<character> [1:1] 
 #>   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"
 #>   ..@ ptype: chr(0) 
-#>  $ output_dir  : chr "/tmp/Rtmps9RmmL/qs_dragen"
+#>  $ output_dir  : chr "/tmp/Rtmpo2xerl/qs_dragen"
 #>  $ pkg_versions: list<
 #>   tbl_df<
 #>     name   : character
@@ -224,7 +229,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #> > [1:1] 
 #>   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr [1:2] "nemo" "tidydragen"
-#>   .. ..$ version: chr [1:2] "0.1.0.9007" "0.0.0.9005"
+#>   .. ..$ version: chr [1:2] "0.1.0.9008" "0.0.0.9006"
 #>   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr(0) 
 #>   .. ..$ version: chr(0) 

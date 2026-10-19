@@ -1,23 +1,12 @@
 # DragenMap Object
 
-Parses and tidies DRAGEN mapping/alignment outputs: mapping metrics,
-run-time metrics, the fragment-length histogram, and run provenance
-(`replay.json`).
+Parses and tidies DRAGEN mapping/alignment outputs.
 
 ## Super classes
 
 [`nemo::Tool`](https://tidywf.github.io/nemo/reference/Tool.html) -\>
 [`tidydragen::DragenTool`](https://tidywf.github.io/tidydragen/reference/DragenTool.md)
 -\> `DragenMap`
-
-## Public fields
-
-- `flat_tidy_names`:
-
-  (`logical(1)`)  
-  `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser
-  token dropped). Needed for the `umimain`/`umihist` and
-  `gcmain`/`gcbias` splits.
 
 ## Methods
 
@@ -27,17 +16,17 @@ run-time metrics, the fragment-length histogram, and run provenance
 
 - [`DragenMap$tidy_metrics()`](#method-DragenMap-tidy_metrics)
 
-- [`DragenMap$tidy_umimain()`](#method-DragenMap-tidy_umimain)
+- [`DragenMap$tidy_umi()`](#method-DragenMap-tidy_umi)
 
-- [`DragenMap$tidy_gcmain()`](#method-DragenMap-tidy_gcmain)
+- [`DragenMap$tidy_gc()`](#method-DragenMap-tidy_gc)
 
 - [`DragenMap$tidy_time()`](#method-DragenMap-tidy_time)
 
 - [`DragenMap$parse_fraglenhist()`](#method-DragenMap-parse_fraglenhist)
 
-- [`DragenMap$parse_replaymain()`](#method-DragenMap-parse_replaymain)
+- [`DragenMap$parse_replay()`](#method-DragenMap-parse_replay)
 
-- [`DragenMap$tidy_replaymain()`](#method-DragenMap-tidy_replaymain)
+- [`DragenMap$tidy_replay()`](#method-DragenMap-tidy_replay)
 
 Inherited methods
 
@@ -78,8 +67,7 @@ Create a new DragenMap object.
 
 ### Method `tidy_metrics()`
 
-Tidy `mapping_metrics.csv`. Both id columns retained
-(`drop_constant = character()`).
+Tidy `mapping_metrics.csv`.
 
 #### Usage
 
@@ -94,14 +82,13 @@ Tidy `mapping_metrics.csv`. Both id columns retained
 
 ------------------------------------------------------------------------
 
-### Method `tidy_umimain()`
+### Method `tidy_umi()`
 
-Tidy `umi_metrics.csv` into `umimain` (summary, wide) and `umihist` (the
-`{a|b|c}` histograms, long).
+Tidy `umi_metrics.csv`.
 
 #### Usage
 
-    DragenMap$tidy_umimain(x)
+    DragenMap$tidy_umi(x)
 
 #### Arguments
 
@@ -112,14 +99,13 @@ Tidy `umi_metrics.csv` into `umimain` (summary, wide) and `umihist` (the
 
 ------------------------------------------------------------------------
 
-### Method `tidy_gcmain()`
+### Method `tidy_gc()`
 
-Tidy `gc_metrics.csv` into `gcmain` (GC METRICS SUMMARY, wide) and
-`gcbias` (per-GC-window GC BIAS DETAILS, long — GC 0-100).
+Tidy `gc_metrics.csv`.
 
 #### Usage
 
-    DragenMap$tidy_gcmain(x)
+    DragenMap$tidy_gc(x)
 
 #### Arguments
 
@@ -132,8 +118,7 @@ Tidy `gc_metrics.csv` into `gcmain` (GC METRICS SUMMARY, wide) and
 
 ### Method `tidy_time()`
 
-Tidy `time_metrics.csv`, using seconds (not HH:MM:SS) as the metric
-value and surfacing `total_runtime` first.
+Tidy `time_metrics.csv`.
 
 #### Usage
 
@@ -150,7 +135,7 @@ value and surfacing `total_runtime` first.
 
 ### Method `parse_fraglenhist()`
 
-Parse `fragment_length_hist.csv` into a long tibble.
+Parse `fragment_length_hist.csv`.
 
 #### Usage
 
@@ -165,14 +150,13 @@ Parse `fragment_length_hist.csv` into a long tibble.
 
 ------------------------------------------------------------------------
 
-### Method `parse_replaymain()`
+### Method `parse_replay()`
 
-Parse a `replay.json` file; returns the whole parsed JSON wrapped in a
-one-row tibble list-column. `tidy_replaymain()` fans it out.
+Parse `replay.json` into a one-row list-column tibble.
 
 #### Usage
 
-    DragenMap$parse_replaymain(x)
+    DragenMap$parse_replay(x)
 
 #### Arguments
 
@@ -183,14 +167,13 @@ one-row tibble list-column. `tidy_replaymain()` fans it out.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_replaymain()`
+### Method `tidy_replay()`
 
-Fan a `replay.json` file into `replaymain` (run provenance, 1 row) and
-`replayconfig` (the full `dragen_config` dump, long).
+Tidy `replay.json`.
 
 #### Usage
 
-    DragenMap$tidy_replaymain(x)
+    DragenMap$tidy_replay(x)
 
 #### Arguments
 

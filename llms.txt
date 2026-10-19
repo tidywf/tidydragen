@@ -22,7 +22,8 @@ outputs into versioned, `snake_case` tables, written to Parquet,
 PostgreSQL, TSV, CSV or RDS (plus a `metadata.parquet` per run). Built
 on [nemo](https://github.com/tidywf/nemo "nemo").
 
-Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA.
+Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA,
+plus BCLConvert demultiplexing and Illumina InterOp run QC.
 
 ## Documentation
 
@@ -294,7 +295,7 @@ From GitHub:
 
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.0.0.9005") # specific version
+remotes::install_github("tidywf/tidydragen@v0.0.0.9006") # specific version
 ```
 
 - conda: <https://anaconda.org/tidywf/r-tidydragen>
@@ -313,7 +314,7 @@ export PATH="${td_cli}:${PATH}"
 
 ``` R
 $ tidydragen.R --version
-tidydragen 0.0.0.9005
+tidydragen 0.0.0.9006
 
 #-----------------------------------#
 $ tidydragen.R --help
@@ -330,7 +331,7 @@ positional arguments:
 options:
   -h, --help        show this help message and exit
   -v, --version     show program's version number and exit
-
+'
 #-----------------------------------#
 #------- Tidy ----------------------#
 $ tidydragen.R tidy --help
@@ -374,6 +375,19 @@ options:
   -f, --format FORMAT  Format of list output [def: pretty] (tsv, pretty)
   -m, --max MAX        Max rows to show.
   -q, --quiet          Shush all the logs.
+
+#-----------------------------------#
+#------- Sync ----------------------#
+$ tidydragen.R sync --help
+usage: tidydragen.R sync [-h] -s SRC -d DEST [--dryrun] [--show_patterns] [-q]
+
+options:
+  -h, --help       show this help message and exit
+  -s, --src SRC    S3 source path.
+  -d, --dest DEST  Local destination directory.
+  --dryrun         Show what would be synced, without syncing.
+  --show_patterns  Print the include/exclude patterns and exit.
+  -q, --quiet      Shush all the logs.
 ```
 
 # Package index

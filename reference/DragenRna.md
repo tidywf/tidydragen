@@ -1,7 +1,6 @@
 # DragenRna Object
 
-Parses and tidies DRAGEN RNA outputs (gene-fusion statistics,
-quantification statistics).
+Parses and tidies DRAGEN RNA outputs.
 
 ## Super classes
 

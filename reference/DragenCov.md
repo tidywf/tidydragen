@@ -1,13 +1,6 @@
 # DragenCov Object
 
-Parses and tidies DRAGEN coverage outputs (per-contig mean coverage,
-coverage metrics, fine histograms, and coverage-report BEDs). Some files
-fan out into multiple output tables: `tidy_metricsmain` splits the
-coverage metrics into `metricsmain`/`metricsbins`/`metricscumu`, and
-`tidy_reportbedmain` splits the coverage-report BED into
-`reportbedmain`/`reportbedcumu`. Every other table has
-`tidy_name == parser`, so its name is unchanged. The per-method docs
-below cover each table's specifics.
+Parses and tidies DRAGEN coverage outputs.
 
 The coverage region (`wgs` / `tmb` /`qc-coverage-region-{<region>}`) and
 phenotype (`normal` / `tumor`) are folded from the filename into the
@@ -20,28 +13,19 @@ table serves every region/phenotype variant.
 [`tidydragen::DragenTool`](https://tidywf.github.io/tidydragen/reference/DragenTool.md)
 -\> `DragenCov`
 
-## Public fields
-
-- `flat_tidy_names`:
-
-  (`logical(1)`)  
-  `TRUE`: fanned-out sub-tables are named `<tool>_<tidy_name>` directly
-  (parser token dropped), so each sub-table's `name` is its final output
-  table. See the class description for the fan-out map.
-
 ## Methods
 
 ### Public methods
 
 - [`DragenCov$new()`](#method-DragenCov-new)
 
-- [`DragenCov$tidy_metricsmain()`](#method-DragenCov-tidy_metricsmain)
+- [`DragenCov$tidy_covmetrics()`](#method-DragenCov-tidy_covmetrics)
 
 - [`DragenCov$parse_finehist()`](#method-DragenCov-parse_finehist)
 
-- [`DragenCov$parse_reportbedmain()`](#method-DragenCov-parse_reportbedmain)
+- [`DragenCov$parse_reportbed()`](#method-DragenCov-parse_reportbed)
 
-- [`DragenCov$tidy_reportbedmain()`](#method-DragenCov-tidy_reportbedmain)
+- [`DragenCov$tidy_reportbed()`](#method-DragenCov-tidy_reportbed)
 
 Inherited methods
 
@@ -80,15 +64,13 @@ Create a new DragenCov object.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_metricsmain()`
+### Method `tidy_covmetrics()`
 
-Tidy `*_coverage_metrics.csv` into `metricsmain` (wide summary),
-`metricsbins` (bucketed depth histogram), and `metricscumu`
-(cumulative).
+Tidy `*_coverage_metrics.csv`.
 
 #### Usage
 
-    DragenCov$tidy_metricsmain(x)
+    DragenCov$tidy_covmetrics(x)
 
 #### Arguments
 
@@ -101,7 +83,7 @@ Tidy `*_coverage_metrics.csv` into `metricsmain` (wide summary),
 
 ### Method `parse_finehist()`
 
-Parse `*_fine_hist.csv`, returning `depth` as an integer.
+Parse `*_fine_hist.csv`.
 
 #### Usage
 
@@ -116,13 +98,13 @@ Parse `*_fine_hist.csv`, returning `depth` as an integer.
 
 ------------------------------------------------------------------------
 
-### Method `parse_reportbedmain()`
+### Method `parse_reportbed()`
 
-Parse `*_cov_report.bed`; `tidy_reportbedmain()` types and splits it.
+Parse `*_cov_report.bed`.
 
 #### Usage
 
-    DragenCov$parse_reportbedmain(x)
+    DragenCov$parse_reportbed(x)
 
 #### Arguments
 
@@ -133,14 +115,13 @@ Parse `*_cov_report.bed`; `tidy_reportbedmain()` types and splits it.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_reportbedmain()`
+### Method `tidy_reportbed()`
 
-Tidy `*_cov_report.bed` into `reportbedmain` (per-interval distribution
-stats, wide) and `reportbedcumu` (coverage thresholds, long).
+Tidy `*_cov_report.bed`.
 
 #### Usage
 
-    DragenCov$tidy_reportbedmain(x)
+    DragenCov$tidy_reportbed(x)
 
 #### Arguments
 

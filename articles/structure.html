@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9005</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9005/vignettes/structure.qmd" class="external-link"><code>vignettes/structure.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9006/vignettes/structure.qmd" class="external-link"><code>vignettes/structure.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -81,16 +81,107 @@
 
 
     <p>One <code>schema.yaml</code> per tool under <code>inst/config/tools/&lt;tool&gt;/</code>. Class/schema walkthrough: <a href="https://tidywf.github.io/nemo/articles/structure.html" class="external-link">nemo structure</a>.</p>
-<p>All tools extend <code>DragenTool</code> (<code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> child), which holds shared parsing, notably the <code>dragen-metrics</code> ftype for headerless <code>section,rg,variable,count[,pct]</code> <code>*_metrics.csv</code> files. See <a href="uml.html">UML</a>.</p>
+<p>DRAGEN tools extend <code>DragenTool</code> (<code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> child), which holds shared parsing, notably the <code>dragen-metrics</code> ftype for headerless <code>section,rg,variable,count[,pct]</code> <code>*_metrics.csv</code> files. <code>Interop</code> (Illumina run QC, not a DRAGEN output) extends <code><a href="https://tidywf.github.io/nemo/reference/Tool.html" class="external-link">nemo::Tool</a></code> directly. See <a href="uml.html">UML</a>.</p>
 <section class="level2"><h2 id="why-several-tools-not-one">Why several tools, not one<a class="anchor" aria-label="anchor" href="#why-several-tools-not-one"></a>
 </h2>
-<p>One tool per DRAGEN output group: <code>DragenMap</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenFqc</code>, <code>DragenTso</code>.</p>
+<p>One tool per output group: <code>DragenMap</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenFqc</code>, <code>DragenTso</code>, <code>DragenBcl</code>, <code>Interop</code>.</p>
 <ul>
 <li>Pipelines produce different subsets; <code>Dragen</code> skips absent tools</li>
 <li>One tool = one <code>schema.yaml</code> = one output token (e.g. <code>&lt;prefix&gt;_dragencov_finehist</code>)</li>
 <li>Schemas evolve independently</li>
 <li>Shared logic (<code>dragen-metrics</code>/<code>csv-nohead</code> ftypes, <code>refine_files</code>, fail-loud policies) lives on <code>DragenTool</code>, so no duplication</li>
-</ul></section><script id="quarto-html-after-body" type="application/javascript">
+</ul></section><section class="level2"><h2 id="fan-out">Fan-out<a class="anchor" aria-label="anchor" href="#fan-out"></a>
+</h2>
+<p>Some files split into several output tables, declared under <code>outputs:</code> in their tool’s <code>schema.yaml</code> and written as <code>&lt;prefix&gt;_&lt;tool&gt;_&lt;output&gt;</code>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 81%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Tool</th>
+<th style="text-align: left;">File table</th>
+<th style="text-align: left;">Outputs</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">dragenmap</td>
+<td style="text-align: left;"><code>umi</code></td>
+<td style="text-align: left;">
+<code>umimain</code>, <code>umihist</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dragenmap</td>
+<td style="text-align: left;"><code>gc</code></td>
+<td style="text-align: left;">
+<code>gcmain</code>, <code>gcbias</code>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dragenmap</td>
+<td style="text-align: left;"><code>replay</code></td>
+<td style="text-align: left;">
+<code>replaymain</code>, <code>replayconfig</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dragenfqc</td>
+<td style="text-align: left;"><code>fastqc</code></td>
+<td style="text-align: left;">
+<code>posbasecontent</code>, <code>posbasemeanqual</code>, <code>posqual</code>, <code>readgc</code>, <code>readgcqual</code>, <code>readlen</code>, <code>readmeanqual</code>, <code>seqpos</code>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dragencov</td>
+<td style="text-align: left;"><code>covmetrics</code></td>
+<td style="text-align: left;">
+<code>metricsmain</code>, <code>metricsbins</code>, <code>metricscumu</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dragencov</td>
+<td style="text-align: left;"><code>reportbed</code></td>
+<td style="text-align: left;">
+<code>reportbedmain</code>, <code>reportbedcumu</code>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dragenvar</td>
+<td style="text-align: left;"><code>ploidy</code></td>
+<td style="text-align: left;">
+<code>ploidymain</code>, <code>ploidyratio</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dragentso</td>
+<td style="text-align: left;"><code>sar</code></td>
+<td style="text-align: left;">
+<code>sarmain</code>, <code>sarqc</code>, <code>sarqcthr</code>, <code>sarswds</code>, <code>sarsw</code>, <code>sarsnv</code>, <code>sarcnv</code>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">interop</td>
+<td style="text-align: left;"><code>summary</code></td>
+<td style="text-align: left;">
+<code>summarymain</code>, <code>summaryreadlane</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">interop</td>
+<td style="text-align: left;"><code>indexsummary</code></td>
+<td style="text-align: left;">
+<code>indexsummarymain</code>, <code>indexsummarydetail</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -173,7 +264,8 @@
       }
     }
   });
-  </script></main>
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

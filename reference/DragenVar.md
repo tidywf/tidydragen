@@ -1,21 +1,12 @@
 # DragenVar Object
 
-Parses and tidies DRAGEN variant-related metric outputs (variant caller,
-SV, CNV, ploidy, TMB, HRD, etc.).
+Parses and tidies DRAGEN variant-calling outputs.
 
 ## Super classes
 
 [`nemo::Tool`](https://tidywf.github.io/nemo/reference/Tool.html) -\>
 [`tidydragen::DragenTool`](https://tidywf.github.io/tidydragen/reference/DragenTool.md)
 -\> `DragenVar`
-
-## Public fields
-
-- `flat_tidy_names`:
-
-  (`logical(1)`)  
-  `TRUE`: fan-out sub-tables are named `<tool>_<tidy_name>` (parser
-  token dropped). Needed for the `ploidymain`/`ploidyratio` split.
 
 ## Methods
 
@@ -31,7 +22,7 @@ SV, CNV, ploidy, TMB, HRD, etc.).
 
 - [`DragenVar$tidy_hethom()`](#method-DragenVar-tidy_hethom)
 
-- [`DragenVar$tidy_ploidymain()`](#method-DragenVar-tidy_ploidymain)
+- [`DragenVar$tidy_ploidy()`](#method-DragenVar-tidy_ploidy)
 
 - [`DragenVar$tidy_nuctrans()`](#method-DragenVar-tidy_nuctrans)
 
@@ -80,8 +71,7 @@ Create a new DragenVar object.
 
 ### Method `tidy_vc()`
 
-Tidy `vc_metrics.csv`. `rg` (sample id) kept raw; region moved from
-metric names into a `region` column.
+Tidy `vc_metrics.csv`.
 
 #### Usage
 
@@ -98,8 +88,7 @@ metric names into a `region` column.
 
 ### Method `tidy_gvcf()`
 
-Tidy `gvcf_metrics.csv` (gVCF postfilter). Same shape as `vc_metrics`;
-region moved into a `region` column.
+Tidy `gvcf_metrics.csv`.
 
 #### Usage
 
@@ -148,14 +137,13 @@ Tidy `vc_hethom_ratio_metrics.csv`.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_ploidymain()`
+### Method `tidy_ploidy()`
 
-Tidy `ploidy_estimation_metrics.csv` into `ploidymain` (sample scalars)
-and `ploidyratio` (long, one row per chromosome ratio).
+Tidy `ploidy_estimation_metrics.csv`.
 
 #### Usage
 
-    DragenVar$tidy_ploidymain(x)
+    DragenVar$tidy_ploidy(x)
 
 #### Arguments
 
@@ -168,7 +156,7 @@ and `ploidyratio` (long, one row per chromosome ratio).
 
 ### Method `tidy_nuctrans()`
 
-Tidy `allele_transition_noise_metrics.csv`
+Tidy `allele_transition_noise_metrics.csv`.
 
 #### Usage
 
@@ -185,7 +173,7 @@ Tidy `allele_transition_noise_metrics.csv`
 
 ### Method `parse_microsat()`
 
-Parse `microsat_output.json` (MSI).
+Parse `microsat_output.json`.
 
 #### Usage
 
@@ -202,8 +190,7 @@ Parse `microsat_output.json` (MSI).
 
 ### Method `parse_contamination()`
 
-Parse `contamination.json` (cttso cross-sample contamination). Flat
-JSON; the per-SNP `SNPsUsed` array is dropped, `NaN` p-value -\> NA.
+Parse `contamination.json`.
 
 #### Usage
 
@@ -220,7 +207,7 @@ JSON; the per-SNP `SNPsUsed` array is dropped, `NaN` p-value -\> NA.
 
 ### Method `parse_ploidyvcf()`
 
-Parse `ploidy.vcf.gz` depth-of-coverage `dc` and normalised depth `ndc`.
+Parse `ploidy.vcf.gz`.
 
 #### Usage
 

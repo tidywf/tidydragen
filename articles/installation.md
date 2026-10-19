@@ -8,7 +8,7 @@ From GitHub:
 
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.0.0.9005") # specific version
+remotes::install_github("tidywf/tidydragen@v0.0.0.9006") # specific version
 ```
 
 ### Conda
@@ -16,16 +16,16 @@ remotes::install_github("tidywf/tidydragen@v0.0.0.9005") # specific version
 [![conda-version](https://anaconda.org/tidywf/r-tidydragen/badges/version.svg "Conda package version")![conda-latest](https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg "Conda package latest release date")](https://anaconda.org/tidywf/r-tidydragen)
 
 ``` bash
-conda create -n tidydragen_env -c tidywf -c conda-forge r-tidydragen==0.0.0.9005
+conda create -n tidydragen_env -c tidywf -c conda-forge r-tidydragen==0.0.0.9006
 conda activate tidydragen_env
 ```
 
 ### Docker
 
-[![ghcr-latest](https://ghcr-badge.egpl.dev/tidywf/tidydragen/latest_tag?color=%2344cc11&ignore=latest&label=docker-version-latest&trim=.png "GHCR latest tag")![ghcr-size](https://ghcr-badge.egpl.dev/tidywf/tidydragen/size?tag=0.0.0.9005 "GHCR image size")](https://github.com/tidywf/tidydragen/pkgs/container/tidydragen)
+[![ghcr-latest](https://ghcr-badge.egpl.dev/tidywf/tidydragen/latest_tag?color=%2344cc11&ignore=latest&label=docker-version-latest&trim=.png "GHCR latest tag")![ghcr-size](https://ghcr-badge.egpl.dev/tidywf/tidydragen/size?tag=0.0.0.9006 "GHCR image size")](https://github.com/tidywf/tidydragen/pkgs/container/tidydragen)
 
 ``` bash
-docker pull --platform linux/amd64 ghcr.io/tidywf/tidydragen:0.0.0.9005
+docker pull --platform linux/amd64 ghcr.io/tidywf/tidydragen:0.0.0.9006
 ```
 
 #### Docker Compose
@@ -53,7 +53,7 @@ With [Pixi](https://pixi.sh/):
 ``` bash
 pixi init -c tidywf -c conda-forge ./tidy_env
 cd ./tidy_env
-pixi add r-tidydragen==0.0.0.9005
+pixi add r-tidydragen==0.0.0.9006
 ```
 
 CLI task:

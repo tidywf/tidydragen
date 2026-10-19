@@ -1,17 +1,29 @@
 # NEWS
 
-## v0.0.0.9002 (current dev)
+## v0.0.0.9005 (current dev)
 
 Initial development release. `tidydragen` is a
 [nemo](https://github.com/tidywf/nemo) child package that parses and
 tidies Illumina DRAGEN outputs into tidy tables, written to parquet,
 TSV, CSV, RDS, or PostgreSQL.
 
-- Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, ctTSO500,
-  BCLConvert demultiplexing, and Illumina InterOp run QC.
+- Pipelines:
+  - DNA tumor-normal
+  - DNA germline
+  - RNA tumor-only, ctTSO500,
+  - BCLConvert demultiplexing
+  - Illumina InterOp run QC.
 - Tools: `DragenMap`, `DragenFqc`, `DragenCov`, `DragenVar`,
   `DragenRna`, `DragenTso`, `DragenBcl`, `Interop`, orchestrated by the
   `Dragen` workflow.
+- Files holding several tables (e.g. coverage metrics, FastQC metrics,
+  the ctTSO500 `SampleAnalysisResults.json`, InterOp summaries) are
+  split into one output table per part, declared under `outputs:` in
+  each tool’s `schema.yaml`.
+- Fail-loud by default: metrics missing from the schema, values that
+  fail type coercion, and normally-constant id columns that vary all
+  error. Set a tool’s `on_unmapped`, `on_coerce_fail` or
+  `on_unexpected_col` to `"warn"` to relax.
 - [`s3sync()`](https://tidywf.github.io/tidydragen/reference/s3sync.md)
-  for pulling DRAGEN run outputs from S3.
+  pulls only the DRAGEN files the schemas need from AWS S3.
 - CLI (`tidydragen.R`), conda package, and multi-arch Docker image.

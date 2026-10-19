@@ -1,9 +1,6 @@
 # DragenFqc Object
 
-Parses and tidies the DRAGEN FASTQC metrics file (`fastqc_metrics.csv`).
-Splits into 8 per-section sub-tables. Setting `flat_tidy_names = TRUE`
-gives flat `dragenfqc_<section>` tables rather than the concatenated
-form.
+Parses and tidies DRAGEN FASTQC metrics (`fastqc_metrics.csv`).
 
 ## Super classes
 
@@ -11,24 +8,15 @@ form.
 [`tidydragen::DragenTool`](https://tidywf.github.io/tidydragen/reference/DragenTool.md)
 -\> `DragenFqc`
 
-## Public fields
-
-- `flat_tidy_names`:
-
-  (`logical(1)`)  
-  drop the parser token so the 8 sub-tables are named
-  `dragenfqc_<section>` (see
-  [nemo::Tool](https://tidywf.github.io/nemo/reference/Tool.html)).
-
 ## Methods
 
 ### Public methods
 
 - [`DragenFqc$new()`](#method-DragenFqc-new)
 
-- [`DragenFqc$parse_posbasecontent()`](#method-DragenFqc-parse_posbasecontent)
+- [`DragenFqc$parse_fastqc()`](#method-DragenFqc-parse_fastqc)
 
-- [`DragenFqc$tidy_posbasecontent()`](#method-DragenFqc-tidy_posbasecontent)
+- [`DragenFqc$tidy_fastqc()`](#method-DragenFqc-tidy_fastqc)
 
 Inherited methods
 
@@ -67,14 +55,13 @@ Create a new DragenFqc object.
 
 ------------------------------------------------------------------------
 
-### Method `parse_posbasecontent()`
+### Method `parse_fastqc()`
 
-Parse headerless `section,mate,metric,value` `fastqc_metrics.csv` into a
-long tibble.
+Parse `fastqc_metrics.csv`.
 
 #### Usage
 
-    DragenFqc$parse_posbasecontent(x)
+    DragenFqc$parse_fastqc(x)
 
 #### Arguments
 
@@ -85,13 +72,13 @@ long tibble.
 
 ------------------------------------------------------------------------
 
-### Method `tidy_posbasecontent()`
+### Method `tidy_fastqc()`
 
-Tidy `fastqc_metrics.csv` into 8 long per-section sub-tables.
+Tidy `fastqc_metrics.csv`.
 
 #### Usage
 
-    DragenFqc$tidy_posbasecontent(x)
+    DragenFqc$tidy_fastqc(x)
 
 #### Arguments
 

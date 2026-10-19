@@ -1,8 +1,6 @@
 # DragenBcl Object
 
-Parses and tidies DRAGEN BCLConvert demultiplexing outputs from a
-`Reports/` directory. Most tables are plain header CSVs handled by the
-nemo `csv` ftype.
+Parses and tidies DRAGEN BCLConvert `Reports/` outputs.
 
 ## Super classes
 
@@ -64,7 +62,7 @@ Create a new DragenBcl object.
 
 ### Method `parse_demultiplexstats()`
 
-Parse Demultiplex_Stats.csv (splits combined `Index`).
+Parse `Demultiplex_Stats.csv`.
 
 #### Usage
 
@@ -75,13 +73,13 @@ Parse Demultiplex_Stats.csv (splits combined `Index`).
 - `x`:
 
   (`character(1)`)  
-  Path to Demultiplex_Stats.csv.
+  Path to file.
 
 ------------------------------------------------------------------------
 
 ### Method `parse_demultiplextilestats()`
 
-Parse Demultiplex_Tile_Stats.csv (splits combined `Index`).
+Parse `Demultiplex_Tile_Stats.csv`.
 
 #### Usage
 
@@ -92,13 +90,13 @@ Parse Demultiplex_Tile_Stats.csv (splits combined `Index`).
 - `x`:
 
   (`character(1)`)  
-  Path to Demultiplex_Tile_Stats.csv.
+  Path to file.
 
 ------------------------------------------------------------------------
 
 ### Method `parse_fastqlist()`
 
-Parse fastq_list.csv (pivots Read1File/Read2File long).
+Parse `fastq_list.csv`.
 
 #### Usage
 
@@ -109,13 +107,13 @@ Parse fastq_list.csv (pivots Read1File/Read2File long).
 - `x`:
 
   (`character(1)`)  
-  Path to fastq_list.csv.
+  Path to file.
 
 ------------------------------------------------------------------------
 
 ### Method `parse_runinfo()`
 
-Parse RunInfo.xml into a one-row run-metadata table.
+Parse `RunInfo.xml`.
 
 #### Usage
 
@@ -126,7 +124,7 @@ Parse RunInfo.xml into a one-row run-metadata table.
 - `x`:
 
   (`character(1)`)  
-  Path to RunInfo.xml.
+  Path to file.
 
 ## Examples
 

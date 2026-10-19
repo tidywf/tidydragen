@@ -1,17 +1,9 @@
 # Dragen Object
 
-Orchestrates all DRAGEN tools
-([DragenMap](https://tidywf.github.io/tidydragen/reference/DragenMap.md),
-[DragenFqc](https://tidywf.github.io/tidydragen/reference/DragenFqc.md),
-[DragenCov](https://tidywf.github.io/tidydragen/reference/DragenCov.md),
-[DragenVar](https://tidywf.github.io/tidydragen/reference/DragenVar.md),
-[DragenRna](https://tidywf.github.io/tidydragen/reference/DragenRna.md),
-[DragenTso](https://tidywf.github.io/tidydragen/reference/DragenTso.md),
-[DragenBcl](https://tidywf.github.io/tidydragen/reference/DragenBcl.md))
-plus [Interop](https://tidywf.github.io/tidydragen/reference/Interop.md)
-for convenience. A DRAGEN run exposes a different subset of files
-depending on the pipeline; tools whose files are absent contribute
-nothing, so a single `Dragen$run()` works across all pipelines.
+Runs every tool in
+[DRAGEN_TOOLS](https://tidywf.github.io/tidydragen/reference/DRAGEN_TOOLS.md).
+Tools whose files are absent contribute nothing, so one `Dragen$run()`
+covers any DRAGEN pipeline.
 
 ## Super class
 
