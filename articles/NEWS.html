@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 
 
 
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.0.0.9006/vignettes/NEWS.qmd" class="external-link"><code>vignettes/NEWS.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.1.0/vignettes/NEWS.qmd" class="external-link"><code>vignettes/NEWS.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -92,25 +92,26 @@ See any child package's NEWS.qmd for the exact wiring.
 The parent MUST define `repo` (the package's GitHub URL) before the child
 runs; the helpers below close over it. They build links to compares, PRs,
 issues, and users: pr(48), iss(11), vdiff("0.1.0", "0.0.3"), user("reisingerf").
---><section class="level2"><h2 id="v0-0-0-9005-current-dev">v0.0.0.9005 (current dev)<a class="anchor" aria-label="anchor" href="#v0-0-0-9005-current-dev"></a>
+--><section class="level2"><h2 id="v0-1-0-9000-dev">v0.1.0.9000 (dev)<a class="anchor" aria-label="anchor" href="#v0-1-0-9000-dev"></a>
 </h2>
-<p>Initial development release. <code>tidydragen</code> is a <a href="https://github.com/tidywf/nemo" class="external-link">nemo</a> child package that parses and tidies Illumina DRAGEN outputs into tidy tables, written to parquet, TSV, CSV, RDS, or PostgreSQL.</p>
+</section><section class="level2"><h2 id="v0-1-0-2026-10-24">v0.1.0 (2026-10-24)<a class="anchor" aria-label="anchor" href="#v0-1-0-2026-10-24"></a>
+</h2>
+<p>Initial release. <code>tidydragen</code> is a <a href="https://github.com/tidywf/nemo" class="external-link">nemo</a> child package that parses and tidies Illumina DRAGEN outputs into tidy tables, written to parquet, TSV, CSV, RDS, or PostgreSQL.</p>
 <ul>
 <li>Pipelines:
 <ul>
-<li>DNA tumor-normal</li>
-<li>DNA germline</li>
-<li>RNA tumor-only, ctTSO500,</li>
-<li>BCLConvert demultiplexing</li>
-<li>Illumina InterOp run QC.</li>
+<li>DNA tumor-normal (somatic)</li>
+<li>DNA germline-only</li>
+<li>RNA tumor-only</li>
+<li>ctTSO500</li>
+<li>BCLConvert demultiplexing reports</li>
+<li>Illumina InterOp run QC summaries</li>
 </ul>
 </li>
-<li>Tools: <code>DragenMap</code>, <code>DragenFqc</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenTso</code>, <code>DragenBcl</code>, <code>Interop</code>, orchestrated by the <code>Dragen</code> workflow.</li>
-<li>Files holding several tables (e.g. coverage metrics, FastQC metrics, the ctTSO500 <code>SampleAnalysisResults.json</code>, InterOp summaries) are split into one output table per part, declared under <code>outputs:</code> in each tool’s <code>schema.yaml</code>.</li>
-<li>Fail-loud by default: metrics missing from the schema, values that fail type coercion, and normally-constant id columns that vary all error. Set a tool’s <code>on_unmapped</code>, <code>on_coerce_fail</code> or <code>on_unexpected_col</code> to <code>"warn"</code> to relax.</li>
+<li>One tool per output group: <code>DragenMap</code>, <code>DragenFqc</code>, <code>DragenCov</code>, <code>DragenVar</code>, <code>DragenRna</code>, <code>DragenTso</code>, <code>DragenBcl</code>, <code>Interop</code>);</li>
 <li>
-<code><a href="../reference/s3sync.html">s3sync()</a></code> pulls only the DRAGEN files the schemas need from AWS S3.</li>
-<li>CLI (<code>tidydragen.R</code>), conda package, and multi-arch Docker image.</li>
+<code>Dragen</code> workflow runs all tools over a directory and ingests any matching patterns it detects</li>
+<li>Run as an R package, CLI (<code>tidydragen.R</code>), conda package, or multi-arch Docker image. See <a href="installation.html">Installation</a> and <a href="quickstart.html">Quickstart</a>.</li>
 </ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
@@ -194,7 +195,8 @@ issues, and users: pr(48), iss(11), vdiff("0.1.0", "0.0.3"), user("reisingerf").
       }
     }
   });
-  </script></main>
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

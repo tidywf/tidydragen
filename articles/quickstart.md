@@ -2,14 +2,17 @@
 
 ## Test data
 
-`inst/extdata/<tool>/`; larger files tracked with
-[DVC](https://dvc.org/) on a public R2 bucket. `dvc pull` in a clone, or
-from R:
+`inst/extdata/<tool>/`, tracked with [DVC](https://dvc.org/) on a public
+R2 bucket. `dvc pull` in a clone, or from R:
 
 ``` r
 
-input_dir <- system.file("extdata/dragencov", package = "tidydragen")
-nemo::dvc_download_all(input_dir, file.path(tempdir(), "dvc_test"))
+input_dir <- system.file("extdata", package = "tidydragen")
+nemo::dvc_download_all(
+  input_dir = file.path(input_dir, "dragenmap"),
+  output_dir = file.path(tempdir(), "dvc_dragenmap_test1"),
+  pkg_nm = "tidydragen"
+)
 ```
 
 ## Input
@@ -220,7 +223,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #>  $ input_dirs  : list<character> [1:1] 
 #>   ..$ : chr "/home/runner/miniconda3/envs/pkgdown_env/lib/R/library/tidydragen/extdata"
 #>   ..@ ptype: chr(0) 
-#>  $ output_dir  : chr "/tmp/Rtmpo2xerl/qs_dragen"
+#>  $ output_dir  : chr "/tmp/RtmpDpSQNe/qs_dragen"
 #>  $ pkg_versions: list<
 #>   tbl_df<
 #>     name   : character
@@ -229,7 +232,7 @@ read_parquet(file.path(outdir_d, "metadata.parquet")) |> str()
 #> > [1:1] 
 #>   ..$ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr [1:2] "nemo" "tidydragen"
-#>   .. ..$ version: chr [1:2] "0.1.0.9008" "0.0.0.9006"
+#>   .. ..$ version: chr [1:2] "0.2.0.9000" "0.1.0"
 #>   ..@ ptype: tibble [0 × 2] (S3: tbl_df/tbl/data.frame)
 #>   .. ..$ name   : chr(0) 
 #>   .. ..$ version: chr(0) 
