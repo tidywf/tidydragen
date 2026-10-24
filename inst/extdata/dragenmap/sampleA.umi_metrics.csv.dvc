@@ -1,0 +1,5 @@
+outs:
+- md5: 3e71802fef15285ee433e34548449b41
+  size: 5346
+  hash: md5
+  path: sampleA.umi_metrics.csv

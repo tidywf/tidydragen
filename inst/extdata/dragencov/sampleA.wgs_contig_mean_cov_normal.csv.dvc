@@ -1,0 +1,5 @@
+outs:
+- md5: 18d8c73641ab39766d7d6580ae0a1f1e
+  size: 804
+  hash: md5
+  path: sampleA.wgs_contig_mean_cov_normal.csv

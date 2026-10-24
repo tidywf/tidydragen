@@ -1,0 +1,5 @@
+outs:
+- md5: 1d10001eae6a6b9af5d2530fff57f9ef
+  size: 456
+  hash: md5
+  path: sampleA.allele_transition_noise_metrics.csv

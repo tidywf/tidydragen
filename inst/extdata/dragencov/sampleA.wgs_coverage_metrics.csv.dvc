@@ -1,0 +1,5 @@
+outs:
+- md5: 44a454f66c357be33efcf585b86b3e0a
+  size: 2206
+  hash: md5
+  path: sampleA.wgs_coverage_metrics.csv

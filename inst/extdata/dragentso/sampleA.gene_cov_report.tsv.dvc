@@ -1,0 +1,5 @@
+outs:
+- md5: 3114682c64eef083ffc02909af06464d
+  size: 519
+  hash: md5
+  path: sampleA.gene_cov_report.tsv

@@ -1,0 +1,5 @@
+outs:
+- md5: 19a5e75f3cb65edb62ffa06ba097c0b6
+  size: 2416
+  hash: md5
+  path: sampleA.tmb.trace.tsv

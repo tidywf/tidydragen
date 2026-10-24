@@ -3,7 +3,7 @@ format: gfm
 knitr:
   opts_chunk:
     collapse: true
-    comment: ''
+    comment: "#>"
     fig.path: "man/figures/README-"
 ---
 
@@ -13,84 +13,192 @@ knitr:
 #| label: pkg_load
 #| echo: false
 #| message: false
-use("tidydragen")
+
+{
+  use("tidydragen")
+  use("glue", "glue")
+  use("arrow", "read_parquet")
+  use("fs", "dir_tree")
+}
+```
+
+```{r}
+#| label: setup
+#| echo: false
+
+# keep these vars for child qmd templates
+pkg_nm <- "tidydragen"
+org_nm <- "tidywf"
+ver <- as.character(utils::packageVersion(pkg_nm))
+dir_nemo <- system.file("doc-templates", "installation", package = "nemo")
 ```
 
 ```{r}
 #| label: opts
 #| echo: false
+
 options(width = 100)
 ```
 
 <a href="https://tidywf.github.io/tidydragen"><img src="man/figures/logo.png" alt="logo" align="left" height="100" /></a>
 
-# 🧬✨ Tidy Illumina DRAGEN Outputs
-
+# Tidy Illumina DRAGEN Outputs
 
 [![conda-latest1]](https://anaconda.org/tidywf/r-tidydragen)
 [![gha]](https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml)
+[![ghcr-latest]](https://github.com/tidywf/tidydragen/pkgs/container/tidydragen)
 
-[conda-latest1]: <https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg> "Conda Latest Release"
-[gha]: <https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml/badge.svg> "GitHub Actions"
+[conda-latest1]: <https://anaconda.org/tidywf/r-tidydragen/badges/latest_release_date.svg> "Conda latest release date"
+[gha]: <https://github.com/tidywf/tidydragen/actions/workflows/deploy.yaml/badge.svg> "GitHub Actions Status"
+[ghcr-latest]: <https://ghcr-badge.egpl.dev/tidywf/tidydragen/latest_tag?color=%2344cc11&ignore=latest&label=image-latest&trim=> "Docker latest release"
 
-- 📚 Docs: <https://tidywf.github.io/tidydragen>:
+## Contents
 
-## Overview
+- [tidydragen](#tidydragen)
+- [Documentation](#documentation)
+- [Quick Start](#quickstart)
+  - [Single tool](#single-tool)
+  - [Full DRAGEN run](#full-dragen-run)
+- [Installation](#installation)
+- [CLI](#cli)
 
-{{< include /inst/doc-templates/introduction/_overview.qmd >}}
+## tidydragen
 
-## 🎨 Quick Start
+Parses and tidies Illumina [DRAGEN] outputs into versioned, `snake_case` tables,
+written to Parquet, PostgreSQL, TSV, CSV or RDS (plus a `metadata.parquet` per
+run). Built on [nemo].
 
-The starting point of {tidydragen} is a directory with DRAGEN results. Let's
-look at some sample data (tracked via [DVC]) under
-<https://github.com/tidywf/tidydragen/tree/main/inst/extdata/oa>:
+Pipelines: DNA tumor-normal, DNA germline, RNA tumor-only, TSO500 ctDNA, plus
+BCLConvert demultiplexing and Illumina InterOp run QC.
 
-[DVC]: <https://dvc.org/>
+[DRAGEN]: <https://www.illumina.com/products/by-type/informatics-products/dragen-secondary-analysis.html> "Illumina DRAGEN"
+[nemo]: <https://github.com/tidywf/nemo> "nemo"
+
+## Documentation
+
+```{r}
+#| label: docs
+#| echo: false
+#| results: asis
+
+base <- glue("https://{org_nm}.github.io/{pkg_nm}")
+glue(
+  "- Installation: <{base}/articles/installation>
+- Quickstart: <{base}/articles/quickstart>
+- Files supported: <{base}/articles/schema_table>
+- Output naming: <{base}/articles/output_naming>
+- Structure: <{base}/articles/structure>
+- Changelog: <{base}/articles/NEWS>
+- R6: <https://{org_nm}.github.io/nemo/articles/structure>"
+)
+```
+
+## Quickstart
+
+### Single tool
+
+Raw DRAGEN metrics (headerless `section,rg,variable,count[,pct]`):
+
+```{r}
+#| label: quickstart_raw
+#| message: false
+
+indir_map <- system.file("extdata/dragenmap", package = "tidydragen")
+writeLines(head(
+  readLines(
+    file.path(indir_map, "sampleA.mapping_metrics.csv")
+  ),
+  5
+))
+```
+
+Parse, tidy and write with `DragenMap$run()`:
+
+```{r}
+#| label: quickstart_wrangle
+#| message: false
+
+outdir_map <- file.path(tempdir(), "map_out")
+DragenMap$new(indir_map)$run(
+  output_dir = outdir_map,
+  format = "parquet",
+  input_id = "run1"
+)
+list.files(outdir_map, pattern = "\\.parquet$")
+```
+
+Tidy output:
+
+```{r}
+#| label: quickstart_read
+
+file.path(outdir_map, "sampleA_dragenmap_metrics.parquet") |>
+  arrow::read_parquet() |>
+  str(list.len = 10)
+```
+
+### Full DRAGEN run
+
+`Dragen` runs all tools over a results directory; absent tools are skipped:
 
 ```{r}
 #| label: example_input_tree
 #| code-fold: true
-#| code-summary: "Click here"
-#| eval: false
-system.file("extdata/oa", package = "tidywigits") |>
-  fs::dir_tree(invert = TRUE, glob = "*.dvc")
+#| code-summary: "View input files"
+#| comment: ""
+
+indir_d <- system.file("extdata", package = "tidydragen")
+dir_tree(indir_d)
 ```
 
-We can parse, tidy up, and write the DRAGEN results into e.g. Parquet format or
-a PostgreSQL database as follows:
+```{r}
+#| label: dragen_parquet_example
+#| message: false
 
-- Parquet:
+outdir_d <- file.path(tempdir(), "dragen_out_parquet")
+d <- Dragen$new(indir_d)
+res <- d$run(
+  output_dir = outdir_d,
+  format = "parquet",
+  input_id = "run1",
+  output_id = "out1",
+  prefix_include = TRUE
+)
+res # shows summary of Dragen object
+list.files(outdir_d, pattern = "\\.parquet$") |> sort() |> str()
+```
 
-{{< include /inst/doc-templates/examples/_parquet1.qmd >}}
+PostgreSQL: `format = "db"` + DBI connection ([article][pg]).
 
-- PostgreSQL:
+[pg]: <https://tidywf.github.io/tidydragen/articles/postgresql>
 
-{{< include /inst/doc-templates/examples/_postgresql1.qmd >}}
+Optional provenance columns (recommended for multi-sample/multi-run use):
 
-## 🍕 Installation
+| Column         | Purpose                                  | User-supplied or auto-generated? |
+| -------------- | ---------------------------------------- | -------------------------------- |
+| `input_id`     | identifies the sample or input run       | user                             |
+| `output_id`    | identifies the tidydragen processing run | user or auto (ULID)              |
+| `input_prefix` | filename prefix (e.g. sample name)       | auto                             |
 
-{{< include /inst/doc-templates/installation/_r.qmd >}}
+## Installation
 
-Alternatively:
+```{r, child=file.path(dir_nemo, "_r.qmd")}
+#| label: child-r
+```
 
-- conda package: <https://anaconda.org/tidywf/r-tidydragen>
-- Docker image: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
+- conda: <https://anaconda.org/tidywf/r-tidydragen>
+- Docker: <https://github.com/tidywf/tidydragen/pkgs/container/tidydragen>
+- more: <https://tidywf.github.io/tidydragen/articles/installation>
 
-For more details see: <https://tidywf.github.io/tidydragen/articles/installation>
+## CLI
 
-## 🌀 CLI
-
-A `tidydragen.R` command line interface is available for convenience.
-
-- If you're using the conda package, the `tidydragen.R` command will already be
-  available inside the activated conda environment.
-- If you're _not_ using the conda package, you need to export the
-  `tidydragen/inst/cli/` directory to your `PATH` in order to use `tidydragen.R`.
+`tidydragen.R` is on `PATH` in the conda env. Otherwise:
 
 ```{bash}
 #| label: cli1
 #| echo: true
 #| eval: false
+
 td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
 export PATH="${td_cli}:${PATH}"
 ```
@@ -98,7 +206,8 @@ export PATH="${td_cli}:${PATH}"
 ```{bash}
 #| label: cli2
 #| echo: false
-#| eval: false
+#| comment: ""
+
 td_cli=$(Rscript -e 'x = system.file("cli", package = "tidydragen"); cat(x, "\n")' | xargs)
 export PATH="${td_cli}:${PATH}"
 
@@ -106,7 +215,7 @@ echo "$ tidydragen.R --version" & tidydragen.R --version
 echo ""
 echo "#-----------------------------------#"
 echo "$ tidydragen.R --help" & tidydragen.R --help
-echo "'"
+echo "'" # balance out highlighting
 echo "#-----------------------------------#"
 echo "#------- Tidy ----------------------#"
 echo "$ tidydragen.R tidy --help" & tidydragen.R tidy --help
@@ -114,5 +223,9 @@ echo ""
 echo "#-----------------------------------#"
 echo "#------- List ----------------------#"
 echo "$ tidydragen.R list --help" & tidydragen.R list --help
+echo ""
+echo "#-----------------------------------#"
+echo "#------- Sync ----------------------#"
+echo "$ tidydragen.R sync --help" & tidydragen.R sync --help
 echo ""
 ```

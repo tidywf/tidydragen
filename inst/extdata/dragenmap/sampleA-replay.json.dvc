@@ -1,0 +1,5 @@
+outs:
+- md5: c202c41c8a129751e27a500975469867
+  size: 1860
+  hash: md5
+  path: sampleA-replay.json

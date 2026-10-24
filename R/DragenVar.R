@@ -1,0 +1,295 @@
+#' @title DragenVar Object
+#'
+#' @description
+#' Parses and tidies DRAGEN variant-calling outputs.
+#'
+#' @examples
+#' cls <- DragenVar; tool <- "dragenvar"
+#' indir <- system.file("extdata", tool, package = "tidydragen")
+#' odir <- tempdir()
+#' obj <- cls$new(indir)
+#' obj$run(output_dir = odir, format = "parquet", input_id = "run1")
+#' (lf <- list.files(odir, pattern = "dragenvar_.*parquet", full.names = FALSE))
+#' @testexamples
+#' # sampleA: whole-genome vc; SUMMARY section dropped, only prefilter/postfilter
+#' vcA <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_vc")
+#' expect_equal(nrow(vcA), 2L)
+#' expect_setequal(vcA$section, c("prefilter", "postfilter"))
+#' expect_equal(vcA$mnps[vcA$section == "prefilter"], 51104)
+#' # SUMMARY-only metrics are gone with the dropped section
+#' expect_false("child_sample" %in% names(vcA))
+#' expect_true(all(vcA$region == "genome"))
+#' post <- vcA[vcA$section == "postfilter", ]
+#' expect_equal(post$total, 5031538)
+#' expect_equal(post$total_pct, 100)
+#' expect_equal(post$chrx_snps, 130382)
+#' # sampleB: targeted vc — region stripped to same tidy col, region col = targetreg
+#' vcB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_vc")
+#' expect_true(all(vcB$region == "targetreg"))
+#' expect_true(is.numeric(vcB$qc_region_callability_region1_pct))
+#' # cttso targeted vc emits a single postfilter row
+#' expect_equal(vcB$chrx_snps[vcB$section == "postfilter"], 11)
+#' # sv: count-only total + pct-paired PASS breakdown
+#' sv <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_sv")
+#' expect_equal(sv$total_pass, 169)
+#' expect_equal(sv$del, 50)
+#' expect_equal(sv$del_pct, 29.59)
+#' # cnv
+#' # sampleA (somatic WGS): tumor purity + amplification pass rate; no SEX GENOTYPER preamble
+#' cnv <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_cnv")
+#' expect_equal(nrow(cnv), 1L)
+#' expect_equal(cnv$purity_tumor, 0.54)
+#' expect_equal(cnv$n_amp_pass_pct, 86.54)
+#' expect_false("sex_karyotype" %in% names(cnv))
+#' # sampleB (cttso): SEX GENOTYPER preamble captured (not dropped) as columns on the one cnv row
+#' cnvB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_cnv")
+#' expect_equal(nrow(cnvB), 1L)
+#' expect_equal(cnvB$sex_karyotype, "XY")
+#' expect_equal(cnvB$sex_genotyper_confidence, 0.475)
+#' expect_false("purity_tumor" %in% names(cnvB))
+#' # tmb (4-col, no pct)
+#' tmb <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_tmb")
+#' expect_equal(tmb$tmb, 3.46)
+#' expect_equal(tmb$vars_tot_input, 12004)
+#' # ploidy: split into `ploidymain` (sample scalars) + `ploidyratio` (per-chrom, long)
+#' plo <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_ploidymain")
+#' expect_equal(plo$ploidy_est, "XX")
+#' expect_equal(plo$cov_x_pctile, 45.99)
+#' expect_false("cov_x_div_auto" %in% names(plo))
+#' pcr <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_ploidyratio")
+#' expect_equal(pcr$ratio[pcr$chrom == "X"], 0.99)
+#' expect_equal(pcr$ratio[pcr$chrom == "1"], 1.00)
+#' # sampleB: 'median coverage'/'median / Autosomal median' naming -> same tidy names
+#' ploB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_ploidymain")
+#' expect_equal(ploB$cov_x_median, 19.24)
+#' expect_equal(ploB$ploidy_est, "XX")
+#' expect_false("cov_skewness" %in% names(ploB))
+#' pcrB <- nemo::read_parquet_grep(odir, lf, "sampleB_dragenvar_ploidyratio")
+#' expect_equal(pcrB$ratio[pcrB$chrom == "X"], 0.99)
+#' # nuctrans: long, one row per transition code (e.g. AC)
+#' nt <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_nuctrans")
+#' expect_equal(nrow(nt), 12L)
+#' expect_equal(nt$value[nt$transition == "AC"], 63)
+#' expect_equal(nt$value[nt$transition == "TG"], 45)
+#' # hethom: per-chromosome, one row per section/rg/chrom; nan ratio preserved
+#' hh <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_hethom")
+#' expect_true(is.numeric(hh$hom))
+#' pre1 <- hh[hh$section == "prefilter" & hh$chrom == "1", ]
+#' expect_equal(pre1$het, 233196)
+#' expect_equal(pre1$het_hom_ratio, 1.348)
+#' postY <- hh[hh$section == "postfilter" & hh$chrom == "Y", ]
+#' expect_true(is.nan(postY$het_hom_ratio))
+#' # hrd (csv, 1 row)
+#' hrd <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_hrd")
+#' expect_equal(hrd$hrd_score, 5L)
+#' expect_equal(hrd$loh_score, 2L)
+#' # microsat (JSON, 1 row): Settings dropped, numeric keys cast, result stays char
+#' msi <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_microsat")
+#' expect_equal(nrow(msi), 1L)
+#' expect_equal(msi$sites_assessed, 14783)
+#' expect_equal(msi$sites_unstable, 204)
+#' expect_equal(msi$pct_unstable, 1.38)
+#' expect_equal(msi$result_valid, "true")
+#' # sum_jsd key absent in this DRAGEN version's JSON -> NA
+#' expect_true(is.na(msi$sum_jsd))
+#' expect_false(any(c("command", "outputprefix") %in% tolower(names(msi))))
+#' # ploidyvcf (native gz VCF parse): one row per contig, FORMAT DC:NDC split out
+#' pv <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_ploidyvcf")
+#' xrow <- pv[pv$chrom == "chrX", ]
+#' expect_equal(xrow$dc, 45.991)
+#' expect_equal(xrow$ndc, 0.990984)
+#' expect_true(all(pv$filter == "PASS"))
+#' # gvcf (cttso): vc-shaped postfilter metrics; region -> targetreg column, pct auto-paired
+#' gv <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_gvcf")
+#' expect_equal(nrow(gv), 1L)
+#' expect_equal(gv$region, "targetreg")
+#' expect_equal(gv$total, 1234)
+#' expect_equal(gv$snps, 1168)
+#' expect_equal(gv$snps_pct, 94.65)
+#' expect_equal(gv$titv_ratio, 2.99)
+#' expect_equal(gv$chrx_snps, 11)
+#' # contamination (cttso, flat JSON): SNPsUsed dropped, NaN p-value -> NA
+#' ct <- nemo::read_parquet_grep(odir, lf, "sampleA_dragenvar_contamination")
+#' expect_equal(nrow(ct), 1L)
+#' expect_equal(ct$score, 50)
+#' expect_equal(round(ct$level, 4), 0.0402)
+#' expect_true(is.na(ct$pvalue))
+#' expect_false("snpsused" %in% tolower(names(ct)))
+#' @export
+DragenVar <- R6::R6Class(
+  "DragenVar",
+  cloneable = FALSE,
+  inherit = DragenTool,
+  public = list(
+    #' @description Create a new DragenVar object.
+    #' @param path (`character(1)`)\cr
+    #' Output directory of tool. If `files_tbl` is supplied, this is ignored.
+    #' @param files_tbl (`tibble(n)`)\cr
+    #' Tibble of files from [nemo::list_files_dir()].
+    initialize = function(path = NULL, files_tbl = NULL) {
+      super$initialize(name = "dragenvar", pkg = pkg_name, path = path, files_tbl = files_tbl)
+    },
+    #' @description Tidy `vc_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_vc = function(x) {
+      private$tidy_metrics(x, "vc", drop_constant = character(), normalise = function(d) {
+        # drop SUMMARY (blank rg, duplicates prefilter)
+        d <- d[!grepl("SUMMARY", d$section), , drop = FALSE]
+        d$section <- dplyr::case_when(
+          grepl("PREFILTER", d$section) ~ "prefilter",
+          grepl("POSTFILTER", d$section) ~ "postfilter",
+          TRUE ~ d$section
+        )
+        # region -> its own column
+        r <- private$region_split(d)
+        r$x$region <- r$region
+        r$x
+      })
+    },
+    #' @description Tidy `gvcf_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_gvcf = function(x) {
+      private$tidy_metrics(x, "gvcf", drop_constant = character(), normalise = function(d) {
+        d$section <- "postfilter"
+        r <- private$region_split(d)
+        r$x$region <- r$region
+        r$x
+      })
+    },
+    #' @description Tidy `cnv_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_cnv = function(x) {
+      private$tidy_metrics(x, "cnv", normalise = function(d) {
+        is_sex <- grepl("SEX GENOTYPER", d$section)
+        if (any(is_sex)) {
+          # SEX GENOTYPER preamble -> two CNV SUMMARY cols (first row = case sample)
+          sx <- d[is_sex, , drop = FALSE][1, , drop = FALSE]
+          add <- tibble::tibble(
+            section = "CNV SUMMARY",
+            rg = sx$rg,
+            variable = c("sex_karyotype", "sex_genotyper_confidence"),
+            count = c(sx$count, as.character(sx$pct)),
+            pct = NA_real_
+          )
+          d <- dplyr::bind_rows(d[!is_sex, , drop = FALSE], add)
+        }
+        d
+      })
+    },
+    #' @description Tidy `vc_hethom_ratio_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_hethom = function(x) {
+      private$tidy_metrics(x, "hethom", drop_constant = character(), normalise = function(d) {
+        d$section <- dplyr::case_when(
+          grepl("PREFILTER", d$section) ~ "prefilter",
+          grepl("POSTFILTER", d$section) ~ "postfilter",
+          TRUE ~ d$section
+        )
+        d$chrom <- sub("^(\\S+)\\s.*$", "\\1", d$variable)
+        d$variable <- sub("^\\S+\\s+", "", d$variable)
+        d
+      })
+    },
+    #' @description Tidy `ploidy_estimation_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_ploidy = function(x) {
+      if (!tibble::is_tibble(x)) {
+        x <- private$parse_metrics(x)
+      }
+      is_ratio <- grepl("/", x$variable)
+      # sample scalars vs per-chrom ratios
+      stats <- private$tidy_metrics(x[!is_ratio, , drop = FALSE], "ploidy")
+      ratio <- private$tidy_metrics(
+        x[is_ratio, , drop = FALSE],
+        "ploidyratio",
+        normalise = function(d) {
+          d$chrom <- sub("^(\\S+).*$", "\\1", d$variable)
+          d$variable <- "ratio"
+          d
+        }
+      )
+      stats$name <- "ploidymain"
+      ratio$name <- "ploidyratio"
+      dplyr::bind_rows(stats, ratio)
+    },
+    #' @description Tidy `allele_transition_noise_metrics.csv`.
+    #' @param x (`character(1)` or `tibble()`)\cr Path to file or parsed tibble.
+    tidy_nuctrans = function(x) {
+      private$tidy_metrics(x, "nuctrans", normalise = function(d) {
+        d$transition <- gsub("->", "", d$variable)
+        d$variable <- "value"
+        d
+      })
+    },
+    #' @description Parse `microsat_output.json`.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_microsat = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
+      # Settings = tool config (paths, thresholds), not a metric.
+      j[["Settings"]] <- NULL
+      j[["ResultMessage"]] <- j[["ResultMessage"]] %||% NA_character_
+      if (identical(j[["PercentageUnstableSites"]], "NaN")) {
+        j[["PercentageUnstableSites"]] <- NA_character_
+      }
+      expected <- c(
+        "TotalMicrosatelliteSitesAssessed",
+        "TotalMicrosatelliteSitesUnstable",
+        "PercentageUnstableSites",
+        "ResultIsValid",
+        "ResultMessage",
+        "SumDistance",
+        "SumJsd"
+      )
+      for (k in setdiff(expected, names(j))) {
+        j[[k]] <- NA_character_
+      }
+      num_cols <- c(
+        "TotalMicrosatelliteSitesAssessed",
+        "TotalMicrosatelliteSitesUnstable",
+        "PercentageUnstableSites",
+        "SumDistance",
+        "SumJsd"
+      )
+      d <- tibble::as_tibble_row(j) |>
+        dplyr::mutate(
+          dplyr::across(dplyr::any_of(num_cols), as.numeric),
+          ResultIsValid = as.character(.data$ResultIsValid)
+        )
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Parse `contamination.json`.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_contamination = function(x) {
+      j <- jsonlite::fromJSON(x, simplifyVector = TRUE)
+      j[["SNPsUsed"]] <- NULL
+      expected <- c("ContaminationScore", "ContaminationLevel", "CONTAMINATION_P_VALUE")
+      for (k in setdiff(expected, names(j))) {
+        j[[k]] <- NA_character_
+      }
+      if (identical(j[["CONTAMINATION_P_VALUE"]], "NaN")) {
+        j[["CONTAMINATION_P_VALUE"]] <- NA_character_
+      }
+      d <- tibble::as_tibble_row(j[expected]) |>
+        dplyr::mutate(dplyr::across(dplyr::everything(), as.numeric))
+      attr(d, "file_version") <- "latest"
+      d[]
+    },
+    #' @description Parse `ploidy.vcf.gz`.
+    #' @param x (`character(1)`)\cr Path to file.
+    parse_ploidyvcf = function(x) {
+      cnames <- list(
+        all = c("chrom", "pos", "id", "ref", "alt", "qual", "filter", "info", "fmt", "sample"),
+        num = c("qual", "dc", "ndc"),
+        final = c("chrom", "qual", "filter", "dc", "ndc")
+      )
+      d <- readr::read_tsv(x, comment = "##", col_types = readr::cols(.default = "c")) |>
+        setNames(cnames$all) |>
+        tidyr::separate_wider_delim("sample", delim = ":", names = c("dc", "ndc")) |>
+        dplyr::select(dplyr::all_of(cnames$final)) |>
+        dplyr::mutate(dplyr::across(dplyr::all_of(cnames$num), as.numeric))
+      attr(d, "file_version") <- "latest"
+      d[]
+    }
+  )
+)

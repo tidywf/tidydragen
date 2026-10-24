@@ -1,0 +1,36 @@
+---
+title: "CI/CD Workflow"
+# note: theme below only applies for standalone quarto renders;
+# pkgdown strips the meta tag, so appearance is controlled by pkgdown/extra.scss
+format:
+  html:
+    mermaid:
+      theme: neutral
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+    echo: false
+---
+
+```{r}
+#| label: pkgs
+#| include: false
+
+use("nemo", "nemo_gha_mermaid")
+use("here", "here")
+```
+
+```{r}
+#| label: mermaid_diagram
+#| include: false
+
+diagram <- nemo_gha_mermaid(here(".github/workflows"))
+```
+
+````{r}
+#| label: mermaid_diagram_cat
+#| output: asis
+
+cat("```{mermaid}\n", diagram, "\n```\n", sep = "")
+````

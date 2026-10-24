@@ -1,0 +1,5 @@
+outs:
+- md5: cd43f965e094ab1f4c1c4ab28862f7e2
+  size: 63
+  hash: md5
+  path: sampleA.hrdscore.csv

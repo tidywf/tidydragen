@@ -1,0 +1,15 @@
+/sampleA.allele_transition_noise_metrics.csv
+/sampleA.cnv_metrics.csv
+/sampleA.contamination.json
+/sampleA.gvcf_metrics.csv
+/sampleA.hrdscore.csv
+/sampleA.microsat_output.json
+/sampleA.ploidy_estimation_metrics.csv
+/sampleA.ploidy.vcf.gz
+/sampleA.sv_metrics.csv
+/sampleA.tmb.metrics.csv
+/sampleA.vc_hethom_ratio_metrics.csv
+/sampleA.vc_metrics.csv
+/sampleB.cnv_metrics.csv
+/sampleB.ploidy_estimation_metrics.csv
+/sampleB.vc_metrics.csv

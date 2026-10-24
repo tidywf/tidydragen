@@ -1,0 +1,4 @@
+[core]
+    remote = cloudflare_r2_tidydragen
+['remote "cloudflare_r2_tidydragen"']
+    url = https://pub-a01f7a6f4beb4056910d1ba371542fc7.r2.dev/tidydragen/r-pkg/dvc

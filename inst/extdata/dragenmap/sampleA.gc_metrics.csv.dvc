@@ -1,0 +1,5 @@
+outs:
+- md5: 93d2f7ce0652b506a2f1655fa23bd2c8
+  size: 10777
+  hash: md5
+  path: sampleA.gc_metrics.csv

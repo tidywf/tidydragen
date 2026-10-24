@@ -1,0 +1,5 @@
+outs:
+- md5: 216452d2308e149bcb7ed5273b972e33
+  size: 2236
+  hash: md5
+  path: sampleA.contamination.json

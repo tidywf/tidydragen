@@ -1,13 +1,26 @@
-.PHONY: all pkgdown
-
-readme:
-	@quarto render README.qmd
+.PHONY: all pkgdown test fmt
 
 air:
-	@air format
+	@air format .
 
-check:
-	@R -e "devtools::check()" --quiet --no-restore --no-save
+# format tracked files changed vs HEAD with the local air + panache (same file
+# types and excludes as the pre-commit hooks; versions may differ from the pins)
+fmt:
+	@files=$$(git diff --name-only --diff-filter=d HEAD); \
+	rfiles=$$(printf '%s\n' $$files | grep -E '\.[Rr]$$'); \
+	mdfiles=$$(printf '%s\n' $$files | grep -E '\.(qmd|Rmd|md|markdown|mdown|mkd)$$'); \
+	if [ -z "$$rfiles$$mdfiles" ]; then echo "fmt: no changed R/Markdown files"; fi; \
+	if [ -n "$$rfiles" ]; then \
+		if command -v air >/dev/null 2>&1; then air format $$rfiles; \
+		else echo "fmt: air not found, skipping R files"; fi; \
+	fi; \
+	if [ -n "$$mdfiles" ]; then \
+		if command -v panache >/dev/null 2>&1; then panache format --force-exclude $$mdfiles; \
+		else echo "fmt: panache not found, skipping Markdown files"; fi; \
+	fi
+
+readme:
+	@quarto render README.qmd -t gfm
 
 pkgdown:
 	@R -e "pkgdown::build_site()" --quiet --no-restore --no-save
@@ -17,10 +30,18 @@ readme-pkgdown: readme pkgdown
 roxydoc:
 	@R -e "devtools::document()" --quiet --no-restore --no-save
 
-build:
-	@R -e "pak::local_install(upgrade = FALSE, dependencies = FALSE)" --quiet --no-restore --no-save
+install:
+	@R CMD INSTALL --no-multiarch .
 
-build-readme: build readme
+install-readme: install readme
+
+test: fmt
+	@R -e "devtools::test()" --quiet --no-restore --no-save
+
+check:
+	@R -e "devtools::check()" --quiet --no-restore --no-save
+
+full: roxydoc test install check
 
 bump:
 ifndef VERSION
@@ -31,8 +52,4 @@ ifndef BRANCH
 endif
 	@gh workflow run bump.yaml --ref $(BRANCH) --field version=$(VERSION)
 
-web-preview:
-	@quarto preview inst/website/index.qmd --port 4242 --no-browser --no-watch-inputs --output-dir nogit/website-tmp --embed-resources
 
-web-render:
-	@quarto render inst/website/

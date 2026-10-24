@@ -1,0 +1,5 @@
+outs:
+- md5: 804fe9da7f6a73cf01a66152f8344c60
+  size: 161498
+  hash: md5
+  path: sampleA.fastqc_metrics.csv

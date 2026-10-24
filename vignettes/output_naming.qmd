@@ -1,0 +1,99 @@
+---
+title: "Output Naming"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+---
+
+```{r}
+#| label: pkgs
+#| include: false
+
+{
+  use("nemo")
+  use("tidydragen")
+  use("fs")
+  use("arrow", "read_parquet")
+  use("purrr", "map")
+  use("dplyr")
+  use("glue", "glue")
+}
+set.seed(1)
+
+# generic template comes from nemo; the special cases below are tidydragen-only
+child1 <- system.file(
+  "doc-templates/vignettes/_output_naming.qmd",
+  package = "nemo"
+)
+ex <- system.file("extdata", package = "tidydragen")
+```
+
+```{r, child=child1}
+#| label: child-output-naming
+```
+
+## Special cases: region and phenotype prefixes
+
+DRAGEN coverage emits the same table per region (`wgs`, `tmb`, `exon`,
+`target_bed`, `--qc-coverage-region-N`) and, for tumor-normal, per phenotype.
+These strip to the same prefix (`sampleA` / `sampleA_2`). Subclasses override
+the private `refine_files()` hook (runs *before* disambiguation) to put the
+region/phenotype in the prefix. Remaining `_2`/`_3` = repeat runs.
+
+### DragenCov: region + phenotype folded into the prefix
+
+- Problem: `sampleA.{wgs,target_bed,exon}_coverage_metrics.csv` all strip to
+  `sampleA` via the same parser; somatic `..._normal.csv`/`..._tumor.csv`
+  contig-mean files collide too.
+- Fix: prefix becomes `sampleA_<region>[_<pheno>]`, e.g.
+  `sampleA_wgs_dragencov_metricsmain`, `sampleA_wgs_normal_...`.
+
+```{r}
+#| label: cov-init
+
+dir_inC <- path(ex, "dragencov")
+dir_tree(dir_inC)
+cv <- DragenCov$new(path = dir_inC)
+```
+
+One file per region (and phenotype):
+
+```{r}
+#| label: cov-run
+
+dir_outC <- dir_create(path(tempdir(), "cov-out"))
+cv$run(
+  input_id = "input1",
+  output_id = "output1",
+  output_dir = dir_outC,
+  format = "parquet",
+  prefix_include = TRUE
+)
+list.files(dir_outC, pattern = "\\.parquet$") |> sort()
+```
+
+`input_prefix` carries the same distinction:
+
+```{r}
+#| label: cov-merge
+
+dir_ls(dir_outC, regexp = "dragencov_contigmean\\.parquet") |>
+  purrr::map(\(x) arrow::read_parquet(x) |> dplyr::slice_head(n = 2)) |>
+  purrr::list_rbind() |>
+  dplyr::select(input_id, input_prefix, output_id, dplyr::everything()) |>
+  dplyr::slice_head(n = 6)
+```
+
+### Variant calling: region kept as a column
+
+`DragenVar` `vc` metrics keep region (`genome`/`targetreg`/`qccovreg`) as a
+`region` column (private `region_split()`), since one file holds several
+regions: a within-file dimension, not a between-file collision.
+
+### When to reach for the hook
+
+- Prefer schema `pattern`s that already separate variants
+- Use `refine_files()` when one parser matches files needing a real label, not
+  `_2` (DragenCov)
+- Use a column when it varies *within* a file (DragenVar `vc`)

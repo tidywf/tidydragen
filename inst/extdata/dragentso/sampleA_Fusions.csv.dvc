@@ -1,0 +1,5 @@
+outs:
+- md5: 37ba60e2993a7102f48d27687ad6fd55
+  size: 3209
+  hash: md5
+  path: sampleA_Fusions.csv

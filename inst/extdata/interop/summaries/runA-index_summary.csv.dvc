@@ -1,0 +1,5 @@
+outs:
+- md5: 4763c0f30b2c85af426e3ccabe5ebc0c
+  size: 2063
+  hash: md5
+  path: runA-index_summary.csv

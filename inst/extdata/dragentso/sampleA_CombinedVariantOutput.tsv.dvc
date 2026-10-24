@@ -1,0 +1,5 @@
+outs:
+- md5: 643176d56095ab1ddd9c161d5bdc1c38
+  size: 118174
+  hash: md5
+  path: sampleA_CombinedVariantOutput.tsv

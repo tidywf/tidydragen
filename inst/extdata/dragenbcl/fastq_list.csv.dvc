@@ -1,0 +1,5 @@
+outs:
+- md5: 4848bac2969ac01462cea14d45556f4d
+  size: 3302
+  hash: md5
+  path: fastq_list.csv

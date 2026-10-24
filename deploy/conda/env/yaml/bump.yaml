@@ -1,0 +1,11 @@
+name: bump_env
+channels:
+  - tidywf/label/dev
+  - tidywf
+  - conda-forge
+dependencies:
+  - r-tidydragen
+  - r-xml2 # remove after bump
+  - r-quarto
+  - quarto
+  - bump-my-version

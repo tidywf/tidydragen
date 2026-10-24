@@ -1,0 +1,5 @@
+outs:
+- md5: 2d08700193228272e5b5f9666571ea9d
+  size: 27674
+  hash: md5
+  path: sampleA.mapping_metrics.csv

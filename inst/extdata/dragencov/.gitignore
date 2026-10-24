@@ -1,0 +1,9 @@
+/sampleA.exon_coverage_metrics.csv
+/sampleA.qc-coverage-region-umccr_cov_report.bed
+/sampleA.qc-coverage-region-umccr_read_cov_report.bed
+/sampleA.target_bed_coverage_metrics.csv
+/sampleA.wgs_contig_mean_cov_normal.csv
+/sampleA.wgs_contig_mean_cov_tumor.csv
+/sampleA.wgs_contig_mean_cov.csv
+/sampleA.wgs_coverage_metrics.csv
+/sampleA.wgs_fine_hist.csv
