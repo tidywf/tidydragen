@@ -1,0 +1,46 @@
+# Package index
+
+## Tool Classes
+
+- [`DragenTool`](https://tidywf.github.io/tidydragen/dev/reference/DragenTool.md)
+  : DragenTool Object
+- [`DragenMap`](https://tidywf.github.io/tidydragen/dev/reference/DragenMap.md)
+  : DragenMap Object
+- [`DragenFqc`](https://tidywf.github.io/tidydragen/dev/reference/DragenFqc.md)
+  : DragenFqc Object
+- [`DragenCov`](https://tidywf.github.io/tidydragen/dev/reference/DragenCov.md)
+  : DragenCov Object
+- [`DragenVar`](https://tidywf.github.io/tidydragen/dev/reference/DragenVar.md)
+  : DragenVar Object
+- [`DragenRna`](https://tidywf.github.io/tidydragen/dev/reference/DragenRna.md)
+  : DragenRna Object
+- [`DragenTso`](https://tidywf.github.io/tidydragen/dev/reference/DragenTso.md)
+  : DragenTso Object
+- [`DragenBcl`](https://tidywf.github.io/tidydragen/dev/reference/DragenBcl.md)
+  : DragenBcl Object
+- [`Interop`](https://tidywf.github.io/tidydragen/dev/reference/Interop.md)
+  : Interop Object
+
+## Workflows
+
+- [`Dragen`](https://tidywf.github.io/tidydragen/dev/reference/Dragen.md)
+  : Dragen Object
+
+## Other
+
+- [`DRAGEN_TOOLS`](https://tidywf.github.io/tidydragen/dev/reference/DRAGEN_TOOLS.md)
+  : DRAGEN Tools Supported
+- [`DRAGEN_TOOL_COLOURS`](https://tidywf.github.io/tidydragen/dev/reference/DRAGEN_TOOL_COLOURS.md)
+  : DRAGEN Tool Colours
+- [`DRAGEN_SYNC_EXCLUDE`](https://tidywf.github.io/tidydragen/dev/reference/DRAGEN_SYNC_EXCLUDE.md)
+  : DRAGEN S3 Sync Excludes
+- [`dragen_cov_bin_split()`](https://tidywf.github.io/tidydragen/dev/reference/dragen_cov_bin_split.md)
+  : Split DRAGEN coverage-bin metric names into numeric bounds
+- [`dragen_cov_metric_normalize()`](https://tidywf.github.io/tidydragen/dev/reference/dragen_cov_metric_normalize.md)
+  : Normalise DRAGEN coverage summary-metric names
+- [`fastqc_bin_expand()`](https://tidywf.github.io/tidydragen/dev/reference/fastqc_bin_expand.md)
+  : Expand DRAGEN FASTQC position/length bin tokens to integer grains
+- [`fastqc_bin_open()`](https://tidywf.github.io/tidydragen/dev/reference/fastqc_bin_open.md)
+  : Normalise open-ended DRAGEN FASTQC position/length bin tokens
+- [`s3sync()`](https://tidywf.github.io/tidydragen/dev/reference/s3sync.md)
+  : AWS S3 Sync Helper
