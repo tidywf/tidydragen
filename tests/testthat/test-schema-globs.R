@@ -10,7 +10,7 @@ test_that("every schema pattern's fixture files are covered by its globs", {
 })
 
 test_that("dragen sync patterns are ordered exclude-all, includes, then excludes", {
-  pats <- nemo::wf_sync_patterns("dragen")
+  pats <- nemo::wf_s3sync_patterns("dragen")
   expect_equal(pats$inex[1], "ex")
   expect_equal(pats$pat[1], "*")
   expect_gt(sum(pats$inex == "in"), 1)

@@ -23,6 +23,10 @@ child1 <- system.file(
 
 ## v0.1.0.9000 (dev)
 
+- CLI: `sync` subcommand renamed to `s3sync`.
+- `s3sync()`: no longer excludes `*_SampleAnalysisResults.json`, as
+  `Logs_Intermediates/` holds the only copy.
+
 ## v0.1.0 (2026-10-24)
 
 Initial release. `tidydragen` is a [nemo][nemo] child package that parses and

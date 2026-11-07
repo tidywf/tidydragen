@@ -226,6 +226,6 @@ echo "$ tidydragen.R list --help" & tidydragen.R list --help
 echo ""
 echo "#-----------------------------------#"
 echo "#------- Sync ----------------------#"
-echo "$ tidydragen.R sync --help" & tidydragen.R sync --help
+echo "$ tidydragen.R s3sync --help" & tidydragen.R s3sync --help
 echo ""
 ```

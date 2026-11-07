@@ -62,7 +62,7 @@ reference:
     contents:
       - DRAGEN_TOOLS
       - DRAGEN_TOOL_COLOURS
-      - DRAGEN_SYNC_EXCLUDE
+      - DRAGEN_S3SYNC_EXCLUDE
       - dragen_cov_bin_split
       - dragen_cov_metric_normalize
       - fastqc_bin_expand
