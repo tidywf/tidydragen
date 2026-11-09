@@ -2,7 +2,7 @@
 #'
 #' Syncs the parse-relevant DRAGEN outputs (any pipeline, incl. BCLConvert
 #' `Reports/`) from `src` to `dest`. Include patterns come from the tool schemas
-#' (see [nemo::wf_sync_patterns()]), followed by [DRAGEN_SYNC_EXCLUDE].
+#' (see [nemo::wf_s3sync_patterns()]), followed by [DRAGEN_S3SYNC_EXCLUDE].
 #'
 #' @inheritParams nemo::s3sync
 #'
@@ -13,7 +13,7 @@
 #' s3sync(src, dest, dryrun = TRUE)
 #'
 #' # inspect what would be pulled down
-#' nemo::wf_sync_patterns("dragen")
+#' nemo::wf_s3sync_patterns("dragen")
 #'
 #' # override with your own patterns
 #' pats <- tibble::tribble(

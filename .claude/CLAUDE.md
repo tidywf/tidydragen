@@ -41,8 +41,9 @@ for coverage).
 
 - **`DragenBcl` is run-scoped** --- no sample id in the basename, so
   `refine_files()` blanks `prefix` → outputs are `dragenbcl_<table>` (a run over
-  several `Reports/` dirs disambiguates as `_2`/`_3`; run id lands in
-  `input_id`, traceable via `metadata_dragenbcl`).
+  several `Reports/` dirs disambiguates as `_2`/`_3`, which a nemo `Tool$run()`
+  accommodation appends with no leading `_`; run id lands in `input_id`,
+  traceable via `metadata_dragenbcl`).
 - **`Interop` is Illumina run-QC, not a DRAGEN tool** --- `InterOp/*.bin` is
   decoded upstream by the `interop` toolchain; tidydragen only parses its CSV
   output. Inherits `Tool` directly (its two fan-outs, `summary` and
@@ -110,11 +111,6 @@ column to its schema `type`).
   `region_split()`.
 - **`csv-nohead` ftype** registered on `DragenTool` (`trim_ws=TRUE`) for
   headerless coverage CSVs.
-- **Run-scoped tools (`DragenBcl`):** no sample id in filenames, so
-  `refine_files()` blanks `prefix` → `dragenbcl_<table>`; relies on a nemo
-  `Tool$run()` accommodation appending the disambiguator with no leading `_`.
-  `Interop` reuses it for `imagingtable`. Design notes: *BCLConvert* in
-  `.claude/dev-plan.md`.
 - **Same-basename, different-content files (cttso `replay`/`time`) need no
   dedup** --- nemo's generic collision handling already assigns distinct
   prefixes; match rows by content (e.g. `grepl("Tmb", command_line)`), not by
@@ -136,13 +132,13 @@ column to its schema `type`).
 - `R/utils.R` --- `dragen_cov_metric_normalize()`, `dragen_cov_bin_split()`,
   `fastqc_bin_open()`/`fastqc_bin_expand()` (bin-range decoding), `pkg_name`.
 - `R/aws_s3.R` --- `s3sync()` (sync test data). One function for every pipeline
-  (DNA/RNA/ctTSO/BCLConvert); the former `s3sync_bcl()`/`s3sync_cttso()` are
-  gone. Delegates to `nemo::s3sync(workflow = "dragen")`, whose include/exclude
-  patterns are **declared in the tool schemas** (a `glob` field per table,
-  collected by `nemo::wf_sync_patterns()`; `nemo::schema_glob_check()` guards it
-  against drifting from `pattern`). ctTSO writes its app-layer outputs twice, so
-  `DRAGEN_SYNC_EXCLUDE` (in `R/Dragen.R`, wired via `Dragen$sync_exclude`) drops
-  the `Logs_Intermediates/` copies and keeps the `Results/` ones.
+  (DNA/RNA/ctTSO/BCLConvert). Delegates to `nemo::s3sync(workflow = "dragen")`,
+  whose include/exclude patterns are **declared in the tool schemas** (a `glob`
+  field per table, collected by `nemo::wf_s3sync_patterns()`;
+  `nemo::schema_glob_check()` guards it against drifting from `pattern`). ctTSO
+  writes its app-layer outputs twice, so `DRAGEN_S3SYNC_EXCLUDE` (in
+  `R/Dragen.R`, wired via `Dragen$s3sync_exclude`) drops the
+  `Logs_Intermediates/` copies and keeps the `Results/` ones.
 
 ## Deployment (CLI, conda, Docker)
 

@@ -16,7 +16,7 @@ Local destination path.}
 \item{pats}{(\code{tibble()})\cr
 Patterns tibble with \code{inex} ("in" or "ex") and \code{pat} (pattern) columns.
 If \code{NULL} and \code{workflow} is given, the workflow's schema-derived patterns
-are used (see \code{\link[nemo:wf_sync_patterns]{wf_sync_patterns()}}); if both are \code{NULL}, everything is
+are used (see \code{\link[nemo:wf_s3sync_patterns]{wf_s3sync_patterns()}}); if both are \code{NULL}, everything is
 excluded.}
 
 \item{dryrun}{(\code{logical(1)})\cr
@@ -26,7 +26,7 @@ without being executed.}
 \description{
 Syncs the parse-relevant DRAGEN outputs (any pipeline, incl. BCLConvert
 \verb{Reports/}) from \code{src} to \code{dest}. Include patterns come from the tool schemas
-(see \code{\link[nemo:wf_sync_patterns]{nemo::wf_sync_patterns()}}), followed by \link{DRAGEN_SYNC_EXCLUDE}.
+(see \code{\link[nemo:wf_s3sync_patterns]{nemo::wf_s3sync_patterns()}}), followed by \link{DRAGEN_S3SYNC_EXCLUDE}.
 }
 \examples{
 \dontrun{
@@ -35,7 +35,7 @@ dest <- sub("s3:/", "~/s3", src)
 s3sync(src, dest, dryrun = TRUE)
 
 # inspect what would be pulled down
-nemo::wf_sync_patterns("dragen")
+nemo::wf_s3sync_patterns("dragen")
 
 # override with your own patterns
 pats <- tibble::tribble(
