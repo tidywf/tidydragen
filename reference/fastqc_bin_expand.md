@@ -19,7 +19,7 @@ fastqc_bin_expand(v)
 
 - v:
 
-  ([`character()`](https://rdrr.io/r/base/character.html))  
+  ([`character()`](https://rdrr.io/r/base/character.html))\
   Vector of position/length bin tokens, open-bin markers already
   stripped (single value or `lo-hi` range).
 

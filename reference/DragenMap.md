@@ -54,12 +54,12 @@ Create a new DragenMap object.
 
 - `path`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Output directory of tool. If `files_tbl` is supplied, this is ignored.
 
 - `files_tbl`:
 
-  (`tibble(n)`)  
+  (`tibble(n)`)\
   Tibble of files from
   [`nemo::list_files_dir()`](https://tidywf.github.io/nemo/reference/list_files_dir.html).
 
@@ -77,7 +77,7 @@ Tidy `mapping_metrics.csv`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ------------------------------------------------------------------------
@@ -94,7 +94,7 @@ Tidy `umi_metrics.csv`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ------------------------------------------------------------------------
@@ -111,7 +111,7 @@ Tidy `gc_metrics.csv`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ------------------------------------------------------------------------
@@ -128,7 +128,7 @@ Tidy `time_metrics.csv`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ------------------------------------------------------------------------
@@ -145,7 +145,7 @@ Parse `fragment_length_hist.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -162,7 +162,7 @@ Parse `replay.json` into a one-row list-column tibble.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -179,7 +179,7 @@ Tidy `replay.json`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ## Examples

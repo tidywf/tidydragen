@@ -14,7 +14,7 @@ dragen_cov_bin_split(v)
 
 - v:
 
-  ([`character()`](https://rdrr.io/r/base/character.html))  
+  ([`character()`](https://rdrr.io/r/base/character.html))\
   Vector of raw coverage-bin metric names.
 
 ## Value

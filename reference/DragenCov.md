@@ -53,12 +53,12 @@ Create a new DragenCov object.
 
 - `path`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Output directory of tool. If `files_tbl` is supplied, this is ignored.
 
 - `files_tbl`:
 
-  (`tibble(n)`)  
+  (`tibble(n)`)\
   Tibble of files from
   [`nemo::list_files_dir()`](https://tidywf.github.io/nemo/reference/list_files_dir.html).
 
@@ -76,7 +76,7 @@ Tidy `*_coverage_metrics.csv`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ------------------------------------------------------------------------
@@ -93,7 +93,7 @@ Parse `*_fine_hist.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -110,7 +110,7 @@ Parse `*_cov_report.bed`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -127,7 +127,7 @@ Tidy `*_cov_report.bed`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ## Examples

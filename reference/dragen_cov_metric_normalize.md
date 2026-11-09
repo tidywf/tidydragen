@@ -15,7 +15,7 @@ dragen_cov_metric_normalize(v)
 
 - v:
 
-  ([`character()`](https://rdrr.io/r/base/character.html))  
+  ([`character()`](https://rdrr.io/r/base/character.html))\
   Vector of raw metric names.
 
 ## Value

@@ -48,13 +48,13 @@ Create a new DragenBcl object.
 
 - `path`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to a BCLConvert `Reports/` directory. If `files_tbl` is supplied,
   this is ignored.
 
 - `files_tbl`:
 
-  (`tibble(n)`)  
+  (`tibble(n)`)\
   Tibble of files from
   [`nemo::list_files_dir()`](https://tidywf.github.io/nemo/reference/list_files_dir.html).
 
@@ -72,7 +72,7 @@ Parse `Demultiplex_Stats.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -89,7 +89,7 @@ Parse `Demultiplex_Tile_Stats.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -106,7 +106,7 @@ Parse `fastq_list.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -123,7 +123,7 @@ Parse `RunInfo.xml`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ## Examples

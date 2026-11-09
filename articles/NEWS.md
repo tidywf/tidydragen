@@ -1,6 +1,16 @@
 # NEWS
 
-## v0.1.0.9000 (dev)
+## dev
+
+## v0.1.1 (2026-11-09)
+
+- CLI: `sync` subcommand renamed to `s3sync`, with repeatable
+  `--include` and `--exclude` globs (via nemo 0.2.1).
+- CLI: `tidy`/`list` `--in_dir` renamed to `--input_dir` (via nemo
+  0.2.1).
+- [`s3sync()`](https://tidywf.github.io/tidydragen/reference/s3sync.md):
+  no longer excludes `*_SampleAnalysisResults.json`, as
+  `Logs_Intermediates/` holds the only copy.
 
 ## v0.1.0 (2026-10-24)
 

@@ -15,7 +15,7 @@ fastqc_bin_open(v)
 
 - v:
 
-  ([`character()`](https://rdrr.io/r/base/character.html))  
+  ([`character()`](https://rdrr.io/r/base/character.html))\
   Vector of raw position/length bin tokens (with any trailing `bp`
   already removed).
 

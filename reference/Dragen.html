@@ -9,7 +9,7 @@ nothing, so one Dragen$run() covers any DRAGEN pipeline."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">tidydragen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,7 @@ nothing, so one Dragen$run() covers any DRAGEN pipeline."><meta property="og:ima
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Dragen Object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.1.0/R/Dragen.R" class="external-link"><code>R/Dragen.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidywf/tidydragen/blob/v0.1.1/R/Dragen.R" class="external-link"><code>R/Dragen.R</code></a></small>
       <div class="d-none name"><code>Dragen.Rd</code></div>
     </div>
 
@@ -58,9 +58,9 @@ nothing, so one <code>Dragen$run()</code> covers any DRAGEN pipeline.</p>
     </div>
     <div class="section level2">
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
-    <p></p><div class="r6-fields"><dl><dt><code>sync_exclude</code></dt>
+    <p></p><div class="r6-fields"><dl><dt><code>s3sync_exclude</code></dt>
 <dd><p>(<code>character(n)</code>)<br>
-Trailing <code>aws s3 sync</code> excludes, see <a href="DRAGEN_SYNC_EXCLUDE.html">DRAGEN_SYNC_EXCLUDE</a>.</p></dd>
+Trailing <code>aws s3 sync</code> excludes, see <a href="DRAGEN_S3SYNC_EXCLUDE.html">DRAGEN_S3SYNC_EXCLUDE</a>.</p></dd>
 
 
 </dl><p></p></div>
@@ -75,9 +75,9 @@ Trailing <code>aws s3 sync</code> excludes, see <a href="DRAGEN_SYNC_EXCLUDE.htm
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="filter_files"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-filter_files"><code>nemo::Workflow$filter_files()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_globs"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_globs"><code>nemo::Workflow$get_globs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_metadata"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_metadata"><code>nemo::Workflow$get_metadata()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_s3sync_patterns"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_s3sync_patterns"><code>nemo::Workflow$get_s3sync_patterns()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_schemas_raw"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_raw"><code>nemo::Workflow$get_schemas_raw()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_schemas_tidy"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_tidy"><code>nemo::Workflow$get_schemas_tidy()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_sync_patterns"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_sync_patterns"><code>nemo::Workflow$get_sync_patterns()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_tbls"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tbls"><code>nemo::Workflow$get_tbls()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="get_tools"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tools"><code>nemo::Workflow$get_tools()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="nemo" data-topic="Workflow" data-id="list_files"><a href="https://tidywf.github.io/nemo/reference/Workflow.html#method-list_files"><code>nemo::Workflow$list_files()</code></a></span></li>
@@ -202,21 +202,8 @@ Path(s) to DRAGEN results.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [87] "sampleB_dragenvar_ploidymain.parquet"            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [88] "sampleB_dragenvar_ploidyratio.parquet"           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [89] "sampleB_dragenvar_vc.parquet"                    </span>
-<span class="r-in"><span><span class="op">(</span><span class="va">pats</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="fu">get_sync_patterns</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 56 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    inex  pat                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ex    *                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> in    *.mapping_metrics.csv     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> in    *.time_metrics.csv        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> in    *.fragment_length_hist.csv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> in    *.trimmer_metrics.csv     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> in    *.umi_metrics.csv         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> in    *.gc_metrics.csv          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> in    *-replay.json             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> in    *.fastqc_metrics.csv      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> in    *.*_coverage_metrics*.csv </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 46 more rows</span></span>
+<span class="r-in"><span><span class="op">(</span><span class="va">pats</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="fu">get_s3sync_patterns</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> attempt to apply non-function</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

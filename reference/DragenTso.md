@@ -51,12 +51,12 @@ Create a new DragenTso object.
 
 - `path`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Output directory of tool. If `files_tbl` is supplied, this is ignored.
 
 - `files_tbl`:
 
-  (`tibble(n)`)  
+  (`tibble(n)`)\
   Tibble of files from
   [`nemo::list_files_dir()`](https://tidywf.github.io/nemo/reference/list_files_dir.html).
 
@@ -75,7 +75,7 @@ rest comes from the SAR JSON).
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -92,7 +92,7 @@ Parse `Fusions.csv`.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -109,7 +109,7 @@ Parse `SampleAnalysisResults.json` into a one-row list-column tibble.
 
 - `x`:
 
-  (`character(1)`)  
+  (`character(1)`)\
   Path to file.
 
 ------------------------------------------------------------------------
@@ -126,7 +126,7 @@ Tidy `SampleAnalysisResults.json`.
 
 - `x`:
 
-  (`character(1)` or `tibble()`)  
+  (`character(1)` or `tibble()`)\
   Path to file or parsed tibble.
 
 ## Examples

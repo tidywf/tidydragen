@@ -32,7 +32,7 @@
   : DRAGEN Tools Supported
 - [`DRAGEN_TOOL_COLOURS`](https://tidywf.github.io/tidydragen/reference/DRAGEN_TOOL_COLOURS.md)
   : DRAGEN Tool Colours
-- [`DRAGEN_SYNC_EXCLUDE`](https://tidywf.github.io/tidydragen/reference/DRAGEN_SYNC_EXCLUDE.md)
+- [`DRAGEN_S3SYNC_EXCLUDE`](https://tidywf.github.io/tidydragen/reference/DRAGEN_S3SYNC_EXCLUDE.md)
   : DRAGEN S3 Sync Excludes
 - [`dragen_cov_bin_split()`](https://tidywf.github.io/tidydragen/reference/dragen_cov_bin_split.md)
   : Split DRAGEN coverage-bin metric names into numeric bounds

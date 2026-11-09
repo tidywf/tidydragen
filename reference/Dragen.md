@@ -12,11 +12,11 @@ covers any DRAGEN pipeline.
 
 ## Public fields
 
-- `sync_exclude`:
+- `s3sync_exclude`:
 
-  (`character(n)`)  
+  (`character(n)`)\
   Trailing `aws s3 sync` excludes, see
-  [DRAGEN_SYNC_EXCLUDE](https://tidywf.github.io/tidydragen/reference/DRAGEN_SYNC_EXCLUDE.md).
+  [DRAGEN_S3SYNC_EXCLUDE](https://tidywf.github.io/tidydragen/reference/DRAGEN_S3SYNC_EXCLUDE.md).
 
 ## Methods
 
@@ -29,9 +29,9 @@ Inherited methods
 - [`nemo::Workflow$filter_files()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-filter_files)
 - [`nemo::Workflow$get_globs()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_globs)
 - [`nemo::Workflow$get_metadata()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_metadata)
+- [`nemo::Workflow$get_s3sync_patterns()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_s3sync_patterns)
 - [`nemo::Workflow$get_schemas_raw()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_raw)
 - [`nemo::Workflow$get_schemas_tidy()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_schemas_tidy)
-- [`nemo::Workflow$get_sync_patterns()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_sync_patterns)
 - [`nemo::Workflow$get_tbls()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tbls)
 - [`nemo::Workflow$get_tools()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-get_tools)
 - [`nemo::Workflow$list_files()`](https://tidywf.github.io/nemo/reference/Workflow.html#method-list_files)
@@ -54,7 +54,7 @@ Create a new Dragen object.
 
 - `path`:
 
-  (`character(n)`)  
+  (`character(n)`)\
   Path(s) to DRAGEN results.
 
 ## Examples
@@ -154,19 +154,6 @@ d$run(output_dir = odir, format = "parquet", input_id = "run1")
 #> [87] "sampleB_dragenvar_ploidymain.parquet"            
 #> [88] "sampleB_dragenvar_ploidyratio.parquet"           
 #> [89] "sampleB_dragenvar_vc.parquet"                    
-(pats <- d$get_sync_patterns())
-#> # A tibble: 56 × 2
-#>    inex  pat                       
-#>    <chr> <chr>                     
-#>  1 ex    *                         
-#>  2 in    *.mapping_metrics.csv     
-#>  3 in    *.time_metrics.csv        
-#>  4 in    *.fragment_length_hist.csv
-#>  5 in    *.trimmer_metrics.csv     
-#>  6 in    *.umi_metrics.csv         
-#>  7 in    *.gc_metrics.csv          
-#>  8 in    *-replay.json             
-#>  9 in    *.fastqc_metrics.csv      
-#> 10 in    *.*_coverage_metrics*.csv 
-#> # ℹ 46 more rows
+(pats <- d$get_s3sync_patterns())
+#> Error: attempt to apply non-function
 ```
