@@ -21,9 +21,13 @@ child1 <- system.file(
 #| label: child-news
 ```
 
-## v0.1.0.9000 (dev)
+## dev
 
-- CLI: `sync` subcommand renamed to `s3sync`.
+## v0.1.1 (2026-11-09)
+
+- CLI: `sync` subcommand renamed to `s3sync`, with repeatable `--include` and
+  `--exclude` globs (via nemo 0.2.1).
+- CLI: `tidy`/`list` `--in_dir` renamed to `--input_dir` (via nemo 0.2.1).
 - `s3sync()`: no longer excludes `*_SampleAnalysisResults.json`, as
   `Logs_Intermediates/` holds the only copy.
 
