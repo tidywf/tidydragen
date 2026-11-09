@@ -299,7 +299,7 @@ From GitHub:
 ``` r
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.1.0.9000") # specific version
+remotes::install_github("tidywf/tidydragen@v0.1.1") # specific version
 ```
 
 - conda: <https://anaconda.org/tidywf/r-tidydragen>
@@ -317,7 +317,7 @@ export PATH="${td_cli}:${PATH}"
 ```
 
     $ tidydragen.R --version
-    tidydragen 0.1.0.9000
+    tidydragen 0.1.1
 
     #-----------------------------------#
     $ tidydragen.R --help
@@ -381,13 +381,6 @@ export PATH="${td_cli}:${PATH}"
 
     #-----------------------------------#
     #------- Sync ----------------------#
-    $ tidydragen.R sync --help
-    usage: tidydragen.R sync [-h] -s SRC -d DEST [--dryrun] [--show_patterns] [-q]
-
-    options:
-      -h, --help       show this help message and exit
-      -s, --src SRC    S3 source path.
-      -d, --dest DEST  Local destination directory.
-      --dryrun         Show what would be synced, without syncing.
-      --show_patterns  Print the include/exclude patterns and exit.
-      -q, --quiet      Shush all the logs.
+    $ tidydragen.R s3sync --help
+    usage: tidydragen.R [-h] [-v] {tidy,list,sync} ...
+    tidydragen.R: error: argument subparser_name: invalid choice: 's3sync', maybe you meant 'sync'? (choose from 'tidy', 'list', 'sync')
