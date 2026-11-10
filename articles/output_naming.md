@@ -57,7 +57,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_runs)
-#> /tmp/Rtmp9AOBP3/naming-demo/runs
+#> /tmp/Rtmp4cimTC/naming-demo/runs
 #> ├── run1
 #> │   ├── sampleA.tool1.table1.tsv
 #> │   └── sampleA.tool1.table2.tsv
@@ -82,12 +82,12 @@ tool$list_files() |>
 #> # A tibble: 6 × 3
 #>   path                                                           prefix   parser
 #>   <chr>                                                          <chr>    <chr> 
-#> 1 /tmp/Rtmp9AOBP3/naming-demo/runs/run1/sampleA.tool1.table1.tsv sampleA  table1
-#> 2 /tmp/Rtmp9AOBP3/naming-demo/runs/run2/sampleA.tool1.table1.tsv sampleA… table1
-#> 3 /tmp/Rtmp9AOBP3/naming-demo/runs/run3/sampleA.tool1.table1.tsv sampleA… table1
-#> 4 /tmp/Rtmp9AOBP3/naming-demo/runs/run1/sampleA.tool1.table2.tsv sampleA  table2
-#> 5 /tmp/Rtmp9AOBP3/naming-demo/runs/run2/sampleA.tool1.table2.tsv sampleA… table2
-#> 6 /tmp/Rtmp9AOBP3/naming-demo/runs/run3/sampleA.tool1.table2.tsv sampleA… table2
+#> 1 /tmp/Rtmp4cimTC/naming-demo/runs/run1/sampleA.tool1.table1.tsv sampleA  table1
+#> 2 /tmp/Rtmp4cimTC/naming-demo/runs/run2/sampleA.tool1.table1.tsv sampleA… table1
+#> 3 /tmp/Rtmp4cimTC/naming-demo/runs/run3/sampleA.tool1.table1.tsv sampleA… table1
+#> 4 /tmp/Rtmp4cimTC/naming-demo/runs/run1/sampleA.tool1.table2.tsv sampleA  table2
+#> 5 /tmp/Rtmp4cimTC/naming-demo/runs/run2/sampleA.tool1.table2.tsv sampleA… table2
+#> 6 /tmp/Rtmp4cimTC/naming-demo/runs/run3/sampleA.tool1.table2.tsv sampleA… table2
 ```
 
 No overwrites:
@@ -103,7 +103,7 @@ tool$run(
 )
 
 dir_tree(dir_outA)
-#> /tmp/Rtmp9AOBP3/naming-demo/outA
+#> /tmp/Rtmp4cimTC/naming-demo/outA
 #> ├── metadata_tool1.parquet
 #> ├── sampleA_2_tool1_table1.parquet
 #> ├── sampleA_2_tool1_table2.parquet
@@ -154,7 +154,7 @@ for (r in run_ids) {
 }
 
 dir_tree(dir_outB)
-#> /tmp/Rtmp9AOBP3/naming-demo/outB
+#> /tmp/Rtmp4cimTC/naming-demo/outB
 #> ├── run1
 #> │   ├── metadata_tool1.parquet
 #> │   ├── sampleA_tool1_table1.parquet

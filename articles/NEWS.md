@@ -2,6 +2,10 @@
 
 ## dev
 
+## v0.1.2 (2026-11-10)
+
+- dragentso: coerce SAR CNV numerics to double.
+
 ## v0.1.1 (2026-11-09)
 
 - CLI: `sync` subcommand renamed to `s3sync`, with repeatable

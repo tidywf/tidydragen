@@ -295,7 +295,7 @@ From GitHub:
 
 install.packages("remotes")
 remotes::install_github("tidywf/tidydragen") # latest main commit
-remotes::install_github("tidywf/tidydragen@v0.1.1") # specific version
+remotes::install_github("tidywf/tidydragen@v0.1.2") # specific version
 ```
 
 - conda: <https://anaconda.org/tidywf/r-tidydragen>
@@ -314,7 +314,7 @@ export PATH="${td_cli}:${PATH}"
 
 ``` R
 $ tidydragen.R --version
-tidydragen 0.1.1
+tidydragen 0.1.2
 
 #-----------------------------------#
 $ tidydragen.R --help
