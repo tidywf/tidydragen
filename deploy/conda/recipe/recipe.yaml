@@ -1,6 +1,6 @@
 context:
   name: r-tidydragen
-  version: 0.1.1 # bump
+  version: 0.1.2 # bump
 
 package:
   name: ${{ name|lower }}
