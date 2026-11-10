@@ -2,7 +2,7 @@
 
 # File R/DragenTso.R: @testexamples
 
-test_that("Function DragenTso() @ L80", {
+test_that("Function DragenTso() @ L82", {
   
   cls <- DragenTso; tool <- "dragentso"
   indir <- system.file("extdata", tool, package = "tidydragen")
@@ -61,10 +61,12 @@ test_that("Function DragenTso() @ L80", {
   expect_true(all(c("biotype", "iscanonical", "proteinid", "introns", "isjunctionpreserving") %in% names(sn)))
   expect_equal(sn$variant_type[sn$pos == 2488153], "SNV")
   expect_equal(sn$hgvsg[sn$pos == 2488153], "NC_000001.10:g.2488153A>G")
-  # this sample reports no CNVs -> sarcnv is an empty (0-row) table with the schema cols
+  # integer-valued JSON numbers (qual/start/end) must still land as double
   cn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarcnv")
-  expect_equal(nrow(cn), 0L)
+  expect_equal(nrow(cn), 3L)
+  expect_equal(cn$gene, c("MET", "MYC", "ERBB2"))
   expect_true(all(c("gene", "cn_type") %in% names(cn)))
+  expect_true(all(vapply(cn[c("foldchange", "qual", "start", "end")], is.double, logical(1))))
   ds <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarswds")
   expect_equal(nrow(ds), 7L)
   expect_true("RefSeq" %in% ds$name)

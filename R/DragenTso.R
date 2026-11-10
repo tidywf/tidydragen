@@ -65,10 +65,12 @@
 #' expect_true(all(c("biotype", "iscanonical", "proteinid", "introns", "isjunctionpreserving") %in% names(sn)))
 #' expect_equal(sn$variant_type[sn$pos == 2488153], "SNV")
 #' expect_equal(sn$hgvsg[sn$pos == 2488153], "NC_000001.10:g.2488153A>G")
-#' # this sample reports no CNVs -> sarcnv is an empty (0-row) table with the schema cols
+#' # integer-valued JSON numbers (qual/start/end) must still land as double
 #' cn <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarcnv")
-#' expect_equal(nrow(cn), 0L)
+#' expect_equal(nrow(cn), 3L)
+#' expect_equal(cn$gene, c("MET", "MYC", "ERBB2"))
 #' expect_true(all(c("gene", "cn_type") %in% names(cn)))
+#' expect_true(all(vapply(cn[c("foldchange", "qual", "start", "end")], is.double, logical(1))))
 #' ds <- nemo::read_parquet_grep(odir, lf, "sampleA_dragentso_sarswds")
 #' expect_equal(nrow(ds), 7L)
 #' expect_true("RefSeq" %in% ds$name)
@@ -286,7 +288,12 @@ DragenTso <- R6::R6Class(
         sarcnv <- purrr::map(cnvs, tibble::as_tibble_row) |>
           purrr::list_rbind() |>
           dplyr::rename_with(tolower) |>
-          dplyr::rename(dplyr::any_of(cnv_ren))
+          dplyr::rename(dplyr::any_of(cnv_ren)) |>
+          # whole-number JSON values parse as integer; schema expects float
+          dplyr::mutate(dplyr::across(
+            dplyr::any_of(c("foldchange", "qual", "start", "end")),
+            as.numeric
+          ))
       } else {
         sarcnv <- nemo::empty_tbl(
           cnames = c("foldchange", "qual", "cn_type", "gene", "chrom", "start", "end"),
